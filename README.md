@@ -1,14 +1,13 @@
+> [!WARNING]
+> **This API Provides Access To Mature/Adult Manga And Manhwa Content**. By Using This API Or Its Browse Interface, You Confirm That You Are At Least **18 Years Of Age**. Parental Discretion Is Advised.
+
 <div align="center">
-
-<br />
-
-[![](public/banner.png)](https://omegaapi.vercel.app/)
+  
+[![X](public/banner.png)](https://omegaapi.vercel.app/)
 
 ### The Fastest Free Manga & Manhwa API Built on OmegaScans
 
 **A free, open-source REST API for manga, manhwa, and webtoon data — no authentication required.**
-
-> **⚠️ 18+ Content Warning** — This API provides access to mature/adult manga and manhwa content. By using this API or its browse interface, you confirm that you are at least **18 years of age**. Parental discretion is advised.
 
 Built as a middleware layer on top of the [OmegaScans](https://omegascans.org) API with caching, rate limiting, error handling, and data normalization.
 
