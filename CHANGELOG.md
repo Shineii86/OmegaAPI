@@ -2,6 +2,15 @@
 
 All notable changes to OmegaAPI will be documented in this file.
 
+## [3.3.1] - 2026-05-12
+
+### Fixed
+- Table of Contents links now work correctly on GitHub — removed emojis from heading anchors that caused mismatched `#id` generation
+- Updated latest version reference in README Changelog section to v3.3.0
+
+### Added
+- 18+ content warning message at top of README.md
+
 ## [3.3.0] - 2026-05-12
 
 ### Added

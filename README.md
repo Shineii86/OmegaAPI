@@ -8,6 +8,8 @@
 
 **A free, open-source REST API for manga, manhwa, and webtoon data — no authentication required.**
 
+> **⚠️ 18+ Content Warning** — This API provides access to mature/adult manga and manhwa content. By using this API or its browse interface, you confirm that you are at least **18 years of age**. Parental discretion is advised.
+
 Built as a middleware layer on top of the [OmegaScans](https://omegascans.org) API with caching, rate limiting, error handling, and data normalization.
 
 <br />
@@ -44,41 +46,42 @@ Built as a middleware layer on top of the [OmegaScans](https://omegascans.org) A
 
 ---
 
-## 📑 Table of Contents
+## Table of Contents
 
-- [📖 About](#about)
-- [🤔 Why OmegaAPI?](#why-omegaapi)
-- [✨ Key Features](#key-features)
-- [🚀 Quick Start](#quick-start)
-- [🌐 Base URL](#base-url)
-- [📡 API Endpoints](#api-endpoints)
-  - [📚 Browse Series](#browse-series)
-  - [📖 Series Detail](#series-detail)
-  - [📑 Chapter List](#chapter-list)
-  - [📄 Chapter Content](#chapter-content)
-  - [🔍 Search](#search)
-  - [🏷️ Genres](#genres)
-  - [💓 Health Check](#health-check)
-  - [📊 Stats](#stats)
-- [📦 Response Format](#response-format)
-- [⏱️ Rate Limiting](#rate-limiting)
-- [💾 Caching](#caching)
-- [🚨 Error Handling](#error-handling)
-- [💻 Code Examples](#code-examples)
-- [🛠️ Tech Stack](#tech-stack)
-- [📁 Project Structure](#project-structure)
-- [⚙️ Local Development](#local-development)
-- [🚢 Deployment](#deployment)
-- [🤝 Contributing](#contributing)
-- [❓ FAQ](#faq)
-- [⚖️ Legal](#legal)
-- [📋 Changelog](#changelog)
-- [📝 License](#license)
-- [🙏 Acknowledgments](#acknowledgments)
+- [About](#about)
+- [Why OmegaAPI?](#why-omegaapi)
+- [Key Features](#key-features)
+- [Quick Start](#quick-start)
+- [Base URL](#base-url)
+- [API Endpoints](#api-endpoints)
+  - [Browse Series](#browse-series)
+  - [Series Detail](#series-detail)
+  - [Chapter List](#chapter-list)
+  - [Chapter Content](#chapter-content)
+  - [Search](#search)
+  - [Genres](#genres)
+  - [Health Check](#health-check)
+  - [Stats](#stats)
+- [Response Format](#response-format)
+- [Rate Limiting](#rate-limiting)
+- [Caching](#caching)
+- [Error Handling](#error-handling)
+- [Code Examples](#code-examples)
+- [Tech Stack](#tech-stack)
+- [Project Structure](#project-structure)
+- [Local Development](#local-development)
+- [Deployment](#deployment)
+- [Contributing](#contributing)
+- [FAQ](#faq)
+- [Legal Disclaimer](#legal-disclaimer)
+- [Legal](#legal)
+- [Changelog](#changelog)
+- [License](#license)
+- [Acknowledgments](#acknowledgments)
 
 ---
 
-## 📖 About
+## About
 
 **OmegaAPI** is a free, public REST API that provides comprehensive manga, manhwa, and webtoon data. It acts as a middleware layer on top of the [OmegaScans](https://omegascans.org) API, adding:
 
@@ -95,7 +98,7 @@ Whether you're building a manga reader app, a recommendation engine, a tracking 
 
 ---
 
-## 🤔 Why OmegaAPI?
+## Why OmegaAPI?
 
 | | OmegaAPI | Other APIs |
 |---|---|---|
@@ -109,7 +112,7 @@ Whether you're building a manga reader app, a recommendation engine, a tracking 
 
 ---
 
-## ✨ Key Features
+## Key Features
 
 | Feature | Description |
 |---------|-------------|
@@ -130,7 +133,7 @@ Whether you're building a manga reader app, a recommendation engine, a tracking 
 
 ---
 
-## 🚀 Quick Start
+## Quick Start
 
 **No API key needed.** Just make a request:
 
@@ -167,7 +170,7 @@ if (success) {
 
 ---
 
-## 🌐 Base URL
+## Base URL
 
 ```
 https://omegaapi.vercel.app/api/v1
@@ -184,9 +187,9 @@ https://omegaapi.vercel.app/api/v1
 
 ---
 
-## 📡 API Endpoints
+## API Endpoints
 
-### 📚 Browse Series
+### Browse Series
 
 ```
 GET /api/v1/series
@@ -213,7 +216,7 @@ curl "https://omegaapi.vercel.app/api/v1/series?q=solo"
 
 ---
 
-### 📖 Series Detail
+### Series Detail
 
 ```
 GET /api/v1/series/{slug}
@@ -279,7 +282,7 @@ curl "https://omegaapi.vercel.app/api/v1/series/sex-stopwatch?include=chapters"
 
 ---
 
-### 📑 Chapter List
+### Chapter List
 
 ```
 GET /api/v1/chapters/{slug}
@@ -303,7 +306,7 @@ curl "https://omegaapi.vercel.app/api/v1/chapters/sex-stopwatch?page=1&perPage=5
 
 ---
 
-### 📄 Chapter Content
+### Chapter Content
 
 ```
 GET /api/v1/chapter/{slug}/{chapter}
@@ -352,7 +355,7 @@ curl https://omegaapi.vercel.app/api/v1/chapter/sex-stopwatch/chapter-1
 
 ---
 
-### 🔍 Search
+### Search
 
 ```
 GET /api/v1/search?q={query}
@@ -375,7 +378,7 @@ curl "https://omegaapi.vercel.app/api/v1/search?q=nano&page=2"
 
 ---
 
-### 🏷️ Genres
+### Genres
 
 ```
 GET /api/v1/genres
@@ -403,7 +406,7 @@ curl https://omegaapi.vercel.app/api/v1/genres
 
 ---
 
-### 💓 Health Check
+### Health Check
 
 ```
 GET /api/v1/health
@@ -436,7 +439,7 @@ curl https://omegaapi.vercel.app/api/v1/health
 
 ---
 
-### 📊 Stats
+### Stats
 
 ```
 GET /api/v1/stats
@@ -450,7 +453,7 @@ curl https://omegaapi.vercel.app/api/v1/stats
 
 ---
 
-## 📦 Response Format
+## Response Format
 
 Every API response follows a consistent envelope format:
 
@@ -491,7 +494,7 @@ Every API response follows a consistent envelope format:
 
 ---
 
-## ⏱️ Rate Limiting
+## Rate Limiting
 
 | Setting | Value |
 |---------|-------|
@@ -527,7 +530,7 @@ console.log(`Request ID: ${requestId}`);
 
 ---
 
-## 💾 Caching
+## Caching
 
 | Resource | Cache TTL | Description |
 |----------|-----------|-------------|
@@ -541,7 +544,7 @@ Cached responses include an `X-Cache: HIT` header. The `Cache-Control: public, s
 
 ---
 
-## 🚨 Error Handling
+## Error Handling
 
 ### HTTP Status Codes
 
@@ -556,7 +559,7 @@ Cached responses include an `X-Cache: HIT` header. The `Cache-Control: public, s
 
 ---
 
-## 💻 Code Examples
+## Code Examples
 
 <details>
 <summary><strong>JavaScript (fetch)</strong></summary>
@@ -716,7 +719,7 @@ puts "Chapters: #{response['data']['chaptersCount']}"
 
 ---
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 | Component | Technology | Purpose |
 |-----------|------------|---------|
@@ -731,7 +734,7 @@ puts "Chapters: #{response['data']['chaptersCount']}"
 
 ---
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 OmegaAPI/
@@ -789,7 +792,7 @@ OmegaAPI/
 
 ---
 
-## ⚙️ Local Development
+## Local Development
 
 ### Prerequisites
 
@@ -839,7 +842,7 @@ curl http://localhost:3000/api/v1/chapter/sex-stopwatch/chapter-1
 
 ---
 
-## 🚢 Deployment
+## Deployment
 
 ### Vercel (Recommended)
 
@@ -864,7 +867,7 @@ OmegaAPI is a standard Next.js application. Deploy anywhere that supports Node.j
 
 ---
 
-## 🤝 Contributing
+## Contributing
 
 Contributions are welcome! Here's how to help:
 
@@ -895,7 +898,7 @@ git push origin feature/amazing-feature
 
 ---
 
-## ❓ FAQ
+## FAQ
 
 <details>
 <summary><strong>Is OmegaAPI really free?</strong></summary>
@@ -953,7 +956,7 @@ Open an issue on our [GitHub Issues](https://github.com/Shineii86/OmegaAPI/issue
 
 ---
 
-## ⚠️ Legal Disclaimer
+## Legal Disclaimer
 
 This project is **unofficial** and **not affiliated with or endorsed by OmegaScans**.
 
@@ -964,7 +967,7 @@ This project is **unofficial** and **not affiliated with or endorsed by OmegaSca
 
 ---
 
-## ⚖️ Legal
+## Legal
 
 - **[Terms of Service](https://omegaapi.vercel.app/terms)** — Rules governing API usage
 - **[Privacy Policy](https://omegaapi.vercel.app/privacy)** — Data collection and privacy practices
@@ -972,12 +975,17 @@ This project is **unofficial** and **not affiliated with or endorsed by OmegaSca
 
 ---
 
-## 📋 Changelog
+## Changelog
 
 See [CHANGELOG.md](CHANGELOG.md) for a detailed version history.
 
-### 🆕 Latest: v3.1.0 (2026-05-12)
+### Latest: v3.3.0 (2026-05-12)
 
+- 🔞 **18+ Age Verification Gate** — Full-screen age gate on browse page with localStorage persistence
+- 💾 **Search Index Caching** — localStorage cache with 1-hour TTL saves ~30KB per visit
+- 🔀 **Sort Controls** — View All mode now supports Latest, Top Rated, Most Viewed, A–Z sorting
+- 🆕 **Latest Updates Row** — New scroll row showing recently updated series
+- ⚡ **Image Preloading** — Paged reader preloads next 3 pages to eliminate white flash
 - 📖 **Reading History** — localStorage-based tracking with "Continue Reading" row and progress bars
 - ❤️ **Bookmarks / My List** — Heart button on cards + modal, dedicated My List scroll row
 - 🔍 **Recent Searches** — Shown in search overlay with clear history option
@@ -991,13 +999,13 @@ See [CHANGELOG.md](CHANGELOG.md) for a detailed version history.
 
 ---
 
-## 📝 License
+## License
 
 This project is licensed under the **MIT License** — see the [LICENSE](LICENSE) file for details.
 
 ---
 
-## 🙏 Acknowledgments
+## Acknowledgments
 
 | Project | Description |
 |---------|-------------|
