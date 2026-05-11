@@ -2,7 +2,7 @@
 
 <br />
 
-# Ω OmegaAPI
+[![](public/banner.png)](https://omegaapi.vercel.app/)
 
 ### The Fastest Free Manga & Manhwa API Built on OmegaScans
 
