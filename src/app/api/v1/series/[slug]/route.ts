@@ -33,7 +33,7 @@ export async function GET(
     if (includeChapters && seriesData.data.id) {
       const chaptersData = await getSeriesChapters(seriesData.data.id, 1, 10000, slug);
       result = {
-        ...seriesData,
+        success: true,
         data: {
           ...seriesData.data,
           chapters: chaptersData.data,

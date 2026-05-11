@@ -301,7 +301,7 @@ function normalizeChapter(ch: OmegaChapter, seriesSlug: string): NormalizedChapt
     price: ch.price,
     isFree: ch.price === 0,
     createdAt: ch.created_at,
-    index: '',
+    index: ch.meta?.index as string || '',
     url: `/api/v1/chapter/${seriesSlug}/${ch.chapter_slug}`,
   };
 }
