@@ -9,6 +9,48 @@ import { getHistory, getContinueReading, clearHistory, getBookmarks, toggleBookm
 
 const BASE = typeof window !== 'undefined' ? window.location.origin : 'https://omegaapi.vercel.app';
 
+const AGE_GATE_KEY = 'omega_age_verified';
+
+/* ── Age Gate (18+ Warning) ── */
+function AgeGate({ onConfirm }: { onConfirm: () => void }) {
+  return (
+    <div className="fixed inset-0 z-[999] flex items-center justify-center" style={{ background: '#0a0a10' }}>
+      <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'radial-gradient(circle at 1px 1px, #fff 1px, transparent 0)', backgroundSize: '40px 40px' }} />
+      <div className="relative max-w-md w-full mx-5 text-center">
+        {/* Warning Icon */}
+        <div className="mx-auto mb-6 w-20 h-20 flex items-center justify-center border-4 border-[#ef4444] rounded-full" style={{ background: 'rgba(239,68,68,0.08)' }}>
+          <span className="text-4xl font-display font-black text-[#ef4444]" style={{ textTransform: 'none' }}>18+</span>
+        </div>
+
+        <h1 className="font-display text-2xl md:text-3xl text-[#e4e4e7] mb-3" style={{ textTransform: 'none' }}>Age Verification Required</h1>
+
+        <p className="text-sm text-[#71717a] leading-relaxed mb-8 max-w-sm mx-auto">
+          This website contains mature content including manga and manhwa intended for adults only. By entering, you confirm you are at least <span className="text-[#e4e4e7] font-semibold">18 years of age</span>.
+        </p>
+
+        <div className="space-y-3">
+          <button
+            onClick={onConfirm}
+            className="w-full py-3.5 px-6 bg-[#ef4444] border-2 border-[#e4e4e7] text-white font-display font-bold text-sm uppercase tracking-widest shadow-[4px_4px_0_0_#e4e4e7] hover:bg-[#dc2626] hover:shadow-[2px_2px_0_0_#e4e4e7] hover:translate-x-[2px] hover:translate-y-[2px] active:shadow-none active:translate-x-[4px] active:translate-y-[4px] transition-all"
+          >
+            I Am 18+ — Enter
+          </button>
+          <a
+            href="/"
+            className="block w-full py-3 px-6 bg-transparent border-2 border-[#2a2a36] text-[#71717a] font-display text-sm uppercase tracking-widest hover:border-[#ef4444]/40 hover:text-[#a1a1aa] transition-all"
+          >
+            I Am Under 18 — Leave
+          </a>
+        </div>
+
+        <p className="text-[0.6rem] text-[#3f3f46] mt-6 uppercase tracking-widest">
+          Your preference is saved locally · No data collected
+        </p>
+      </div>
+    </div>
+  );
+}
+
 /* ── ScrollRow ── */
 function ScrollRow({ children }: { children: React.ReactNode }) {
   const ref = useRef<HTMLDivElement>(null);
@@ -478,6 +520,7 @@ export default function BrowsePage() {
   const [modalSlug, setModalSlug] = useState<string | null>(null);
   const [searchOpen, setSearchOpen] = useState(false);
   const [bookmarkRefresh, setBookmarkRefresh] = useState(0);
+  const [ageVerified, setAgeVerified] = useState(false);
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [allSeriesIndex, setAllSeriesIndex] = useState<Series[]>([]);
 
@@ -509,6 +552,15 @@ export default function BrowsePage() {
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', 'dark');
     return () => { document.documentElement.removeAttribute('data-theme'); };
+  }, []);
+
+  /* Check age verification on mount */
+  useEffect(() => {
+    try {
+      if (localStorage.getItem(AGE_GATE_KEY) === 'true') {
+        setAgeVerified(true);
+      }
+    } catch { /* SSR or private mode */ }
   }, []);
 
   /* Sync genre from URL params */
@@ -672,6 +724,15 @@ export default function BrowsePage() {
   const closeViewAll = useCallback(() => {
     setViewAll(false);
   }, []);
+
+  const handleAgeConfirm = useCallback(() => {
+    try { localStorage.setItem(AGE_GATE_KEY, 'true'); } catch {}
+    setAgeVerified(true);
+  }, []);
+
+  if (!ageVerified) {
+    return <AgeGate onConfirm={handleAgeConfirm} />;
+  }
 
   return (
     <main className="min-h-screen" style={{ background: 'var(--bg)' }}>

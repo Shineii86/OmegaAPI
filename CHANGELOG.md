@@ -9,9 +9,7 @@ All notable changes to OmegaAPI will be documented in this file.
 - Sort controls in "View All" mode: Latest, Top Rated, Most Viewed, A–Z — instant client-side sorting
 - "Latest Updates" scroll row on browse page showing recently updated series (sorted by `updatedAt`)
 - Image preloading in paged chapter reader — preloads next 3 pages via `new Image()` to eliminate white flash on page turn
-
-### Changed
-- Search index fetch now respects localStorage cache; only refetches when cache is missing, corrupt, or older than 1 hour
+- 18+ age verification gate on browse page — full-screen overlay with age confirmation, persists choice in localStorage so it never reappears for returning users
 
 ## [3.2.5] - 2026-05-12
 
