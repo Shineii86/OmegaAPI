@@ -2,6 +2,16 @@
 
 All notable changes to OmegaAPI will be documented in this file.
 
+## [3.0.3] - 2026-05-11
+
+### Fixed
+- Fixed chapter images not loading: relative image paths (e.g. `uploads/series/...`) are now normalized to full URLs (`https://media.omegascans.org/...`)
+- Fixed series thumbnails and covers: all image URLs now normalized through `normalizeImageUrl()` helper
+- Fixed chapter thumbnails: normalized through the same helper
+- Fixed Common Recipes section overflow on mobile: added `overflow-hidden` to recipe cards
+- Removed JSON API links from browse series detail page (nav bar and bottom)
+- Removed JSON API link from chapter reader footer
+
 ## [3.0.2] - 2026-05-11
 
 ### Changed

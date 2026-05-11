@@ -655,7 +655,7 @@ console.log(data.chapters[0]);   // { id, name, slug, ... }`,
               },
             ].map((recipe, i) => (
               <Reveal key={recipe.title} delay={i * 80}>
-                <div className="card-brutal">
+                <div className="card-brutal overflow-hidden">
                   <h3 className="font-display text-base mb-1" style={{ textTransform: 'none' }}>{recipe.title}</h3>
                   <p className="text-sm text-[var(--text-muted)] mb-4">{recipe.desc}</p>
                   <CodeBlock code={recipe.code} lang="javascript" />

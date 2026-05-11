@@ -243,8 +243,7 @@ export default function ChapterReaderPage() {
       {/* ── Footer Info (vertical, above nav bar) ── */}
       {readingMode === 'vertical' && (
         <div className="max-w-3xl mx-auto px-5 pb-20 text-center">
-          <p className="text-xs text-[#71717a] mb-4">{chapter.name} · {chapter.pageCount} pages · {chapter.series?.title || ''}</p>
-          <a href={`/api/v1/chapter/${seriesSlug}/${chapterSlug}`} target="_blank" className="text-xs text-[#fbbf24] hover:underline font-medium">View JSON API response</a>
+          <p className="text-xs text-[#71717a]">{chapter.name} · {chapter.pageCount} pages · {chapter.series?.title || ''}</p>
         </div>
       )}
     </main>

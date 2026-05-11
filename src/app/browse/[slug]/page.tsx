@@ -111,9 +111,6 @@ export default function SeriesDetailPage() {
             <a href="/browse" className="text-xs font-semibold uppercase tracking-widest text-[#a1a1aa] hover:text-[#e4e4e7] transition-colors flex items-center gap-1">
               <IconChevronLeft size={14} /> BROWSE
             </a>
-            <a href={`/api/v1/series/${slug}?include=chapters`} target="_blank" className="text-xs font-semibold uppercase tracking-widest text-[#fbbf24] hover:underline flex items-center gap-1">
-              JSON <IconExternalLink size={10} />
-            </a>
           </div>
         </div>
       </nav>
@@ -255,11 +252,6 @@ export default function SeriesDetailPage() {
               )}
             </>
           )}
-        </div>
-        <div className="mt-6 text-center">
-          <a href={`/api/v1/series/${slug}?include=chapters`} target="_blank" className="text-xs text-[#71717a] hover:text-[#fbbf24] transition-colors flex items-center gap-1 justify-center font-medium">
-            View as JSON <IconExternalLink size={10} />
-          </a>
         </div>
       </div>
 

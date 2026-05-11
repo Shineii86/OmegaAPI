@@ -224,8 +224,8 @@ function normalizeSeries(series: OmegaSeries): NormalizedSeries {
     title: series.title,
     slug: series.series_slug,
     description: stripHtml(series.description),
-    thumbnail: series.thumbnail,
-    cover: series.thumbnail,
+    thumbnail: normalizeImageUrl(series.thumbnail),
+    cover: normalizeImageUrl(series.thumbnail),
     status: series.status,
     type: series.series_type,
     rating: Math.round(series.rating * 100) / 100,
@@ -268,8 +268,8 @@ function normalizeSeriesDetail(series: OmegaSeriesDetail): NormalizedSeries {
     title: series.title,
     slug: series.series_slug,
     description: stripHtml(series.description),
-    thumbnail: series.thumbnail,
-    cover: series.thumbnail,
+    thumbnail: normalizeImageUrl(series.thumbnail),
+    cover: normalizeImageUrl(series.thumbnail),
     status: series.status,
     type: series.series_type,
     rating: Math.round(series.rating * 100) / 100,
@@ -297,7 +297,7 @@ function normalizeChapter(ch: OmegaChapter, seriesSlug: string): NormalizedChapt
     name: ch.chapter_name,
     title: ch.chapter_title,
     slug: ch.chapter_slug,
-    thumbnail: ch.chapter_thumbnail,
+    thumbnail: normalizeImageUrl(ch.chapter_thumbnail),
     price: ch.price,
     isFree: ch.price === 0,
     createdAt: ch.created_at,
@@ -306,7 +306,16 @@ function normalizeChapter(ch: OmegaChapter, seriesSlug: string): NormalizedChapt
   };
 }
 
+function normalizeImageUrl(url: string): string {
+  if (!url) return '';
+  if (url.startsWith('http://') || url.startsWith('https://')) return url;
+  return `https://media.omegascans.org/${url.replace(/^\//, '')}`;
+}
+
 function normalizeChapterContent(ch: OmegaChapterContent['chapter']): NormalizedChapterContent {
+  const rawImages = ch.chapter_data?.images || [];
+  const images = rawImages.map(normalizeImageUrl);
+
   return {
     id: ch.id,
     name: ch.chapter_name,
@@ -315,15 +324,15 @@ function normalizeChapterContent(ch: OmegaChapterContent['chapter']): Normalized
     index: ch.index,
     price: ch.price,
     isFree: ch.price === 0,
-    thumbnail: ch.chapter_thumbnail,
-    images: ch.chapter_data?.images || [],
-    pageCount: ch.chapter_data?.images?.length || 0,
+    thumbnail: normalizeImageUrl(ch.chapter_thumbnail),
+    images,
+    pageCount: images.length,
     createdAt: ch.created_at,
     series: {
       id: ch.series.id,
       title: ch.series.title,
       slug: ch.series.series_slug,
-      thumbnail: ch.series.thumbnail,
+      thumbnail: normalizeImageUrl(ch.series.thumbnail),
       status: ch.series.status,
       description: stripHtml(ch.series.description),
     },
