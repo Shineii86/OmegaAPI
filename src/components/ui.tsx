@@ -11,7 +11,7 @@ export function CopyBtn({ text }: { text: string }) {
         setCopied(true);
         setTimeout(() => setCopied(false), 2000);
       }}
-      className="text-[0.65rem] font-semibold uppercase tracking-wider px-2.5 py-1 rounded-md bg-white/[0.04] hover:bg-white/[0.08] text-[#5c5a70] hover:text-[#e8e6f0] transition-all border border-transparent hover:border-[#1e1e3a]"
+      className="text-[0.62rem] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-md bg-white/10 hover:bg-white/20 text-[#a5b4fc] hover:text-white transition-all"
     >
       {copied ? '✓ copied' : 'copy'}
     </button>
@@ -28,7 +28,7 @@ export function CodeBlock({ code, lang = 'bash', title }: { code: string; lang?:
         </div>
       )}
       <pre><code>{code}</code></pre>
-      <div className="absolute top-[0.6rem] right-3 opacity-0 group-hover:opacity-100 transition-opacity">
+      <div className="absolute top-[0.5rem] right-3 opacity-0 group-hover:opacity-100 transition-opacity">
         <CopyBtn text={code} />
       </div>
     </div>
@@ -45,4 +45,22 @@ export function formatDate(d: string): string {
   if (!d) return '';
   try { return new Date(d).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }); }
   catch { return d; }
+}
+
+export function Spinner() {
+  return (
+    <div className="flex items-center justify-center py-20">
+      <div className="w-7 h-7 border-2 border-[var(--border)] border-t-[var(--accent)] rounded-full animate-spin" />
+    </div>
+  );
+}
+
+export function EmptyState({ icon, title, description }: { icon?: React.ReactNode; title: string; description: string }) {
+  return (
+    <div className="text-center py-16">
+      {icon && <div className="flex justify-center mb-4 text-[var(--text-muted)]">{icon}</div>}
+      <h3 className="text-lg font-semibold mb-2 text-[var(--text)]">{title}</h3>
+      <p className="text-sm text-[var(--text-muted)] max-w-md mx-auto">{description}</p>
+    </div>
+  );
 }

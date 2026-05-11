@@ -2,6 +2,22 @@
 
 All notable changes to OmegaAPI will be documented in this file.
 
+## [2.0.0] - 2026-05-11
+
+### Changed
+- Complete frontend redesign with clean light theme (white background, indigo accents, soft shadows)
+- Replaced dark glassmorphism design with modern, minimal light aesthetic
+- New CSS design system with CSS variables for consistent theming
+- Updated all pages: Home, Browse, Series Detail, Chapter Reader, Docs, Support, Terms, Privacy
+- Redesigned navbar with frosted glass effect on light background
+- Updated code blocks to dark indigo theme (contrast against light UI)
+- New card design with subtle shadows and hover states
+- Updated hero section with mesh gradient background
+- Improved typography spacing and hierarchy
+- Light-themed search modal, playground, and interactive elements
+- Updated tags, badges, buttons, and form inputs for light theme
+- Responsive design improvements across all breakpoints
+
 ## [1.1.0] - 2026-05-11
 
 ### Fixed
