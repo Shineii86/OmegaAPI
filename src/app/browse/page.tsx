@@ -6,6 +6,7 @@ import { IconStar, IconEye, IconBook, IconSearch, IconArrowRight, IconChevronLef
 import { formatViews, Spinner } from '@/components/ui';
 import { Footer } from '@/components/layout';
 import { getHistory, getContinueReading, clearHistory, getBookmarks, toggleBookmark, isBookmarked, getRecentSearches, saveSearch, clearRecentSearches, type HistoryEntry } from '@/lib/storage';
+import { ErrorBoundary } from '@/components/ErrorBoundary';
 const BASE = typeof window !== 'undefined' ? window.location.origin : 'https://omegaapi.vercel.app';
 
 const AGE_GATE_KEY = 'omega_age_verified';
@@ -735,6 +736,7 @@ export default function BrowsePage() {
   }
 
   return (
+    <ErrorBoundary>
     <main className="min-h-screen" style={{ background: 'var(--bg)' }}>
       {/* Nav */}
       <nav className="nav-frosted sticky top-0 z-50">
@@ -1105,5 +1107,6 @@ export default function BrowsePage() {
       {/* Series Detail Modal */}
       {modalSlug && <SeriesDetailModal slug={modalSlug} onClose={() => setModalSlug(null)} />}
     </main>
+    </ErrorBoundary>
   );
 }

@@ -5,11 +5,14 @@ import { useParams } from 'next/navigation';
 import type { ChapterData, Chapter } from '@/types';
 import { IconChevronLeft, IconChevronRight, IconColumns, IconFile, IconHome, IconBook } from '@/components/icons';
 import { saveHistory, saveReadingPosition, getReadingPosition } from '@/lib/storage';
+import { ErrorBoundary } from '@/components/ErrorBoundary';
 const BASE = typeof window !== 'undefined' ? window.location.origin : 'https://omegaapi.vercel.app';
 
 export default function ChapterReaderPage() {
   return (
-    <ChapterReaderContent />
+    <ErrorBoundary>
+      <ChapterReaderContent />
+    </ErrorBoundary>
   );
 }
 
@@ -221,7 +224,7 @@ function ChapterReaderContent() {
       {readingMode === 'vertical' && (
         <div className="max-w-3xl mx-auto pt-16 pb-4 cursor-pointer" onClick={() => setShowNav(!showNav)}>
           {chapter.images.map((url: string, i: number) => (
-            <img key={i} src={url} alt={`Page ${i + 1}`} className="w-full block" loading={i < 3 ? 'eager' : 'lazy'} />
+            <img key={i} src={url} alt={`Page ${i + 1}`} className="w-full block" loading={i < 3 ? 'eager' : 'lazy'} decoding="async" />
           ))}
         </div>
       )}
@@ -230,7 +233,7 @@ function ChapterReaderContent() {
       {readingMode === 'paged' && (
         <div className="flex items-center justify-center min-h-screen pt-14">
           {chapter.images[currentPage] ? (
-            <img src={chapter.images[currentPage]} alt={`Page ${currentPage + 1}`} className="max-h-[calc(100vh-4rem)] max-w-full object-contain" />
+            <img src={chapter.images[currentPage]} alt={`Page ${currentPage + 1}`} className="max-h-[calc(100vh-4rem)] max-w-full object-contain" decoding="async" />
           ) : (
             <div className="text-[#71717a]">Page not available</div>
           )}

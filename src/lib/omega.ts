@@ -156,27 +156,48 @@ export type { NormalizedSeries, NormalizedChapter, NormalizedChapterContent, Pag
 /**
  * Generic fetch wrapper for the upstream OmegaScans API.
  *
- * @param path  - API path relative to OMEGA_BASE (e.g. "/query?type=series&page=1")
- * @returns     - Parsed JSON response of type T
- * @throws      - Error if the upstream response is not OK
+ * @param path    - API path relative to OMEGA_BASE (e.g. "/query?type=series&page=1")
+ * @param retries - Number of retry attempts on 5xx errors (default: 1)
+ * @returns       - Parsed JSON response of type T
+ * @throws        - Error if the upstream response is not OK after all retries
  *
  * NOTE: Uses Next.js `revalidate: 300` (5 min) for ISR caching at the fetch layer.
+ * Retries once on 5xx errors with a 1-second delay to handle transient upstream failures.
  */
-async function fetchOmega<T>(path: string): Promise<T> {
+async function fetchOmega<T>(path: string, retries = 1): Promise<T> {
   const url = `${OMEGA_BASE}${path}`;
-  const res = await fetch(url, {
-    headers: {
-      'User-Agent': 'OmegaAPI/1.0',
-      'Accept': 'application/json',
-    },
-    next: { revalidate: 300 },
-  });
+  let lastError: Error | null = null;
 
-  if (!res.ok) {
-    throw new Error(`OmegaScans API error: ${res.status} ${res.statusText}`);
+  for (let attempt = 0; attempt <= retries; attempt++) {
+    try {
+      const res = await fetch(url, {
+        headers: {
+          'User-Agent': 'OmegaAPI/1.0',
+          'Accept': 'application/json',
+        },
+        next: { revalidate: 300 },
+      });
+
+      if (res.ok) return res.json();
+
+      // ---- FEATURE: RETRY LOGIC ----
+      // Only retry on 5xx (server errors), not 4xx (client errors)
+      if (res.status >= 500 && attempt < retries) {
+        await new Promise(r => setTimeout(r, 1000));
+        continue;
+      }
+
+      throw new Error(`OmegaScans API error: ${res.status} ${res.statusText}`);
+    } catch (err) {
+      lastError = err instanceof Error ? err : new Error(String(err));
+      if (attempt < retries) {
+        await new Promise(r => setTimeout(r, 1000));
+        continue;
+      }
+    }
   }
 
-  return res.json();
+  throw lastError || new Error('OmegaScans API error: unknown');
 }
 
 // ---- FEATURE: NORMALIZATION ----

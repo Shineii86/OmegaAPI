@@ -81,6 +81,36 @@ export function successResponse<T>(
   });
 }
 
+// ---- FEATURE: PAGINATION HEADERS ----
+
+/**
+ * Build pagination metadata headers for paginated responses.
+ *
+ * @param pagination - Pagination object from PaginatedResponse
+ * @returns          - Record of X-Pagination-* headers
+ *
+ * NOTE: These headers allow API consumers to read pagination
+ * metadata without parsing the JSON body (useful for HEAD
+ * requests and automated tooling).
+ */
+export function paginationHeaders(pagination: {
+  total: number;
+  perPage: number;
+  currentPage: number;
+  lastPage: number;
+  hasNext: boolean;
+  hasPrevious: boolean;
+}): Record<string, string> {
+  return {
+    'X-Pagination-Total': String(pagination.total),
+    'X-Pagination-Per-Page': String(pagination.perPage),
+    'X-Pagination-Current-Page': String(pagination.currentPage),
+    'X-Pagination-Last-Page': String(pagination.lastPage),
+    'X-Pagination-Has-Next': String(pagination.hasNext),
+    'X-Pagination-Has-Previous': String(pagination.hasPrevious),
+  };
+}
+
 /**
  * Build a standardized error response.
  *

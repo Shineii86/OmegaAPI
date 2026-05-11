@@ -2,6 +2,25 @@
 
 All notable changes to OmegaAPI will be documented in this file.
 
+## [3.9.0] - 2026-05-12
+
+### Added
+- `.env.example` with all environment variable documentation
+- Retry logic in `fetchOmega()` — single retry on 5xx errors with 1s delay
+- Health check caching — upstream probe result cached for 30s to reduce load
+- Pagination metadata headers (`X-Pagination-Total`, `X-Pagination-Per-Page`, etc.) on all paginated endpoints
+- Sorting & filtering on `/api/v1/series` — `?sort=title|rating|views|updated&order=asc|desc&status=ongoing&type=manhwa`
+- RESTful alias route `/api/v1/series/:slug/chapters` for chapter list
+- Random series endpoint `/api/v1/random?count=1` for discovery
+- Dynamic OG image generator `/api/og?title=...&rating=...&views=...`
+- React Error Boundary wrapper on all browse pages (browse, series, chapter, genre)
+- Static search index generator script (`scripts/generate-search-index.ts`)
+
+### Changed
+- Removed duplicate CORS headers from `vercel.json` (already in `next.config.js`)
+- Chapter reader images now use `decoding="async"` for better rendering performance
+- Stats endpoint updated with all new endpoints
+
 ## [3.8.0] - 2026-05-12
 
 ### Added

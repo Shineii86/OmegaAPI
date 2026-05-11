@@ -20,7 +20,7 @@ import { NextRequest } from 'next/server';
 import { getSeriesDetail, getSeriesChapters } from '@/lib/omega';
 import { getCached, setCache } from '@/lib/cache';
 import { checkRateLimit } from '@/lib/rate-limit';
-import { getClientIp, successResponse, errorResponse } from '@/lib/utils';
+import { getClientIp, successResponse, errorResponse, paginationHeaders } from '@/lib/utils';
 
 export const runtime = 'edge';
 
@@ -61,6 +61,7 @@ export async function GET(
       'X-RateLimit-Limit': '60',
       'X-RateLimit-Remaining': String(rate.remaining),
       'X-RateLimit-Reset': String(Math.ceil(rate.resetTime / 1000)),
+      ...paginationHeaders(chaptersData.pagination),
     });
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : 'Internal server error';
