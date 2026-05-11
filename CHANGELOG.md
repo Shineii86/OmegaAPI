@@ -2,6 +2,13 @@
 
 All notable changes to OmegaAPI will be documented in this file.
 
+## [3.2.4] - 2026-05-12
+
+### Fixed
+- Search now indexes ALL 263 series (was only searching first 40)
+- Background fetch loads all series pages on browse page load for comprehensive search
+- Search results are now accurate and complete
+
 ## [3.2.3] - 2026-05-12
 
 ### Fixed

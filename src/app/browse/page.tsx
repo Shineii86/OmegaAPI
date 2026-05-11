@@ -479,6 +479,7 @@ export default function BrowsePage() {
   const [searchOpen, setSearchOpen] = useState(false);
   const [bookmarkRefresh, setBookmarkRefresh] = useState(0);
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
+  const [allSeriesIndex, setAllSeriesIndex] = useState<Series[]>([]);
 
   /* Continue Reading + My List state */
   const [continueReading, setContinueReading] = useState<HistoryEntry[]>([]);
@@ -520,6 +521,30 @@ export default function BrowsePage() {
   useEffect(() => {
     setContinueReading(getContinueReading());
   }, [bookmarkRefresh]);
+
+  /* Background: fetch ALL series for search index */
+  useEffect(() => {
+    const fetchAllForSearch = async () => {
+      try {
+        const all: Series[] = [];
+        let page = 1;
+        let hasMore = true;
+        while (hasMore && page <= 25) {
+          const res = await fetch(`${BASE}/api/v1/series?page=${page}&perPage=100`);
+          const data = await res.json();
+          if (data.success && data.data?.length > 0) {
+            all.push(...data.data);
+            hasMore = data.pagination?.hasNext || false;
+            page++;
+          } else {
+            hasMore = false;
+          }
+        }
+        setAllSeriesIndex(all);
+      } catch { /* silent */ }
+    };
+    fetchAllForSearch();
+  }, []);
 
   /* Load My List (bookmarked series) */
   useEffect(() => {
@@ -644,7 +669,7 @@ export default function BrowsePage() {
       </nav>
 
       {/* Search Overlay */}
-      <SearchOverlay open={searchOpen} onClose={() => setSearchOpen(false)} onSelect={(s) => setModalSlug(s.slug)} allSeries={popular} />
+      <SearchOverlay open={searchOpen} onClose={() => setSearchOpen(false)} onSelect={(s) => setModalSlug(s.slug)} allSeries={allSeriesIndex.length > 0 ? allSeriesIndex : popular} />
 
       {/* Featured Banner */}
       {featured && (
