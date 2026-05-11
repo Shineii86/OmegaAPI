@@ -48,7 +48,7 @@ export async function GET() {
     success: true,
     data: {
       status: 'ok',
-      version: '1.0.0',
+      version: '3.8.0',
       uptime: Math.floor((Date.now() - startTime) / 1000),
       upstream: {
         status: upstreamStatus,

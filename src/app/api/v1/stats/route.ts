@@ -33,7 +33,7 @@ export async function GET() {
     success: true,
     data: {
       name: 'OmegaAPI',
-      version: '1.0.0',
+      version: '3.8.0',
       description: 'Free Manga & Manhwa REST API powered by OmegaScans',
       uptime: Math.floor((Date.now() - startTime) / 1000),
       endpoints: [
