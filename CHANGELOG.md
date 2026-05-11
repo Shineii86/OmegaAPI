@@ -2,6 +2,13 @@
 
 All notable changes to OmegaAPI will be documented in this file.
 
+## [3.0.4] - 2026-05-11
+
+### Fixed
+- Featured banner cover image now always visible (removed hidden sm:block that hid it on mobile)
+- Featured banner uses inline styles for cross-browser reliability
+- Cover image onError falls back to thumbnail instead of hiding
+
 ## [3.0.3] - 2026-05-11
 
 ### Fixed
