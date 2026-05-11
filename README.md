@@ -45,42 +45,44 @@ Built as a middleware layer on top of the [OmegaScans](https://omegascans.org) A
 
 ---
 
-## Table of Contents
+## 📑 Table of Contents
 
-- [About](#about)
-- [Why OmegaAPI?](#why-omegaapi)
-- [Key Features](#key-features)
-- [Quick Start](#quick-start)
-- [Base URL](#base-url)
-- [API Endpoints](#api-endpoints)
-  - [Browse Series](#browse-series)
-  - [Series Detail](#series-detail)
-  - [Chapter List](#chapter-list)
-  - [Chapter Content](#chapter-content)
-  - [Search](#search)
-  - [Genres](#genres)
-  - [Health Check](#health-check)
-  - [Stats](#stats)
-- [Response Format](#response-format)
-- [Rate Limiting](#rate-limiting)
-- [Caching](#caching)
-- [Error Handling](#error-handling)
-- [Code Examples](#code-examples)
-- [Tech Stack](#tech-stack)
-- [Project Structure](#project-structure)
-- [Local Development](#local-development)
-- [Deployment](#deployment)
-- [Contributing](#contributing)
-- [FAQ](#faq)
-- [Legal Disclaimer](#legal-disclaimer)
-- [Legal](#legal)
-- [Changelog](#changelog)
-- [License](#license)
-- [Acknowledgments](#acknowledgments)
+- [📖 About](#about)
+- [🤔 Why OmegaAPI?](#why-omegaapi)
+- [✨ Key Features](#key-features)
+- [🚀 Quick Start](#quick-start)
+- [🌐 Base URL](#base-url)
+- [📡 API Endpoints](#api-endpoints)
+  - [📚 Browse Series](#browse-series)
+  - [📖 Series Detail](#series-detail)
+  - [📑 Chapter List](#chapter-list)
+  - [📄 Chapter Content](#chapter-content)
+  - [🔍 Search](#search)
+  - [🏷️ Genres](#genres)
+  - [💓 Health Check](#health-check)
+  - [📊 Stats](#stats)
+- [📦 Response Format](#response-format)
+- [⏱️ Rate Limiting](#rate-limiting)
+- [💾 Caching](#caching)
+- [🚨 Error Handling](#error-handling)
+- [💻 Code Examples](#code-examples)
+- [🛠️ Tech Stack](#tech-stack)
+- [📁 Project Structure](#project-structure)
+- [⚙️ Local Development](#local-development)
+- [🚢 Deployment](#deployment)
+- [🤝 Contributing](#contributing)
+- [❓ FAQ](#faq)
+- [⚠️ Legal Disclaimer](#legal-disclaimer)
+- [⚖️ Legal](#legal)
+- [📋 Changelog](#changelog)
+- [📝 License](#license)
+- [🙏 Acknowledgments](#acknowledgments)
 
 ---
 
-## About
+<a id="about"></a>
+
+## 📖 About
 
 **OmegaAPI** is a free, public REST API that provides comprehensive manga, manhwa, and webtoon data. It acts as a middleware layer on top of the [OmegaScans](https://omegascans.org) API, adding:
 
@@ -97,7 +99,9 @@ Whether you're building a manga reader app, a recommendation engine, a tracking 
 
 ---
 
-## Why OmegaAPI?
+<a id="why-omegaapi"></a>
+
+## 🤔 Why OmegaAPI?
 
 | | OmegaAPI | Other APIs |
 |---|---|---|
@@ -111,7 +115,9 @@ Whether you're building a manga reader app, a recommendation engine, a tracking 
 
 ---
 
-## Key Features
+<a id="key-features"></a>
+
+## ✨ Key Features
 
 | Feature | Description |
 |---------|-------------|
@@ -132,7 +138,9 @@ Whether you're building a manga reader app, a recommendation engine, a tracking 
 
 ---
 
-## Quick Start
+<a id="quick-start"></a>
+
+## 🚀 Quick Start
 
 **No API key needed.** Just make a request:
 
@@ -169,7 +177,9 @@ if (success) {
 
 ---
 
-## Base URL
+<a id="base-url"></a>
+
+## 🌐 Base URL
 
 ```
 https://omegaapi.vercel.app/api/v1
@@ -186,9 +196,13 @@ https://omegaapi.vercel.app/api/v1
 
 ---
 
-## API Endpoints
+<a id="api-endpoints"></a>
 
-### Browse Series
+## 📡 API Endpoints
+
+<a id="browse-series"></a>
+
+### 📚 Browse Series
 
 ```
 GET /api/v1/series
@@ -215,7 +229,9 @@ curl "https://omegaapi.vercel.app/api/v1/series?q=solo"
 
 ---
 
-### Series Detail
+<a id="series-detail"></a>
+
+### 📖 Series Detail
 
 ```
 GET /api/v1/series/{slug}
@@ -281,7 +297,9 @@ curl "https://omegaapi.vercel.app/api/v1/series/sex-stopwatch?include=chapters"
 
 ---
 
-### Chapter List
+<a id="chapter-list"></a>
+
+### 📑 Chapter List
 
 ```
 GET /api/v1/chapters/{slug}
@@ -305,7 +323,9 @@ curl "https://omegaapi.vercel.app/api/v1/chapters/sex-stopwatch?page=1&perPage=5
 
 ---
 
-### Chapter Content
+<a id="chapter-content"></a>
+
+### 📄 Chapter Content
 
 ```
 GET /api/v1/chapter/{slug}/{chapter}
@@ -354,7 +374,9 @@ curl https://omegaapi.vercel.app/api/v1/chapter/sex-stopwatch/chapter-1
 
 ---
 
-### Search
+<a id="search"></a>
+
+### 🔍 Search
 
 ```
 GET /api/v1/search?q={query}
@@ -377,7 +399,9 @@ curl "https://omegaapi.vercel.app/api/v1/search?q=nano&page=2"
 
 ---
 
-### Genres
+<a id="genres"></a>
+
+### 🏷️ Genres
 
 ```
 GET /api/v1/genres
@@ -405,7 +429,9 @@ curl https://omegaapi.vercel.app/api/v1/genres
 
 ---
 
-### Health Check
+<a id="health-check"></a>
+
+### 💓 Health Check
 
 ```
 GET /api/v1/health
@@ -438,7 +464,9 @@ curl https://omegaapi.vercel.app/api/v1/health
 
 ---
 
-### Stats
+<a id="stats"></a>
+
+### 📊 Stats
 
 ```
 GET /api/v1/stats
@@ -452,7 +480,9 @@ curl https://omegaapi.vercel.app/api/v1/stats
 
 ---
 
-## Response Format
+<a id="response-format"></a>
+
+## 📦 Response Format
 
 Every API response follows a consistent envelope format:
 
@@ -493,7 +523,9 @@ Every API response follows a consistent envelope format:
 
 ---
 
-## Rate Limiting
+<a id="rate-limiting"></a>
+
+## ⏱️ Rate Limiting
 
 | Setting | Value |
 |---------|-------|
@@ -529,7 +561,9 @@ console.log(`Request ID: ${requestId}`);
 
 ---
 
-## Caching
+<a id="caching"></a>
+
+## 💾 Caching
 
 | Resource | Cache TTL | Description |
 |----------|-----------|-------------|
@@ -543,7 +577,9 @@ Cached responses include an `X-Cache: HIT` header. The `Cache-Control: public, s
 
 ---
 
-## Error Handling
+<a id="error-handling"></a>
+
+## 🚨 Error Handling
 
 ### HTTP Status Codes
 
@@ -558,7 +594,9 @@ Cached responses include an `X-Cache: HIT` header. The `Cache-Control: public, s
 
 ---
 
-## Code Examples
+<a id="code-examples"></a>
+
+## 💻 Code Examples
 
 <details>
 <summary><strong>JavaScript (fetch)</strong></summary>
@@ -718,7 +756,9 @@ puts "Chapters: #{response['data']['chaptersCount']}"
 
 ---
 
-## Tech Stack
+<a id="tech-stack"></a>
+
+## 🛠️ Tech Stack
 
 | Component | Technology | Purpose |
 |-----------|------------|---------|
@@ -733,7 +773,9 @@ puts "Chapters: #{response['data']['chaptersCount']}"
 
 ---
 
-## Project Structure
+<a id="project-structure"></a>
+
+## 📁 Project Structure
 
 ```
 OmegaAPI/
@@ -791,7 +833,9 @@ OmegaAPI/
 
 ---
 
-## Local Development
+<a id="local-development"></a>
+
+## ⚙️ Local Development
 
 ### Prerequisites
 
@@ -841,7 +885,9 @@ curl http://localhost:3000/api/v1/chapter/sex-stopwatch/chapter-1
 
 ---
 
-## Deployment
+<a id="deployment"></a>
+
+## 🚢 Deployment
 
 ### Vercel (Recommended)
 
@@ -866,7 +912,9 @@ OmegaAPI is a standard Next.js application. Deploy anywhere that supports Node.j
 
 ---
 
-## Contributing
+<a id="contributing"></a>
+
+## 🤝 Contributing
 
 Contributions are welcome! Here's how to help:
 
@@ -897,7 +945,9 @@ git push origin feature/amazing-feature
 
 ---
 
-## FAQ
+<a id="faq"></a>
+
+## ❓ FAQ
 
 <details>
 <summary><strong>Is OmegaAPI really free?</strong></summary>
@@ -955,7 +1005,9 @@ Open an issue on our [GitHub Issues](https://github.com/Shineii86/OmegaAPI/issue
 
 ---
 
-## Legal Disclaimer
+<a id="legal-disclaimer"></a>
+
+## ⚠️ Legal Disclaimer
 
 This project is **unofficial** and **not affiliated with or endorsed by OmegaScans**.
 
@@ -966,7 +1018,9 @@ This project is **unofficial** and **not affiliated with or endorsed by OmegaSca
 
 ---
 
-## Legal
+<a id="legal"></a>
+
+## ⚖️ Legal
 
 - **[Terms of Service](https://omegaapi.vercel.app/terms)** — Rules governing API usage
 - **[Privacy Policy](https://omegaapi.vercel.app/privacy)** — Data collection and privacy practices
@@ -974,7 +1028,9 @@ This project is **unofficial** and **not affiliated with or endorsed by OmegaSca
 
 ---
 
-## Changelog
+<a id="changelog"></a>
+
+## 📋 Changelog
 
 See [CHANGELOG.md](CHANGELOG.md) for a detailed version history.
 
@@ -998,13 +1054,17 @@ See [CHANGELOG.md](CHANGELOG.md) for a detailed version history.
 
 ---
 
-## License
+<a id="license"></a>
+
+## 📝 License
 
 This project is licensed under the **MIT License** — see the [LICENSE](LICENSE) file for details.
 
 ---
 
-## Acknowledgments
+<a id="acknowledgments"></a>
+
+## 🙏 Acknowledgments
 
 | Project | Description |
 |---------|-------------|
