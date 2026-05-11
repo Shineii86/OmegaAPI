@@ -2,6 +2,19 @@
 
 All notable changes to OmegaAPI will be documented in this file.
 
+## [2.1.0] - 2026-05-11
+
+### Added
+- SVG favicon with Ω symbol and gradient background
+- PNG favicon variants (16x16, 32x32, 180x180 apple-touch-icon)
+- OG image (1200x630 PNG) for social media sharing
+- Full Open Graph meta tags (title, description, image, locale, siteName, url)
+- Twitter Card meta tags (summary_large_image with image)
+- JSON-LD structured data (WebApplication schema with SearchAction)
+- Canonical URL, robots meta, author/creator/publisher metadata
+- Viewport meta with theme color
+- Preconnect hints for Google Fonts
+
 ## [2.0.1] - 2026-05-11
 
 ### Fixed
