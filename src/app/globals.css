@@ -153,6 +153,8 @@ code, pre, .font-mono {
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow);
   transition: all 0.25s ease;
+  overflow: hidden;
+  max-width: 100%;
 }
 
 .glass-card:hover {
@@ -378,4 +380,27 @@ code, pre, .font-mono {
 @media (max-width: 768px) {
   .hero-title { font-size: 2.5rem !important; }
   .stat-grid { grid-template-columns: repeat(2, 1fr) !important; }
+
+  .glass-card {
+    overflow: hidden;
+    max-width: 100%;
+  }
+
+  .code-block {
+    max-width: 100%;
+    overflow: hidden;
+  }
+
+  .code-block pre {
+    max-width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    font-size: 0.72rem;
+    padding: 1rem;
+  }
+
+  .code-block code {
+    word-break: break-all;
+    white-space: pre-wrap;
+  }
 }

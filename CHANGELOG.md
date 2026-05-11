@@ -7,7 +7,10 @@ All notable changes to OmegaAPI will be documented in this file.
 ### Fixed
 - Fixed React error #31: tags returned as objects from upstream API caused client-side crash
 - Tags are now properly normalized by extracting the `name` field from tag objects
-- This was the root cause of the crash on `/browse/glory-hole-shop` and other series with tags
+- This was the root cause of the crash on `/browse/glory-hole-shop` and all series with tags
+- Fixed code blocks overflowing on mobile in Common Recipes and other sections
+- Added overflow-hidden and max-width constraints to glass-card and code-block elements
+- Added mobile-specific styles for code blocks with touch-friendly scrolling
 
 ## [2.0.0] - 2026-05-11
 
