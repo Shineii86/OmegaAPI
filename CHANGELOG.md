@@ -2,6 +2,13 @@
 
 All notable changes to OmegaAPI will be documented in this file.
 
+## [2.1.1] - 2026-05-11
+
+### Added
+- robots.txt allowing all crawlers, disallowing /api/, pointing to sitemap
+- Dynamic sitemap.xml (Next.js App Router sitemap.ts) with all static pages and series pages
+- Sitemap auto-fetches series slugs from API, revalidates hourly
+
 ## [2.1.0] - 2026-05-11
 
 ### Added
