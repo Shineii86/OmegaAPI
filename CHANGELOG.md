@@ -2,6 +2,13 @@
 
 All notable changes to OmegaAPI will be documented in this file.
 
+## [3.0.7] - 2026-05-12
+
+### Fixed
+- Fixed Common Recipes code blocks overflowing horizontally on mobile by extending them edge-to-edge within cards (negative margins, removed side borders/shadow)
+- Added `min-width: 0` to `.code-block` and `.card-brutal` on mobile to prevent grid blowout
+- Set `white-space: pre` and `word-break: normal` on mobile `pre` elements for consistent overflow-x scrolling
+
 ## [3.0.6] - 2026-05-12
 
 ### Added

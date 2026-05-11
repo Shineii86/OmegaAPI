@@ -928,10 +928,12 @@ code, pre, .font-mono {
   .glass-card, .card-brutal {
     overflow: hidden;
     max-width: 100%;
+    min-width: 0;
   }
 
   .code-block, .code-brutal {
     max-width: 100%;
+    min-width: 0;
     overflow: hidden;
   }
 
@@ -941,6 +943,17 @@ code, pre, .font-mono {
     -webkit-overflow-scrolling: touch;
     font-size: 0.72rem;
     padding: 1rem;
+    white-space: pre;
+    word-break: normal;
+  }
+
+  /* Fix Common Recipes code block overflow on mobile */
+  .card-brutal .code-block {
+    margin-left: -1.5rem;
+    margin-right: -1.5rem;
+    border-left: none;
+    border-right: none;
+    box-shadow: none;
   }
 
   .btn-brutal, .btn-brutal-outline, .btn-primary, .btn-ghost {
