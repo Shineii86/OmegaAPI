@@ -7,8 +7,6 @@ import { IconStar, IconEye, IconBook, IconChevronLeft, IconChevronRight, IconHea
 import { formatViews } from '@/components/ui';
 import { Footer } from '@/components/layout';
 import { isBookmarked, toggleBookmark } from '@/lib/storage';
-import PaymentGate from '@/components/PaymentGate';
-
 const BASE = typeof window !== 'undefined' ? window.location.origin : 'https://omegaapi.vercel.app';
 const GENRE_INDEX_KEY = 'omega_genre_index';
 const GENRE_INDEX_TTL = 60 * 60 * 1000; // 1 hour
@@ -230,9 +228,7 @@ function SeriesDetailModal({ slug, onClose }: { slug: string; onClose: () => voi
 /* ── Main Genre Page ── */
 export default function GenrePage() {
   return (
-    <PaymentGate>
-      <GenrePageContent />
-    </PaymentGate>
+    <GenrePageContent />
   );
 }
 

@@ -6,15 +6,11 @@ import type { Series, Chapter } from '@/types';
 import { IconStar, IconEye, IconBook, IconBookmark, IconChevronRight, IconChevronLeft, IconArrowUp, IconArrowDown, IconExternalLink, IconX, IconMenu } from '@/components/icons';
 import { formatViews, formatDate, Spinner } from '@/components/ui';
 import { Footer } from '@/components/layout';
-import PaymentGate from '@/components/PaymentGate';
-
 const BASE = typeof window !== 'undefined' ? window.location.origin : 'https://omegaapi.vercel.app';
 
 export default function SeriesDetailPage() {
   return (
-    <PaymentGate>
-      <SeriesDetailContent />
-    </PaymentGate>
+    <SeriesDetailContent />
   );
 }
 

@@ -2,6 +2,19 @@
 
 All notable changes to OmegaAPI will be documented in this file.
 
+## [3.7.0] - 2026-05-12
+
+### Removed
+- Payment system completely removed — browse pages are now free and open to all users
+- `src/lib/payment.ts`: payment verification with device fingerprinting and plan-scoped expiry
+- `src/lib/pricing.ts`: subscription plan configuration with INR/USD pricing
+- `src/components/PaymentGate.tsx`: full-page payment gate with plan selector, currency toggle, and UPI/crypto payment tabs
+- `src/app/api/v1/auth/verify/route.ts`: server-side access code verification API endpoint
+- Payment-only icon components: `IconLock`, `IconCrown`, `IconWallet`, `IconCreditCard`, `IconShieldCheck`
+
+### Changed
+- All browse pages (`/browse`, `/browse/[slug]`, `/browse/[slug]/[chapter]`, `/browse/genre/[name]`) no longer require premium access
+
 ## [3.6.0] - 2026-05-12
 
 ### Added
