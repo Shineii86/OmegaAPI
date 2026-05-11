@@ -926,33 +926,35 @@ code, pre, .font-mono {
   .stat-grid { grid-template-columns: repeat(2, 1fr) !important; }
 
   .glass-card, .card-brutal {
-    overflow: hidden;
     max-width: 100%;
     min-width: 0;
   }
 
+  /* Code blocks: scroll horizontally, don't overflow parent */
   .code-block, .code-brutal {
     max-width: 100%;
     min-width: 0;
-    overflow: hidden;
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
   }
 
   .code-block pre, .code-brutal pre {
-    max-width: 100%;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-    font-size: 0.72rem;
-    padding: 1rem;
+    min-width: max-content;
+    overflow-x: visible;
+    font-size: 0.68rem;
+    padding: 0.85rem 1rem;
     white-space: pre;
     word-break: normal;
   }
 
-  /* Fix Common Recipes code block overflow on mobile */
+  /* Make code blocks full-bleed inside cards */
   .card-brutal .code-block {
     margin-left: -1.5rem;
     margin-right: -1.5rem;
     border-left: none;
     border-right: none;
+    border-radius: 0;
     box-shadow: none;
   }
 

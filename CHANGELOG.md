@@ -2,6 +2,15 @@
 
 All notable changes to OmegaAPI will be documented in this file.
 
+## [3.2.1] - 2026-05-12
+
+### Fixed
+- Fixed Common Recipes code block horizontal overflow on mobile (proper fix)
+- Code blocks now scroll horizontally within their container instead of overflowing the page
+- Changed `.code-block` to `overflow-x: auto` so scrollbar is visible (was `overflow: hidden` which clipped the scrollbar)
+- Set `.code-block pre` to `min-width: max-content` so code doesn't wrap
+- Code blocks extend edge-to-edge within cards on mobile via negative margins
+
 ## [3.2.0] - 2026-05-12
 
 ### Added
