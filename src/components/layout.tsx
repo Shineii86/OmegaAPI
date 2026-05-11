@@ -70,13 +70,13 @@ export function Footer({ theme = 'light' }: { theme?: 'light' | 'dark' }) {
         </div>
         <div className="mt-8 pt-6 flex flex-col sm:flex-row items-center justify-between gap-4" style={{ borderTop: `1px solid ${isDark ? '#222230' : '#334155'}` }}>
           <p className="text-xs" style={{ color: text }}>
-            Data from <a href="https://omegascans.org" target="_blank" rel="noopener noreferrer" className="font-semibold hover:underline" style={{ color: accent }}>OmegaScans</a> · Not affiliated
+            Data From <a href="https://omegascans.org" target="_blank" rel="noopener noreferrer" className="font-semibold hover:underline" style={{ color: accent }}>OmegaScans</a> • Not Affiliated
           </p>
           <div className="flex items-center gap-2 text-xs" style={{ color: text }}>
             <span>Built with</span>
             <span className="animate-heartbeat inline-flex items-center" style={{ color: '#ef4444' }}><IconHeart size={14} /></span>
             <span>by</span>
-            <a href="https://github.com/Shineii86" target="_blank" rel="noopener noreferrer" className="font-semibold hover:underline" style={{ color: accent }}>Shineii86</a>
+            <a href="https://github.com/Shineii86" target="_blank" rel="noopener noreferrer" className="font-semibold hover:underline" style={{ color: accent }}>Shinei Nouzen</a>
           </div>
         </div>
       </div>
