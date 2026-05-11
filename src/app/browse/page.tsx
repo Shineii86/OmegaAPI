@@ -463,30 +463,39 @@ export default function BrowsePage() {
 
       {/* Featured Banner */}
       {featured && (
-        <section className="relative overflow-hidden" style={{ minHeight: '380px' }}>
-          <div className="absolute inset-0">
+        <section className="relative" style={{ minHeight: '380px', overflow: 'hidden' }}>
+          {/* Blurred BG */}
+          <div className="absolute inset-0" style={{ zIndex: 0 }}>
             {featured.thumbnail && (
-              <img src={featured.thumbnail} alt="" className="w-full h-full object-cover opacity-25 blur-2xl scale-110" />
+              <img src={featured.thumbnail} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', opacity: 0.25, filter: 'blur(40px)', transform: 'scale(1.1)' }} />
             )}
-            <div className="absolute inset-0 bg-gradient-to-t from-[#121218] via-[#121218]/70 to-[#121218]/30" />
-            <div className="absolute inset-0 bg-gradient-to-r from-[#121218]/80 to-transparent" />
+            <div className="absolute inset-0" style={{ background: 'linear-gradient(to top, #121218, rgba(18,18,24,0.7), rgba(18,18,24,0.3))' }} />
+            <div className="absolute inset-0" style={{ background: 'linear-gradient(to right, rgba(18,18,24,0.8), transparent)' }} />
           </div>
-          <div className="relative max-w-container mx-auto px-5 md:px-8 py-12 flex items-end" style={{ minHeight: '380px' }}>
-            <div className="flex gap-6 items-end pb-4">
-              <div className="w-36 md:w-44 shrink-0 hidden sm:block">
-                <div className="aspect-[3/4] rounded-lg overflow-hidden border border-[#2a2a36] shadow-2xl bg-[#1e1e2a]">
-                  <img src={featured.cover || featured.thumbnail} alt={featured.title} className="w-full h-full object-cover" />
+          {/* Content */}
+          <div className="relative max-w-container mx-auto px-5 md:px-8 py-12 flex items-end" style={{ minHeight: '380px', zIndex: 1 }}>
+            <div className="flex gap-6 items-end pb-4 w-full">
+              {/* Cover Image */}
+              <div className="shrink-0 hidden sm:block" style={{ width: '176px' }}>
+                <div style={{ aspectRatio: '3/4', borderRadius: '12px', overflow: 'hidden', border: '2px solid #2a2a36', boxShadow: '0 8px 32px rgba(0,0,0,0.5)', background: '#1e1e2a' }}>
+                  <img
+                    src={featured.cover || featured.thumbnail}
+                    alt={featured.title}
+                    style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+                    onError={(e) => { (e.target as HTMLImageElement).src = featured.thumbnail; }}
+                  />
                 </div>
               </div>
+              {/* Text Content */}
               <div className="flex-1 pb-2">
-                <span className="px-2 py-0.5 text-[0.6rem] font-semibold rounded bg-[#ef4444]/20 text-[#ef4444] mb-3 inline-block">FEATURED</span>
+                <span className="px-2 py-0.5 text-[0.6rem] font-semibold rounded mb-3 inline-block" style={{ background: 'rgba(239,68,68,0.2)', color: '#ef4444' }}>FEATURED</span>
                 <h1 className="font-display text-3xl md:text-4xl text-white mb-2" style={{ textTransform: 'none' }}>{featured.title}</h1>
-                <p className="text-sm text-[#a1a1aa] max-w-lg mb-4 line-clamp-2">{featured.description?.slice(0, 200) || 'No description.'}</p>
-                <div className="flex items-center gap-4 text-sm text-[#a1a1aa] mb-5">
-                  <span className="flex items-center gap-1 text-[#fbbf24] font-semibold"><IconStar size={14} /> {featured.rating.toFixed(1)}</span>
+                <p className="text-sm max-w-lg mb-4 line-clamp-2" style={{ color: '#a1a1aa' }}>{featured.description?.slice(0, 200) || 'No description.'}</p>
+                <div className="flex items-center gap-4 text-sm mb-5" style={{ color: '#a1a1aa' }}>
+                  <span className="flex items-center gap-1 font-semibold" style={{ color: '#fbbf24' }}><IconStar size={14} /> {featured.rating.toFixed(1)}</span>
                   <span className="flex items-center gap-1"><IconBook size={14} /> {featured.chaptersCount} chapters</span>
                   <span className="flex items-center gap-1"><IconEye size={14} /> {formatViews(featured.totalViews)}</span>
-                  <span className={`px-2 py-0.5 text-[0.6rem] font-semibold rounded ${featured.status === 'Ongoing' ? 'bg-[#22c55e]/10 text-[#22c55e]' : 'bg-[#3b82f6]/10 text-[#3b82f6]'}`}>{featured.status}</span>
+                  <span className="px-2 py-0.5 text-[0.6rem] font-semibold rounded" style={{ background: featured.status === 'Ongoing' ? 'rgba(34,197,94,0.1)' : 'rgba(59,130,246,0.1)', color: featured.status === 'Ongoing' ? '#22c55e' : '#3b82f6' }}>{featured.status}</span>
                 </div>
                 <div className="flex gap-3">
                   <button onClick={() => setModalSlug(featured.slug)} className="btn-brutal btn-sm" style={{ background: '#ef4444', borderColor: '#e4e4e7', boxShadow: '3px 3px 0 0 #e4e4e7' }}>
