@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback, useRef } from 'react';
 import type { Series, Pagination } from '@/types';
-import { IconStar, IconEye, IconBook, IconSearch, IconInbox, IconAlertTriangle, IconArrowRight, IconArrowLeft, IconChevronLeft, IconChevronRight, IconFire, IconTrophy, IconSparkles, IconX, IconShuffle, IconHeart, IconClock, IconGrid, IconList } from '@/components/icons';
+import { IconStar, IconEye, IconBook, IconSearch, IconInbox, IconAlertTriangle, IconArrowRight, IconArrowLeft, IconChevronLeft, IconChevronRight, IconFire, IconTrophy, IconSparkles, IconX, IconShuffle, IconHeart, IconClock, IconGrid, IconList, IconArrowDown } from '@/components/icons';
 import { formatViews, Spinner } from '@/components/ui';
 import { Footer } from '@/components/layout';
 import { getHistory, getContinueReading, clearHistory, getBookmarks, toggleBookmark, isBookmarked, getRecentSearches, saveSearch, clearRecentSearches, type HistoryEntry } from '@/lib/storage';
@@ -493,6 +493,18 @@ export default function BrowsePage() {
   const [allTotal, setAllTotal] = useState(0);
   const [allLoading, setAllLoading] = useState(false);
   const [allHasMore, setAllHasMore] = useState(false);
+  const [sortBy, setSortBy] = useState<'latest' | 'rating' | 'views' | 'az'>('latest');
+
+  /* Sorted series for View All */
+  const sortedAllSeries = [...allSeries].sort((a, b) => {
+    switch (sortBy) {
+      case 'rating': return b.rating - a.rating;
+      case 'views': return b.totalViews - a.totalViews;
+      case 'az': return a.title.localeCompare(b.title);
+      case 'latest':
+      default: return new Date(b.updatedAt || b.createdAt || 0).getTime() - new Date(a.updatedAt || a.createdAt || 0).getTime();
+    }
+  });
 
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', 'dark');
@@ -522,10 +534,25 @@ export default function BrowsePage() {
     setContinueReading(getContinueReading());
   }, [bookmarkRefresh]);
 
-  /* Background: fetch ALL series for search index */
+  /* Background: fetch ALL series for search index (cached in localStorage, 1-hour TTL) */
   useEffect(() => {
+    const SEARCH_INDEX_KEY = 'omega_search_index';
+    const SEARCH_INDEX_TTL = 60 * 60 * 1000; // 1 hour
+
     const fetchAllForSearch = async () => {
       try {
+        // Check localStorage cache first
+        const cached = localStorage.getItem(SEARCH_INDEX_KEY);
+        if (cached) {
+          try {
+            const { data, timestamp } = JSON.parse(cached);
+            if (Array.isArray(data) && data.length > 0 && Date.now() - timestamp < SEARCH_INDEX_TTL) {
+              setAllSeriesIndex(data);
+              return; // Cache hit, skip fetch
+            }
+          } catch { /* corrupt cache, refetch */ }
+        }
+
         const all: Series[] = [];
         let page = 1;
         let hasMore = true;
@@ -540,7 +567,14 @@ export default function BrowsePage() {
             hasMore = false;
           }
         }
-        setAllSeriesIndex(all);
+
+        if (all.length > 0) {
+          setAllSeriesIndex(all);
+          // Cache to localStorage with timestamp
+          try {
+            localStorage.setItem(SEARCH_INDEX_KEY, JSON.stringify({ data: all, timestamp: Date.now() }));
+          } catch { /* quota exceeded, silent */ }
+        }
       } catch { /* silent */ }
     };
     fetchAllForSearch();
@@ -853,6 +887,19 @@ export default function BrowsePage() {
             </section>
 
             <section className="mb-10">
+              <SectionHeader icon={<IconClock size={20} />} title="Latest Updates" subtitle="Recently updated series" />
+              {loading ? (
+                <div className="flex gap-4 overflow-hidden">
+                  {Array.from({ length: 8 }).map((_, i) => <SkeletonCard key={i} />)}
+                </div>
+              ) : (
+                <ScrollRow>
+                  {[...popular].sort((a, b) => new Date(b.updatedAt || b.createdAt || 0).getTime() - new Date(a.updatedAt || a.createdAt || 0).getTime()).slice(0, 15).map(s => <ManhwaCard key={s.id} series={s} onClick={() => setModalSlug(s.slug)} onBookmark={() => setBookmarkRefresh(v => v + 1)} />)}
+                </ScrollRow>
+              )}
+            </section>
+
+            <section className="mb-10">
               <SectionHeader icon={<IconTrophy size={20} />} title="Top Rated" subtitle="Highest rated series of all time" />
               {loading ? (
                 <div className="flex gap-4 overflow-hidden">
@@ -878,7 +925,24 @@ export default function BrowsePage() {
                   <p className="text-xs text-[#71717a]">{allTotal.toLocaleString()} series available</p>
                 </div>
               </div>
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-3 flex-wrap justify-end">
+                {/* Sort Controls */}
+                <div className="flex items-center border border-[#2a2a36] rounded overflow-hidden">
+                  {([
+                    { key: 'latest', label: 'Latest' },
+                    { key: 'rating', label: 'Top Rated' },
+                    { key: 'views', label: 'Most Viewed' },
+                    { key: 'az', label: 'A–Z' },
+                  ] as const).map((opt) => (
+                    <button
+                      key={opt.key}
+                      onClick={() => setSortBy(opt.key)}
+                      className={`px-2.5 py-1.5 text-[0.6rem] font-semibold uppercase tracking-wider transition-colors ${sortBy === opt.key ? 'bg-[#ef4444] text-white' : 'bg-[#1e1e2a] text-[#71717a] hover:text-[#a1a1aa]'}`}
+                    >
+                      {opt.label}
+                    </button>
+                  ))}
+                </div>
                 {/* View Mode Toggle */}
                 <div className="flex items-center border border-[#2a2a36] rounded overflow-hidden">
                   <button
@@ -912,11 +976,11 @@ export default function BrowsePage() {
               <>
                 {viewMode === 'grid' ? (
                   <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-8 gap-5">
-                    {allSeries.map(s => <ManhwaCard key={s.id} series={s} onClick={() => setModalSlug(s.slug)} onBookmark={() => setBookmarkRefresh(v => v + 1)} />)}
+                    {sortedAllSeries.map(s => <ManhwaCard key={s.id} series={s} onClick={() => setModalSlug(s.slug)} onBookmark={() => setBookmarkRefresh(v => v + 1)} />)}
                   </div>
                 ) : (
                   <div className="space-y-2">
-                    {allSeries.map(s => (
+                    {sortedAllSeries.map(s => (
                       <div
                         key={s.id}
                         onClick={() => setModalSlug(s.slug)}

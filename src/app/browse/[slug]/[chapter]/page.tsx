@@ -120,6 +120,22 @@ export default function ChapterReaderPage() {
     return () => window.removeEventListener('keydown', handler);
   }, [readingMode, chapter]);
 
+  /* Preload next 3 pages in paged reader to prevent white flash */
+  useEffect(() => {
+    if (readingMode !== 'paged' || !chapter?.images?.length) return;
+    const preloadCount = 3;
+    const preloaded: HTMLImageElement[] = [];
+    for (let i = 1; i <= preloadCount; i++) {
+      const nextIdx = currentPage + i;
+      if (nextIdx < chapter.images.length) {
+        const img = new window.Image();
+        img.src = chapter.images[nextIdx];
+        preloaded.push(img);
+      }
+    }
+    return () => { preloaded.length = 0; }; // cleanup refs
+  }, [currentPage, readingMode, chapter?.images]);
+
   /* Restore scroll position for vertical reader */
   useEffect(() => {
     if (readingMode !== 'vertical' || loading) return;
