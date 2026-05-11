@@ -95,7 +95,7 @@ interface OmegaSeriesDetail {
   total_views: number;
   description: string;
   series_type: string;
-  tags: string[];
+  tags: Array<{ id: number; name: string; description: string; created_at: string; updated_at: string; color: string }>;
   rating: number;
   status: string;
   release_schedule: Record<string, boolean>;
@@ -279,7 +279,7 @@ function normalizeSeriesDetail(series: OmegaSeriesDetail): NormalizedSeries {
     studio: series.studio || '',
     releaseYear: series.release_year || '',
     releaseSchedule: days,
-    tags: series.tags || [],
+    tags: (series.tags || []).map((t) => typeof t === 'string' ? t : t.name),
     chaptersCount: parseInt(series.meta?.chapters_count || '0', 10),
     bookmarksCount: parseInt(series.meta?.who_bookmarked_count || '0', 10),
     isComingSoon: false,

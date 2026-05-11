@@ -2,6 +2,13 @@
 
 All notable changes to OmegaAPI will be documented in this file.
 
+## [2.0.1] - 2026-05-11
+
+### Fixed
+- Fixed React error #31: tags returned as objects from upstream API caused client-side crash
+- Tags are now properly normalized by extracting the `name` field from tag objects
+- This was the root cause of the crash on `/browse/glory-hole-shop` and other series with tags
+
 ## [2.0.0] - 2026-05-11
 
 ### Changed
