@@ -11,11 +11,11 @@
  * Query Parameters:
  *   count - Number of random series to return (1–10, default: 1)
  *
- * Response: ApiResponse<NormalizedSeries | NormalizedSeries[]>
+ * Response: ApiResponse<Series | Series[]>
  */
 
 import { NextRequest } from 'next/server';
-import type { NormalizedSeries } from '@/types';
+import type { Series } from '@/types';
 import { getSeriesList } from '@/lib/omega';
 import { getCached, setCache } from '@/lib/cache';
 import { checkRateLimit } from '@/lib/rate-limit';
@@ -41,7 +41,7 @@ export async function GET(req: NextRequest) {
 
     // Fetch a page of series and pick random ones from it
     const cacheKey = 'random:pool';
-    let pool = getCached<NormalizedSeries[]>(cacheKey);
+    let pool = getCached<Series[]>(cacheKey);
 
     if (!pool) {
       // Fetch multiple pages to get a good pool of series

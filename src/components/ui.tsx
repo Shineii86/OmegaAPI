@@ -71,10 +71,12 @@ export function Spinner() {
  *
  * @param code     - Code string to display
  * @param language - Language label (e.g. "json", "javascript", "bash")
+ * @param title    - Optional title shown above the code block
  */
-export function CodeBlock({ code, language }: { code: string; language?: string }) {
+export function CodeBlock({ code, language, title }: { code: string; language?: string; title?: string }) {
   return (
     <div className="code-block">
+      {title && <div className="code-block-title">{title}</div>}
       <pre>
         <code className={language ? `language-${language}` : ''}>
           {code}

@@ -81,7 +81,7 @@ export default function SupportPage() {
         <div className="card-brutal p-6 md:p-8 mb-16">
           <h3 className="text-xl font-bold font-display uppercase mb-4">Rate Limit Troubleshooting</h3>
           <p className="text-sm mb-6" style={{ color: '#64748b' }}>Getting 429 errors? Here&apos;s how to handle rate limits gracefully.</p>
-          <CodeBlock title="javascript" lang="javascript" code={`async function fetchWithRetry(url, maxRetries = 3) {
+          <CodeBlock title="javascript" language="javascript" code={`async function fetchWithRetry(url, maxRetries = 3) {
   for (let i = 0; i < maxRetries; i++) {
     const res = await fetch(url);
 

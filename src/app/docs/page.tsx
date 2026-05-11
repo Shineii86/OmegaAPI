@@ -81,7 +81,7 @@ function EndpointSection({ id, method, path, desc, params, curl, js, jsonRespons
           </button>
         ))}
       </div>
-      <CodeBlock code={tab === 'curl' ? curl : tab === 'js' ? js : jsonResponse} lang={tab === 'curl' ? 'bash' : tab === 'js' ? 'javascript' : 'json'} />
+      <CodeBlock code={tab === 'curl' ? curl : tab === 'js' ? js : jsonResponse} language={tab === 'curl' ? 'bash' : tab === 'js' ? 'javascript' : 'json'} />
     </div>
   );
 }
@@ -190,7 +190,7 @@ export default function DocsPage() {
               </div>
             </div>
             <div className="mt-4">
-              <CodeBlock title="Handling 429 responses" lang="javascript" code={`const res = await fetch('${BASE}/api/v1/series');
+              <CodeBlock title="Handling 429 responses" language="javascript" code={`const res = await fetch('${BASE}/api/v1/series');
 
 if (res.status === 429) {
   const retryAfter = res.headers.get('Retry-After');
@@ -240,13 +240,13 @@ if (res.status === 429) {
                 </div>
               ))}
             </div>
-            <CodeBlock title="Error response format" lang="json" code={`{\n  "success": false,\n  "error": "Series not found"\n}`} />
+            <CodeBlock title="Error response format" language="json" code={`{\n  "success": false,\n  "error": "Series not found"\n}`} />
           </section>
 
           <section id="pagination" className="mb-16 scroll-mt-24">
             <h2 className="text-2xl font-bold mb-4 text-[var(--text)]">Pagination</h2>
             <p className="text-sm text-[var(--text-secondary)] mb-4 max-w-2xl">List endpoints return paginated results. Use <code className="text-[var(--accent)]">page</code> and <code className="text-[var(--accent)]">perPage</code> parameters to navigate through results.</p>
-            <CodeBlock title="Pagination object" lang="json" code={`{\n  "success": true,\n  "data": [...],\n  "pagination": {\n    "total": 250,\n    "perPage": 20,\n    "currentPage": 2,\n    "lastPage": 13,\n    "hasNext": true,\n    "hasPrevious": true\n  }\n}`} />
+            <CodeBlock title="Pagination object" language="json" code={`{\n  "success": true,\n  "data": [...],\n  "pagination": {\n    "total": 250,\n    "perPage": 20,\n    "currentPage": 2,\n    "lastPage": 13,\n    "hasNext": true,\n    "hasPrevious": true\n  }\n}`} />
           </section>
 
           <section id="endpoints" className="mb-10 scroll-mt-24">
@@ -334,7 +334,7 @@ if (res.status === 429) {
               ].map((ex) => (
                 <div key={ex.title}>
                   <h3 className="text-sm font-semibold mb-3 text-[var(--text)]">{ex.title}</h3>
-                  <CodeBlock code={ex.code} lang="javascript" />
+                  <CodeBlock code={ex.code} language="javascript" />
                 </div>
               ))}
             </div>

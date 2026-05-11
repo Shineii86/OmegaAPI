@@ -13,13 +13,97 @@
  *   { success: boolean, data: T, pagination?: Pagination }
  */
 
-import type {
-  NormalizedSeries,
-  NormalizedChapter,
-  NormalizedChapterContent,
-  PaginatedResponse,
-  ApiResponse,
-} from '@/types';
+// ==================== NORMALIZED TYPES ====================
+
+/**
+ * Normalized series object returned by all API endpoints.
+ * This is the public-facing type — consumers should use this
+ * instead of the raw Omega* types.
+ */
+export interface NormalizedSeries {
+  id: number;
+  title: string;
+  slug: string;
+  description: string;
+  thumbnail: string;
+  cover: string;
+  status: string;
+  type: string;
+  rating: number;
+  totalViews: number;
+  alternativeNames: string;
+  author: string;
+  studio: string;
+  releaseYear: string;
+  releaseSchedule: string[];
+  tags: string[];
+  chaptersCount: number;
+  bookmarksCount: number;
+  isComingSoon: boolean;
+  badge: string | null;
+  createdAt: string;
+  updatedAt: string;
+  chapters: NormalizedChapter[];
+  url: string;
+}
+
+/** Normalized chapter entry in a series chapter list */
+export interface NormalizedChapter {
+  id: number;
+  name: string;
+  title: string | null;
+  slug: string;
+  thumbnail: string;
+  price: number;
+  isFree: boolean;
+  createdAt: string;
+  index: string;
+  url: string;
+}
+
+/** Normalized chapter content for the reader */
+export interface NormalizedChapterContent {
+  id: number;
+  name: string;
+  title: string | null;
+  slug: string;
+  index: string;
+  price: number;
+  isFree: boolean;
+  thumbnail: string;
+  images: string[];
+  pageCount: number;
+  createdAt: string;
+  series: {
+    id: number;
+    title: string;
+    slug: string;
+    thumbnail: string;
+    status: string;
+    description: string;
+  };
+  url: string;
+}
+
+/** Paginated API response envelope */
+export interface PaginatedResponse<T> {
+  success: boolean;
+  data: T[];
+  pagination: {
+    total: number;
+    perPage: number;
+    currentPage: number;
+    lastPage: number;
+    hasNext: boolean;
+    hasPrevious: boolean;
+  };
+}
+
+/** Single-item API response envelope */
+export interface ApiResponse<T> {
+  success: boolean;
+  data: T;
+}
 
 // ==================== CONSTANTS ====================
 
@@ -146,10 +230,6 @@ interface OmegaSeriesDetail {
     who_bookmarked_count: string;
   };
 }
-
-// ==================== NORMALIZED TYPES (RE-EXPORTS) ====================
-
-export type { NormalizedSeries, NormalizedChapter, NormalizedChapterContent, PaginatedResponse, ApiResponse };
 
 // ==================== INTERNAL HELPERS ====================
 

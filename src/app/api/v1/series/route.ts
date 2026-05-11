@@ -17,13 +17,13 @@
  *   status  - Filter by status: ongoing, completed, hiatus
  *   type    - Filter by type: manga, manhwa, manhua
  *
- * Response: PaginatedResponse<NormalizedSeries>
+ * Response: PaginatedResponse<Series>
  * Headers:  X-Cache, X-RateLimit-Limit, X-RateLimit-Remaining, X-RateLimit-Reset,
  *           X-Pagination-*
  */
 
 import { NextRequest } from 'next/server';
-import type { NormalizedSeries } from '@/types';
+import type { Series } from '@/types';
 import { getSeriesList } from '@/lib/omega';
 import { getCached, setCache, getSearchTTL } from '@/lib/cache';
 import { checkRateLimit } from '@/lib/rate-limit';
@@ -40,12 +40,12 @@ type SortOrder = 'asc' | 'desc';
 /**
  * Sort an array of series by the given field and order.
  *
- * @param data  - Array of NormalizedSeries to sort
+ * @param data  - Array of Series to sort
  * @param sort  - Field to sort by
  * @param order - Sort direction
  * @returns     - New sorted array (does not mutate original)
  */
-function sortSeries(data: NormalizedSeries[], sort: SortField, order: SortOrder): NormalizedSeries[] {
+function sortSeries(data: Series[], sort: SortField, order: SortOrder): Series[] {
   const sorted = [...data];
   const dir = order === 'asc' ? 1 : -1;
 
@@ -72,12 +72,12 @@ function sortSeries(data: NormalizedSeries[], sort: SortField, order: SortOrder)
 /**
  * Filter series by status and/or type.
  *
- * @param data   - Array of NormalizedSeries to filter
+ * @param data   - Array of Series to filter
  * @param status - Status filter (case-insensitive)
  * @param type   - Type filter (case-insensitive)
  * @returns      - Filtered array
  */
-function filterSeries(data: NormalizedSeries[], status?: string, type?: string): NormalizedSeries[] {
+function filterSeries(data: Series[], status?: string, type?: string): Series[] {
   let result = data;
   if (status) {
     result = result.filter(s => s.status.toLowerCase() === status.toLowerCase());

@@ -577,7 +577,7 @@ export default function HomePage() {
                   </button>
                 ))}
               </div>
-              <CodeBlock code={codeTab === 'curl' ? ep.curl : ep.js} lang={codeTab === 'curl' ? 'bash' : 'javascript'} />
+              <CodeBlock code={codeTab === 'curl' ? ep.curl : ep.js} language={codeTab === 'curl' ? 'bash' : 'javascript'} />
             </div>
           </div>
         </Reveal>
@@ -601,7 +601,7 @@ export default function HomePage() {
               <Reveal key={r.label} delay={i * 100}>
                 <div className="card-brutal">
                   <h4 className="text-[0.6rem] font-display tracking-widest text-[var(--text-muted)] mb-3">{r.label}</h4>
-                  <CodeBlock code={r.code} lang="json" />
+                  <CodeBlock code={r.code} language="json" />
                 </div>
               </Reveal>
             ))}
