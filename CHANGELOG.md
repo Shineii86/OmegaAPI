@@ -2,6 +2,12 @@
 
 All notable changes to OmegaAPI will be documented in this file.
 
+## [3.2.5] - 2026-05-12
+
+### Added
+- Dismiss button on "Continue Reading" section to clear reading history
+- Footer component location documented: `src/components/layout.tsx`
+
 ## [3.2.4] - 2026-05-12
 
 ### Fixed

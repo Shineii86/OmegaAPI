@@ -5,7 +5,7 @@ import type { Series, Pagination } from '@/types';
 import { IconStar, IconEye, IconBook, IconSearch, IconInbox, IconAlertTriangle, IconArrowRight, IconArrowLeft, IconChevronLeft, IconChevronRight, IconFire, IconTrophy, IconSparkles, IconX, IconShuffle, IconHeart, IconClock, IconGrid, IconList } from '@/components/icons';
 import { formatViews, Spinner } from '@/components/ui';
 import { Footer } from '@/components/layout';
-import { getHistory, getContinueReading, getBookmarks, toggleBookmark, isBookmarked, getRecentSearches, saveSearch, clearRecentSearches, type HistoryEntry } from '@/lib/storage';
+import { getHistory, getContinueReading, clearHistory, getBookmarks, toggleBookmark, isBookmarked, getRecentSearches, saveSearch, clearRecentSearches, type HistoryEntry } from '@/lib/storage';
 
 const BASE = typeof window !== 'undefined' ? window.location.origin : 'https://omegaapi.vercel.app';
 
@@ -750,7 +750,16 @@ export default function BrowsePage() {
         {/* Continue Reading */}
         {!selectedGenre && !viewAll && continueReading.length > 0 && (
           <section className="mb-10">
-            <SectionHeader icon={<IconClock size={20} />} title="Continue Reading" subtitle="Pick up where you left off" />
+            <div className="flex items-center justify-between mb-4">
+              <SectionHeader icon={<IconClock size={20} />} title="Continue Reading" subtitle="Pick up where you left off" />
+              <button
+                onClick={() => { clearHistory(); setContinueReading([]); }}
+                className="flex items-center gap-1.5 text-[0.6rem] font-semibold uppercase tracking-widest text-[#71717a] hover:text-[#ef4444] transition-colors"
+                title="Clear reading history"
+              >
+                <IconX size={12} /> Dismiss
+              </button>
+            </div>
             <ScrollRow>
               {continueReading.map(entry => (
                 <div
