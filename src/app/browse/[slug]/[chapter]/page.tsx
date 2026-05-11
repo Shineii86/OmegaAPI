@@ -5,10 +5,19 @@ import { useParams } from 'next/navigation';
 import type { ChapterData, Chapter } from '@/types';
 import { IconChevronLeft, IconChevronRight, IconColumns, IconFile, IconHome, IconBook } from '@/components/icons';
 import { saveHistory, saveReadingPosition, getReadingPosition } from '@/lib/storage';
+import PaymentGate from '@/components/PaymentGate';
 
 const BASE = typeof window !== 'undefined' ? window.location.origin : 'https://omegaapi.vercel.app';
 
 export default function ChapterReaderPage() {
+  return (
+    <PaymentGate>
+      <ChapterReaderContent />
+    </PaymentGate>
+  );
+}
+
+function ChapterReaderContent() {
   const params = useParams();
   const seriesSlug = params?.slug as string;
   const chapterSlug = params?.chapter as string;

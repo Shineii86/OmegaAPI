@@ -2,6 +2,29 @@
 
 All notable changes to OmegaAPI will be documented in this file.
 
+## [3.6.0] - 2026-05-12
+
+### Added
+- Premium access gate on all `/browse/*` pages — browse, series detail, chapter reader, and genre pages now require paid access
+- Subscription plans: Quick Access (1hr), Day Pass (1d), Week Pass (7d), Monthly (30d), Quarterly (90d)
+- Plan-specific access codes — each code is locked to its matching plan tier (e.g., `1WK-` codes only work with Weekly plan)
+- Dual currency support with INR (₹) and USD ($) pricing with per-day cost comparison
+- Payment via UPI (`shinigami86@ybl`) and Crypto (BTC, ETH, USDT-TRC20) with copy-to-clipboard
+- Server-side access code verification via `POST /api/v1/auth/verify` — codes stored in env vars, never in source
+- Device fingerprinting — each code is bound to the first device that uses it, preventing code sharing
+- Plan-based expiry — access duration matches the purchased plan (1hr to 90 days)
+- Optional Vercel KV (Upstash Redis) support for persistent device binding across serverless cold starts
+- `src/lib/pricing.ts`: subscription plan configuration with pricing and utility functions
+- `src/lib/payment.ts`: payment verification with device fingerprint generation and plan-scoped expiry
+- `src/components/PaymentGate.tsx`: full-page payment gate with plan selector, currency toggle, and payment tabs
+- `src/app/api/v1/auth/verify/route.ts`: API route for secure, device-bound, plan-aware code verification
+- `IconLock`, `IconWallet`, `IconCreditCard`, `IconShieldCheck`, `IconClock`, `IconArrowRight` icon components
+- Premium status bar showing current plan and remaining time for active subscribers
+
+### Changed
+- All browse pages (`/browse`, `/browse/[slug]`, `/browse/[slug]/[chapter]`, `/browse/genre/[name]`) are now wrapped with PaymentGate
+- Non-premium users see a styled payment page instead of browse content
+
 ## [3.5.0] - 2026-05-12
 
 ### Added
