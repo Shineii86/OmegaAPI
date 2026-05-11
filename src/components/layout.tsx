@@ -74,7 +74,7 @@ export function Footer({ theme = 'light' }: { theme?: 'light' | 'dark' }) {
           </p>
           <div className="flex items-center gap-2 text-xs" style={{ color: text }}>
             <span>Built with</span>
-            <span className="animate-heartbeat" style={{ color: '#ef4444' }}>♥</span>
+            <span className="animate-heartbeat inline-flex items-center" style={{ color: '#ef4444' }}><IconHeart size={14} /></span>
             <span>by</span>
             <a href="https://github.com/Shineii86" target="_blank" rel="noopener noreferrer" className="font-semibold hover:underline" style={{ color: accent }}>Shineii86</a>
           </div>

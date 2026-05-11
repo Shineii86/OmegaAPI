@@ -69,7 +69,7 @@ function ManhwaCard({ series, onClick }: { series: Series; onClick: () => void }
             <span>·</span>
             <span>{formatViews(series.totalViews)} views</span>
           </div>
-          <span className="mt-2 text-[0.6rem] font-semibold uppercase tracking-wider text-[#fbbf24]">Read Now →</span>
+          <span className="mt-2 text-[0.6rem] font-semibold uppercase tracking-wider text-[#fbbf24] flex items-center gap-1">Read Now <IconArrowRight size={10} /></span>
         </div>
       </div>
       <div className="card-title">{series.title}</div>
@@ -304,8 +304,8 @@ function SeriesDetailModal({ slug, onClose }: { slug: string; onClose: () => voi
                       </a>
                     ))}
                     {series.chapters.length > 30 && (
-                      <a href={`/browse/${slug}`} className="block text-center text-xs text-[#ef4444] hover:underline py-2 font-semibold">
-                        View all {series.chapters.length} chapters →
+                      <a href={`/browse/${slug}`} className="block text-center text-xs text-[#ef4444] hover:underline py-2 font-semibold flex items-center justify-center gap-1">
+                        View all {series.chapters.length} chapters <IconArrowRight size={12} />
                       </a>
                     )}
                   </div>

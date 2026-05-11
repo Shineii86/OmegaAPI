@@ -341,8 +341,8 @@ if (res.status === 429) {
           </section>
 
           <div className="flex flex-col sm:flex-row gap-3 pt-8 border-t border-[var(--border-subtle)]">
-            <a href="/browse" className="btn-ghost btn-sm text-center">Browse Series →</a>
-            <a href="/support" className="btn-ghost btn-sm text-center">Get Support →</a>
+            <a href="/browse" className="btn-ghost btn-sm text-center inline-flex items-center gap-1">Browse Series <IconChevronRight size={14} /></a>
+            <a href="/support" className="btn-ghost btn-sm text-center inline-flex items-center gap-1">Get Support <IconChevronRight size={14} /></a>
           </div>
         </div>
       </div>
