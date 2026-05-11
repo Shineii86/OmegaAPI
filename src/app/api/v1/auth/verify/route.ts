@@ -29,6 +29,7 @@ const PLAN_DURATIONS: Record<string, number> = {
   weekly:    7 * 24 * 60 * 60 * 1000,
   monthly:   30 * 24 * 60 * 60 * 1000,
   quarterly: 90 * 24 * 60 * 60 * 1000,
+  dev:       100 * 365 * 24 * 60 * 60 * 1000, // 100 years — effectively forever
 };
 
 const PLAN_ENV_MAP: Record<string, string> = {
@@ -37,6 +38,7 @@ const PLAN_ENV_MAP: Record<string, string> = {
   weekly:    'ACCESS_CODES_WEEKLY',
   monthly:   'ACCESS_CODES_MONTHLY',
   quarterly: 'ACCESS_CODES_QUARTERLY',
+  dev:       'ACCESS_CODES_DEV',
 };
 
 function parseCodes(envVar: string): string[] {
@@ -91,6 +93,34 @@ export async function POST(request: Request) {
     const plan = planId && PLAN_DURATIONS[planId] ? planId : 'monthly';
     const durationMs = PLAN_DURATIONS[plan];
     const normalizedCode = code.trim().toUpperCase();
+
+    // ── Dev codes: work with ANY plan, 100-year expiry ──
+    const devCodes = parseCodes('ACCESS_CODES_DEV');
+    if (devCodes.includes(normalizedCode)) {
+      const devDuration = PLAN_DURATIONS['dev'];
+      const usageKey = `code:${normalizedCode}`;
+      const existing = await kvGet(usageKey);
+
+      if (existing) {
+        const entry = typeof existing === 'string' ? JSON.parse(existing) : existing;
+        if (entry.fingerprint === fingerprint) {
+          return NextResponse.json({
+            success: true,
+            data: { token: 'verified', expiresIn: entry.expiresAt - Date.now(), planId: 'dev', expiresAt: entry.expiresAt },
+          });
+        }
+        if (entry.expiresAt && Date.now() > entry.expiresAt) {
+          const newEntry = { fingerprint, planId: 'dev', usedAt: Date.now(), expiresAt: Date.now() + devDuration };
+          await kvSet(usageKey, JSON.stringify(newEntry));
+          return NextResponse.json({ success: true, data: { token: 'verified', expiresIn: devDuration, planId: 'dev', expiresAt: newEntry.expiresAt } });
+        }
+        return NextResponse.json({ success: false, error: 'This code is already in use on another device' }, { status: 403 });
+      }
+
+      const entry = { fingerprint, planId: 'dev', usedAt: Date.now(), expiresAt: Date.now() + devDuration };
+      await kvSet(usageKey, JSON.stringify(entry));
+      return NextResponse.json({ success: true, data: { token: 'verified', expiresIn: devDuration, planId: 'dev', expiresAt: entry.expiresAt } });
+    }
 
     // Check if any codes are configured at all
     const genericCodes = parseCodes('ACCESS_CODES');

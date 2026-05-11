@@ -19,7 +19,7 @@ export const SUBSCRIPTION_PLANS: SubscriptionPlan[] = [
   {
     id: 'hourly',
     name: 'Quick Access',
-    durationMs: 60 * 60 * 1000,          // 1 hour
+    durationMs: 60 * 60 * 1000,
     durationLabel: '1 Hour',
     priceINR: 29,
     priceUSD: 0.49,
@@ -28,7 +28,7 @@ export const SUBSCRIPTION_PLANS: SubscriptionPlan[] = [
   {
     id: 'daily',
     name: 'Day Pass',
-    durationMs: 24 * 60 * 60 * 1000,     // 1 day
+    durationMs: 24 * 60 * 60 * 1000,
     durationLabel: '1 Day',
     priceINR: 69,
     priceUSD: 0.99,
@@ -37,7 +37,7 @@ export const SUBSCRIPTION_PLANS: SubscriptionPlan[] = [
   {
     id: 'weekly',
     name: 'Week Pass',
-    durationMs: 7 * 24 * 60 * 60 * 1000, // 7 days
+    durationMs: 7 * 24 * 60 * 60 * 1000,
     durationLabel: '1 Week',
     priceINR: 149,
     priceUSD: 2.99,
@@ -48,7 +48,7 @@ export const SUBSCRIPTION_PLANS: SubscriptionPlan[] = [
   {
     id: 'monthly',
     name: 'Monthly',
-    durationMs: 30 * 24 * 60 * 60 * 1000, // 30 days
+    durationMs: 30 * 24 * 60 * 60 * 1000,
     durationLabel: '1 Month',
     priceINR: 299,
     priceUSD: 5.99,
@@ -58,7 +58,7 @@ export const SUBSCRIPTION_PLANS: SubscriptionPlan[] = [
   {
     id: 'quarterly',
     name: 'Quarterly',
-    durationMs: 90 * 24 * 60 * 60 * 1000, // 90 days
+    durationMs: 90 * 24 * 60 * 60 * 1000,
     durationLabel: '3 Months',
     priceINR: 699,
     priceUSD: 14.99,
