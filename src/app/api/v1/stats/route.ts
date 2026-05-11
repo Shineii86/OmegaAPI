@@ -1,9 +1,30 @@
+/**
+ * ┌─────────────────────────────────────────────────────────────┐
+ * │  OmegaAPI — Stats Endpoint                                 │
+ * │  Author : Sʜɪɴᴇɪ Nᴏᴜᴢᴇɴ                                   │
+ * │  License: MIT                                              │
+ * │  Route  : GET /api/v1/stats                                │
+ * └─────────────────────────────────────────────────────────────┘
+ *
+ * API statistics and metadata. Returns available endpoints,
+ * rate limit config, cache state, and uptime.
+ *
+ * Response: ApiResponse<{ name, version, endpoints, cache, rateLimit, ... }>
+ */
+
 import { getCacheStats } from '@/lib/cache';
 import { successResponse } from '@/lib/utils';
 
 export const runtime = 'edge';
 
+// ==================== STATE ====================
+
+/** Server start timestamp for uptime calculation */
 const startTime = Date.now();
+
+// ==================== HANDLER ====================
+
+// ---- FEATURE: API STATS ----
 
 export async function GET() {
   const cache = getCacheStats();
@@ -36,3 +57,5 @@ export async function GET() {
     },
   });
 }
+
+// ==================== EOF ====================

@@ -1,13 +1,37 @@
+/**
+ * ┌─────────────────────────────────────────────────────────────┐
+ * │  OmegaAPI — Health Check Endpoint                          │
+ * │  Author : Sʜɪɴᴇɪ Nᴏᴜᴢᴇɴ                                   │
+ * │  License: MIT                                              │
+ * │  Route  : GET /api/v1/health                               │
+ * └─────────────────────────────────────────────────────────────┘
+ *
+ * Health check with upstream probe. Pings the OmegaScans API
+ * to verify connectivity and measures latency.
+ *
+ * Response: ApiResponse<{ status, version, uptime, upstream, timestamp }>
+ */
+
 import { successResponse } from '@/lib/utils';
 
 export const runtime = 'edge';
 
+// ==================== STATE ====================
+
+/** Server start timestamp for uptime calculation */
 const startTime = Date.now();
+
+// ==================== HANDLER ====================
+
+// ---- FEATURE: HEALTH CHECK ----
 
 export async function GET() {
   let upstreamStatus = 'ok';
   let upstreamLatency = 0;
 
+  // ---- FEATURE: UPSTREAM PROBE ----
+  // Send a lightweight HEAD request to verify the upstream API
+  // is reachable and measure round-trip latency.
   try {
     const start = performance.now();
     const res = await fetch('https://api.omegascans.org/query?type=series&page=1', {
@@ -35,3 +59,5 @@ export async function GET() {
     },
   });
 }
+
+// ==================== EOF ====================

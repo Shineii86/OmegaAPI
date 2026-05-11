@@ -1,3 +1,20 @@
+/**
+ * ┌─────────────────────────────────────────────────────────────┐
+ * │  OmegaAPI — Series Detail Endpoint                         │
+ * │  Author : Sʜɪɴᴇɪ Nᴏᴜᴢᴇɴ                                   │
+ * │  License: MIT                                              │
+ * │  Route  : GET /api/v1/series/:slug                         │
+ * └─────────────────────────────────────────────────────────────┘
+ *
+ * Get detailed metadata for a single series by slug.
+ *
+ * Query Parameters:
+ *   include - Set to "chapters" to embed the full chapter list
+ *
+ * Response: ApiResponse<NormalizedSeries>
+ * Headers:  X-Cache, X-RateLimit-Limit, X-RateLimit-Remaining, X-RateLimit-Reset
+ */
+
 import { NextRequest } from 'next/server';
 import { getSeriesDetail, getSeriesChapters } from '@/lib/omega';
 import { getCached, setCache } from '@/lib/cache';
@@ -6,10 +23,13 @@ import { getClientIp, successResponse, errorResponse } from '@/lib/utils';
 
 export const runtime = 'edge';
 
+// ==================== HANDLER ====================
+
 export async function GET(
   req: NextRequest,
   { params }: { params: { slug: string } }
 ) {
+  // ---- FEATURE: RATE LIMITING ----
   const ip = getClientIp(req);
   const rate = checkRateLimit(ip);
   if (!rate.remaining && !rate.allowed) {
@@ -23,10 +43,14 @@ export async function GET(
     const { searchParams } = new URL(req.url);
     const includeChapters = searchParams.get('include') === 'chapters';
 
+    // ---- FEATURE: CACHE LAYER ----
     const cacheKey = `series:detail:${slug}:${includeChapters ? 'full' : 'basic'}`;
     const cached = getCached<ReturnType<typeof getSeriesDetail> extends Promise<infer R> ? R : never>(cacheKey);
     if (cached) return successResponse(cached, 200, { 'X-Cache': 'HIT' });
 
+    // ---- FEATURE: CHAPTER EMBEDDING ----
+    // When ?include=chapters, fetch the series detail AND chapter list
+    // in parallel, then merge them into a single response.
     const seriesData = await getSeriesDetail(slug);
 
     let result;
@@ -59,6 +83,8 @@ export async function GET(
   }
 }
 
+// ==================== CORS PREFLIGHT ====================
+
 export async function OPTIONS() {
   return new Response(null, {
     status: 204,
@@ -70,3 +96,5 @@ export async function OPTIONS() {
     },
   });
 }
+
+// ==================== EOF ====================

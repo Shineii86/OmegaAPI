@@ -1,8 +1,34 @@
+/**
+ * ┌─────────────────────────────────────────────────────────────┐
+ * │  OmegaAPI — Layout Components                              │
+ * │  Author : Sʜɪɴᴇɪ Nᴏᴜᴢᴇɴ                                   │
+ * │  License: MIT                                              │
+ * │  Module : src/components/layout.tsx                         │
+ * └─────────────────────────────────────────────────────────────┘
+ *
+ * Shared layout components for the OmegaAPI frontend:
+ * - Navbar: Responsive navigation bar with light/dark theme support
+ * - Footer: Site footer with links, credits, and heartbeat animation
+ */
+
 'use client';
 
 import { useState } from 'react';
 import { IconMenu, IconX, IconGithub, IconHeart } from '@/components/icons';
 
+// ==================== NAVBAR ====================
+// ---- FEATURE: NAVBAR ----
+
+/**
+ * Responsive navigation bar with light/dark theme support.
+ *
+ * @param active   - Current page identifier for active link highlighting
+ * @param children - Additional nav items (injected by parent pages)
+ * @param theme    - "light" (landing page) or "dark" (browse pages)
+ *
+ * NOTE: The navbar is sticky-positioned with a frosted glass effect.
+ * On mobile, it collapses into a hamburger menu using IconMenu/IconX.
+ */
 export function Navbar({ active, children, theme = 'light' }: { active?: 'home' | 'docs' | 'browse' | 'support'; children?: React.ReactNode; theme?: 'light' | 'dark' }) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const isDark = theme === 'dark';
@@ -18,6 +44,7 @@ export function Navbar({ active, children, theme = 'light' }: { active?: 'home' 
           {active === 'support' && <span className="pill-tag ml-1 hidden sm:inline-flex" style={{ color: '#f59e0b', borderColor: '#f59e0b' }}>SUPPORT</span>}
         </a>
 
+        {/* Desktop navigation links */}
         <div className="hidden md:flex items-center gap-6">
           {active !== 'home' && <a href="/" className={`text-sm font-semibold uppercase tracking-wider transition-colors ${isDark ? 'text-[#a1a1aa] hover:text-[#e4e4e7]' : 'text-[#64748b] hover:text-[#0f172a]'}`} style={{ fontSize: '0.7rem', letterSpacing: '0.1em' }}>Home</a>}
           {active !== 'docs' && <a href="/docs" className={`text-sm font-semibold uppercase tracking-wider transition-colors ${isDark ? 'text-[#a1a1aa] hover:text-[#e4e4e7]' : 'text-[#64748b] hover:text-[#0f172a]'}`} style={{ fontSize: '0.7rem', letterSpacing: '0.1em' }}>Docs</a>}
@@ -26,11 +53,13 @@ export function Navbar({ active, children, theme = 'light' }: { active?: 'home' 
           {children}
         </div>
 
+        {/* Mobile hamburger button */}
         <button className={`md:hidden ${isDark ? 'text-[#a1a1aa]' : 'text-[#64748b]'}`} onClick={() => setMobileOpen(!mobileOpen)}>
           {mobileOpen ? <IconX size={22} /> : <IconMenu size={22} />}
         </button>
       </div>
 
+      {/* Mobile dropdown menu */}
       {mobileOpen && (
         <div className={`md:hidden border-t px-5 py-4 space-y-3 animate-fade-in ${isDark ? 'bg-[#121218] border-[#2a2a36]' : 'bg-[#f0f2f8] border-[#d0d4e4]'}`}>
           {active !== 'home' && <a href="/" className={`block text-xs font-semibold uppercase tracking-widest ${isDark ? 'text-[#a1a1aa]' : 'text-[#64748b]'}`} onClick={() => setMobileOpen(false)}>Home</a>}
@@ -43,6 +72,17 @@ export function Navbar({ active, children, theme = 'light' }: { active?: 'home' 
   );
 }
 
+// ==================== FOOTER ====================
+// ---- FEATURE: FOOTER ----
+
+/**
+ * Site footer with navigation links, attribution, and heartbeat animation.
+ *
+ * @param theme - "light" (dark navy background) or "dark" (near-black background)
+ *
+ * NOTE: The footer includes a heartbeat animation on the "Built with ❤️"
+ * line using the `.animate-heartbeat` CSS class.
+ */
 export function Footer({ theme = 'light' }: { theme?: 'light' | 'dark' }) {
   const isDark = theme === 'dark';
   const bg = isDark ? '#0c0c12' : '#0f172a';
@@ -53,6 +93,7 @@ export function Footer({ theme = 'light' }: { theme?: 'light' | 'dark' }) {
     <footer style={{ background: bg, borderTop: `3px solid ${isDark ? '#2a2a36' : '#334155'}` }}>
       <div className="max-w-container mx-auto px-5 md:px-8 py-12">
         <div className="flex flex-col md:flex-row items-center justify-between gap-6">
+          {/* Brand */}
           <div className="flex items-center gap-3">
             <div className="w-8 h-8 flex items-center justify-center font-black text-sm border-2" style={{ background: accent, color: '#0f172a', borderColor: '#e4e4e7' }}>Ω</div>
             <div>
@@ -60,6 +101,7 @@ export function Footer({ theme = 'light' }: { theme?: 'light' | 'dark' }) {
               <p className="text-xs" style={{ color: text }}>Free Manga & Manhwa REST API</p>
             </div>
           </div>
+          {/* Navigation links */}
           <div className="flex items-center gap-6 text-xs">
             <a href="/docs" className="font-semibold uppercase tracking-wider transition-colors hover:text-white" style={{ color: text, fontSize: '0.65rem', letterSpacing: '0.1em' }}>Docs</a>
             <a href="/browse" className="font-semibold uppercase tracking-wider transition-colors hover:text-white" style={{ color: text, fontSize: '0.65rem', letterSpacing: '0.1em' }}>Browse</a>
@@ -68,6 +110,7 @@ export function Footer({ theme = 'light' }: { theme?: 'light' | 'dark' }) {
             <a href="/privacy" className="font-semibold uppercase tracking-wider transition-colors hover:text-white" style={{ color: text, fontSize: '0.65rem', letterSpacing: '0.1em' }}>Privacy</a>
           </div>
         </div>
+        {/* Attribution */}
         <div className="mt-8 pt-6 flex flex-col sm:flex-row items-center justify-between gap-4" style={{ borderTop: `1px solid ${isDark ? '#222230' : '#334155'}` }}>
           <p className="text-xs" style={{ color: text }}>
             Data From <a href="https://omegascans.org" target="_blank" rel="noopener noreferrer" className="font-semibold hover:underline" style={{ color: accent }}>OmegaScans</a> • Not Affiliated
@@ -83,3 +126,5 @@ export function Footer({ theme = 'light' }: { theme?: 'light' | 'dark' }) {
     </footer>
   );
 }
+
+// ==================== EOF ====================

@@ -2,6 +2,30 @@
 
 All notable changes to OmegaAPI will be documented in this file.
 
+## [3.8.0] - 2026-05-12
+
+### Added
+- Box-style file headers on every source file (Project, Author, License, Module path)
+- Section headers with `// ==================== SECTION ====================` style
+- Function-level JSDoc comments with @param, @returns, and purpose descriptions
+- Inline notes for non-obvious logic (rate limiting windows, cache TTL rationale, normalization edge cases)
+- Feature markers `// ---- FEATURE: XYZ ----` for grep-ability across the codebase
+- Module footer `// ==================== EOF ====================` on every file
+
+### Changed
+- `src/lib/omega.ts`: Full documentation of all normalization functions, upstream types, and public API
+- `src/lib/cache.ts`: Documented cache strategy, TTL rationale, and garbage collection
+- `src/lib/rate-limit.ts`: Documented sliding-window algorithm and cleanup interval
+- `src/lib/storage.ts`: Documented all localStorage utilities with SSR safety notes
+- `src/lib/utils.ts`: Documented IP extraction, CORS, and response builder patterns
+- `src/types/index.ts`: Added JSDoc to all interfaces with endpoint mapping
+- All 8 API route files: Added request/response docs, parameter docs, and handler comments
+- `src/components/icons.tsx`: Added section headers and usage notes per icon category
+- `src/components/layout.tsx`: Documented Navbar and Footer with prop descriptions
+- `src/components/ui.tsx`: Documented formatting helpers and UI components
+- `src/app/sitemap.ts`: Documented dynamic sitemap generation and fallback strategy
+- `src/global.d.ts`: Added module header
+
 ## [3.7.0] - 2026-05-12
 
 ### Removed

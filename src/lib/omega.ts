@@ -1,4 +1,35 @@
+/**
+ * ┌─────────────────────────────────────────────────────────────┐
+ * │  OmegaAPI — OmegaScans Client & Normalizer                 │
+ * │  Author : Sʜɪɴᴇɪ Nᴏᴜᴢᴇɴ                                   │
+ * │  License: MIT                                              │
+ * │  Module : src/lib/omega.ts                                 │
+ * └─────────────────────────────────────────────────────────────┘
+ *
+ * Wraps the upstream OmegaScans REST API and normalizes raw
+ * responses into clean, consistent TypeScript interfaces.
+ *
+ * Every public function returns a standard envelope:
+ *   { success: boolean, data: T, pagination?: Pagination }
+ */
+
+import type {
+  NormalizedSeries,
+  NormalizedChapter,
+  NormalizedChapterContent,
+  PaginatedResponse,
+  ApiResponse,
+} from '@/types';
+
+// ==================== CONSTANTS ====================
+
+/** Upstream OmegaScans API base URL */
 const OMEGA_BASE = 'https://api.omegascans.org';
+
+// ==================== UPSTREAM TYPES ====================
+// These interfaces mirror the raw JSON returned by OmegaScans.
+// They are intentionally internal — consumers should use the
+// Normalized* types from @/types instead.
 
 interface OmegaMeta {
   total: number;
@@ -116,87 +147,21 @@ interface OmegaSeriesDetail {
   };
 }
 
-export interface NormalizedSeries {
-  id: number;
-  title: string;
-  slug: string;
-  description: string;
-  thumbnail: string;
-  cover: string;
-  status: string;
-  type: string;
-  rating: number;
-  totalViews: number;
-  alternativeNames: string;
-  author: string;
-  studio: string;
-  releaseYear: string;
-  releaseSchedule: string[];
-  tags: string[];
-  chaptersCount: number;
-  bookmarksCount: number;
-  isComingSoon: boolean;
-  badge: string | null;
-  createdAt: string;
-  updatedAt: string;
-  chapters: NormalizedChapter[];
-  url: string;
-}
+// ==================== NORMALIZED TYPES (RE-EXPORTS) ====================
 
-export interface NormalizedChapter {
-  id: number;
-  name: string;
-  title: string | null;
-  slug: string;
-  thumbnail: string;
-  price: number;
-  isFree: boolean;
-  createdAt: string;
-  index: string;
-  url: string;
-}
+export type { NormalizedSeries, NormalizedChapter, NormalizedChapterContent, PaginatedResponse, ApiResponse };
 
-export interface NormalizedChapterContent {
-  id: number;
-  name: string;
-  title: string | null;
-  slug: string;
-  index: string;
-  price: number;
-  isFree: boolean;
-  thumbnail: string;
-  images: string[];
-  pageCount: number;
-  createdAt: string;
-  series: {
-    id: number;
-    title: string;
-    slug: string;
-    thumbnail: string;
-    status: string;
-    description: string;
-  };
-  url: string;
-}
+// ==================== INTERNAL HELPERS ====================
 
-export interface PaginatedResponse<T> {
-  success: boolean;
-  data: T[];
-  pagination: {
-    total: number;
-    perPage: number;
-    currentPage: number;
-    lastPage: number;
-    hasNext: boolean;
-    hasPrevious: boolean;
-  };
-}
-
-export interface ApiResponse<T> {
-  success: boolean;
-  data: T;
-}
-
+/**
+ * Generic fetch wrapper for the upstream OmegaScans API.
+ *
+ * @param path  - API path relative to OMEGA_BASE (e.g. "/query?type=series&page=1")
+ * @returns     - Parsed JSON response of type T
+ * @throws      - Error if the upstream response is not OK
+ *
+ * NOTE: Uses Next.js `revalidate: 300` (5 min) for ISR caching at the fetch layer.
+ */
 async function fetchOmega<T>(path: string): Promise<T> {
   const url = `${OMEGA_BASE}${path}`;
   const res = await fetch(url, {
@@ -214,7 +179,24 @@ async function fetchOmega<T>(path: string): Promise<T> {
   return res.json();
 }
 
+// ---- FEATURE: NORMALIZATION ----
+// These functions transform raw upstream objects into the clean
+// NormalizedSeries / NormalizedChapter / NormalizedChapterContent
+// interfaces used by all API endpoints.
+
+/**
+ * Normalize a series from the list endpoint.
+ *
+ * NOTE: The list endpoint returns fewer fields than the detail endpoint.
+ * Fields like `author`, `studio`, `tags`, and `bookmarksCount` are
+ * only available via getSeriesDetail().
+ *
+ * @param series - Raw OmegaSeries from the upstream list API
+ * @returns      - Clean NormalizedSeries object
+ */
 function normalizeSeries(series: OmegaSeries): NormalizedSeries {
+  // Extract active release days from the boolean map
+  // e.g. { monday: true, friday: true } → ["Monday", "Friday"]
   const days = Object.entries(series.release_schedule || {})
     .filter(([, v]) => v)
     .map(([k]) => k.charAt(0).toUpperCase() + k.slice(1));
@@ -258,6 +240,16 @@ function normalizeSeries(series: OmegaSeries): NormalizedSeries {
   };
 }
 
+/**
+ * Normalize a series from the detail endpoint.
+ *
+ * NOTE: The detail endpoint includes extra fields (author, studio, tags,
+ * bookmarksCount, chaptersCount) not available in the list endpoint.
+ * It does NOT include chapters — those must be fetched separately.
+ *
+ * @param series - Raw OmegaSeriesDetail from the upstream detail API
+ * @returns      - Clean NormalizedSeries object with enriched metadata
+ */
 function normalizeSeriesDetail(series: OmegaSeriesDetail): NormalizedSeries {
   const days = Object.entries(series.release_schedule || {})
     .filter(([, v]) => v)
@@ -291,6 +283,13 @@ function normalizeSeriesDetail(series: OmegaSeriesDetail): NormalizedSeries {
   };
 }
 
+/**
+ * Normalize a single chapter object.
+ *
+ * @param ch         - Raw OmegaChapter from the upstream API
+ * @param seriesSlug - Parent series slug (not included in chapter response)
+ * @returns          - Clean NormalizedChapter object
+ */
 function normalizeChapter(ch: OmegaChapter, seriesSlug: string): NormalizedChapter {
   return {
     id: ch.id,
@@ -306,12 +305,27 @@ function normalizeChapter(ch: OmegaChapter, seriesSlug: string): NormalizedChapt
   };
 }
 
+/**
+ * Convert relative image paths to full URLs.
+ *
+ * NOTE: The upstream API returns images as relative paths like
+ * "uploads/series/slug/chapter/001.jpg". This prepends the media CDN.
+ *
+ * @param url - Raw image path (relative or absolute)
+ * @returns   - Full HTTPS URL to the image
+ */
 function normalizeImageUrl(url: string): string {
   if (!url) return '';
   if (url.startsWith('http://') || url.startsWith('https://')) return url;
   return `https://media.omegascans.org/${url.replace(/^\//, '')}`;
 }
 
+/**
+ * Normalize chapter content (the reader payload with images).
+ *
+ * @param ch - Raw chapter object from the content endpoint
+ * @returns  - Clean NormalizedChapterContent with resolved image URLs
+ */
 function normalizeChapterContent(ch: OmegaChapterContent['chapter']): NormalizedChapterContent {
   const rawImages = ch.chapter_data?.images || [];
   const images = rawImages.map(normalizeImageUrl);
@@ -340,6 +354,12 @@ function normalizeChapterContent(ch: OmegaChapterContent['chapter']): Normalized
   };
 }
 
+/**
+ * Strip HTML tags and decode common HTML entities.
+ *
+ * @param html - Raw HTML string from the upstream API
+ * @returns    - Plain text with entities decoded and whitespace normalized
+ */
 function stripHtml(html: string): string {
   if (!html) return '';
   return html
@@ -355,8 +375,17 @@ function stripHtml(html: string): string {
     .trim();
 }
 
-// --- Public API Functions ---
+// ==================== PUBLIC API FUNCTIONS ====================
+// ---- FEATURE: SERIES ----
 
+/**
+ * Fetch a paginated list of series, optionally filtered by search query.
+ *
+ * @param page    - Page number (1-indexed, default: 1)
+ * @param perPage - Results per page (1–100, default: 20)
+ * @param q       - Optional search query to filter by title
+ * @returns       - Paginated list of normalized series
+ */
 export async function getSeriesList(
   page = 1,
   perPage = 20,
@@ -379,6 +408,12 @@ export async function getSeriesList(
   };
 }
 
+/**
+ * Fetch detailed metadata for a single series by slug.
+ *
+ * @param slug - Series slug (e.g. "solo-leveling")
+ * @returns    - Normalized series with enriched fields (author, tags, etc.)
+ */
 export async function getSeriesDetail(slug: string): Promise<ApiResponse<NormalizedSeries>> {
   const data = await fetchOmega<OmegaSeriesDetail>(`/series/${slug}`);
   return {
@@ -387,6 +422,20 @@ export async function getSeriesDetail(slug: string): Promise<ApiResponse<Normali
   };
 }
 
+// ---- FEATURE: CHAPTERS ----
+
+/**
+ * Fetch all chapters for a given series.
+ *
+ * NOTE: Uses a very high perPage (10000) to get all chapters in one request.
+ * The upstream API doesn't support sorting, so results arrive in API order.
+ *
+ * @param seriesId   - Numeric series ID (from getSeriesDetail)
+ * @param page       - Page number (default: 1)
+ * @param perPage    - Results per page (default: 10000)
+ * @param seriesSlug - Series slug for URL generation
+ * @returns          - Paginated list of normalized chapters
+ */
 export async function getSeriesChapters(
   seriesId: number,
   page = 1,
@@ -411,6 +460,13 @@ export async function getSeriesChapters(
   };
 }
 
+/**
+ * Fetch the content (images) of a specific chapter.
+ *
+ * @param seriesSlug  - Parent series slug
+ * @param chapterSlug - Chapter slug
+ * @returns           - Normalized chapter content with resolved image URLs
+ */
 export async function getChapterContent(
   seriesSlug: string,
   chapterSlug: string
@@ -424,6 +480,15 @@ export async function getChapterContent(
   };
 }
 
+// ---- FEATURE: SEARCH ----
+
+/**
+ * Search series by title.
+ *
+ * @param query - Search string
+ * @param page  - Page number (default: 1)
+ * @returns     - Paginated list of matching normalized series
+ */
 export async function searchSeries(
   query: string,
   page = 1
@@ -445,3 +510,5 @@ export async function searchSeries(
     },
   };
 }
+
+// ==================== EOF ====================

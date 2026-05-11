@@ -1,3 +1,21 @@
+/**
+ * ┌─────────────────────────────────────────────────────────────┐
+ * │  OmegaAPI — Chapter List Endpoint                          │
+ * │  Author : Sʜɪɴᴇɪ Nᴏᴜᴢᴇɴ                                   │
+ * │  License: MIT                                              │
+ * │  Route  : GET /api/v1/chapters/:slug                       │
+ * └─────────────────────────────────────────────────────────────┘
+ *
+ * Get all chapters for a series by its slug.
+ *
+ * Query Parameters:
+ *   page    - Page number (default: 1)
+ *   perPage - Results per page (1–500, default: 100)
+ *
+ * Response: PaginatedResponse<NormalizedChapter>
+ * Headers:  X-Cache, X-RateLimit-Limit, X-RateLimit-Remaining, X-RateLimit-Reset
+ */
+
 import { NextRequest } from 'next/server';
 import { getSeriesDetail, getSeriesChapters } from '@/lib/omega';
 import { getCached, setCache } from '@/lib/cache';
@@ -6,10 +24,13 @@ import { getClientIp, successResponse, errorResponse } from '@/lib/utils';
 
 export const runtime = 'edge';
 
+// ==================== HANDLER ====================
+
 export async function GET(
   req: NextRequest,
   { params }: { params: { slug: string } }
 ) {
+  // ---- FEATURE: RATE LIMITING ----
   const ip = getClientIp(req);
   const rate = checkRateLimit(ip);
   if (!rate.remaining && !rate.allowed) {
@@ -24,11 +45,13 @@ export async function GET(
     const page = Math.max(1, parseInt(searchParams.get('page') || '1', 10));
     const perPage = Math.min(500, Math.max(1, parseInt(searchParams.get('perPage') || '100', 10)));
 
-    // First get series to find the ID
+    // ---- FEATURE: CACHE LAYER ----
     const cacheKey = `chapters:${slug}:${page}:${perPage}`;
     const cached = getCached<ReturnType<typeof getSeriesChapters> extends Promise<infer R> ? R : never>(cacheKey);
     if (cached) return successResponse(cached, 200, { 'X-Cache': 'HIT' });
 
+    // NOTE: We need the series ID to fetch chapters, so we fetch
+    // the series detail first, then use its ID for the chapter query.
     const seriesData = await getSeriesDetail(slug);
     const chaptersData = await getSeriesChapters(seriesData.data.id, page, perPage, slug);
 
@@ -48,6 +71,8 @@ export async function GET(
   }
 }
 
+// ==================== CORS PREFLIGHT ====================
+
 export async function OPTIONS() {
   return new Response(null, {
     status: 204,
@@ -59,3 +84,5 @@ export async function OPTIONS() {
     },
   });
 }
+
+// ==================== EOF ====================
