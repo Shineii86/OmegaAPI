@@ -12,6 +12,63 @@ const BASE = typeof window !== 'undefined' ? window.location.origin : 'https://o
 const GENRE_INDEX_KEY = 'omega_genre_index';
 const GENRE_INDEX_TTL = 60 * 60 * 1000; // 1 hour
 
+/* Map API tags to genre names — tags are often more specific than genres */
+const TAG_TO_GENRE: Record<string, string> = {
+  'mild': 'adult',
+  'hardcore': 'adult',
+  'netori': 'adult',
+  'netorare': 'adult',
+  'campus': 'school life',
+  'school': 'school life',
+  'office': 'slice of life',
+  'cohabitation': 'slice of life',
+  'martial art': 'martial arts',
+  'martial arts': 'martial arts',
+  'superhero': 'action',
+  'super power': 'action',
+  'superpower': 'action',
+  'adventure': 'action',
+  'monster': 'horror',
+  'zombie': 'horror',
+  'survival': 'thriller',
+  'revenge': 'drama',
+  'tragedy': 'tragedy',
+  'romance': 'romance',
+  'comedy': 'comedy',
+  'drama': 'drama',
+  'fantasy': 'fantasy',
+  'harem': 'harem',
+  'horror': 'horror',
+  'isekai': 'isekai',
+  'mature': 'mature',
+  'mystery': 'mystery',
+  'psychological': 'psychological',
+  'sci-fi': 'sci-fi',
+  'seinen': 'seinen',
+  'shounen': 'shounen',
+  'slice of life': 'slice of life',
+  'supernatural': 'supernatural',
+  'thriller': 'thriller',
+  'webtoon': 'webtoon',
+  'yaoi': 'yaoi',
+  'yuri': 'yuri',
+  'action': 'action',
+  'adult': 'adult',
+};
+
+function matchesGenre(tags: string[], genre: string): boolean {
+  return tags.some(t => {
+    const tag = t.toLowerCase().trim();
+    // Direct match
+    if (tag === genre) return true;
+    // Mapped match
+    if (TAG_TO_GENRE[tag] === genre) return true;
+    // Partial match (e.g. "martial art" in "martial arts")
+    if (genre.includes(tag) || tag.includes(genre)) return true;
+    return false;
+  });
+}
+
 interface SeriesWithTags extends Series {
   tags: string[];
 }
@@ -232,7 +289,7 @@ export default function GenrePage() {
         const hasTags = seriesList.some((s: any) => s.tags?.length > 0);
         if (hasTags) {
           const matching = (seriesList as SeriesWithTags[]).filter(s =>
-            s.tags?.some(t => t.toLowerCase() === genre)
+            matchesGenre(s.tags || [], genre)
           );
           setFiltered(matching);
           setEnriched(true);
@@ -261,7 +318,7 @@ export default function GenrePage() {
           setProgress({ loaded: Math.min(i + BATCH, seriesList.length), total: seriesList.length });
           // Update filtered results incrementally
           const matching = enrichedSeries.filter(s =>
-            s.tags?.some(t => t.toLowerCase() === genre)
+            matchesGenre(s.tags || [], genre)
           );
           setFiltered(matching);
         }
