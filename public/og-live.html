@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>OmegaAPI Live OG</title>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      overflow: hidden;
+      background: #05010b;
+      font-family: Inter, sans-serif;
+    }
+
+    .scene {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+      background:
+        radial-gradient(circle at 20% 30%, rgba(168,85,247,.25), transparent 35%),
+        radial-gradient(circle at 80% 30%, rgba(251,191,36,.18), transparent 35%),
+        linear-gradient(135deg, #05010b 0%, #13071d 40%, #090312 100%);
+    }
+
+    .bg-noise {
+      position: absolute;
+      inset: 0;
+      opacity: .08;
+      background-image:
+        linear-gradient(rgba(255,255,255,.08) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,.08) 1px, transparent 1px);
+      background-size: 4px 4px;
+      mix-blend-mode: overlay;
+    }
+
+    .energy-line {
+      position: absolute;
+      width: 180%;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, #a855f7, transparent);
+      opacity: .2;
+      transform: rotate(-12deg);
+      animation: slide 8s linear infinite;
+    }
+
+    .energy-line:nth-child(2) {
+      top: 30%;
+      animation-duration: 12s;
+    }
+
+    .energy-line:nth-child(3) {
+      top: 60%;
+      animation-duration: 16s;
+    }
+
+    @keyframes slide {
+      from {
+        transform: translateX(-20%) rotate(-12deg);
+      }
+      to {
+        transform: translateX(20%) rotate(-12deg);
+      }
+    }
+
+    .character {
+      position: absolute;
+      top: 0;
+      width: 42%;
+      height: 100%;
+      object-fit: cover;
+      opacity: .95;
+      filter: saturate(1.15) contrast(1.1);
+      animation: float 6s ease-in-out infinite;
+    }
+
+    .left {
+      left: 0;
+      mask-image: linear-gradient(to right, black 70%, transparent 100%);
+      -webkit-mask-image: linear-gradient(to right, black 70%, transparent 100%);
+    }
+
+    .right {
+      right: 0;
+      animation-delay: 2s;
+      mask-image: linear-gradient(to left, black 70%, transparent 100%);
+      -webkit-mask-image: linear-gradient(to left, black 70%, transparent 100%);
+    }
+
+    @keyframes float {
+      0%,100% {
+        transform: translateY(0px);
+      }
+      50% {
+        transform: translateY(-10px);
+      }
+    }
+
+    .overlay-purple,
+    .overlay-gold {
+      position: absolute;
+      inset: 0;
+      mix-blend-mode: screen;
+      pointer-events: none;
+    }
+
+    .overlay-purple {
+      background: radial-gradient(circle at 20% 40%, rgba(168,85,247,.45), transparent 30%);
+      animation: pulse 5s ease-in-out infinite;
+    }
+
+    .overlay-gold {
+      background: radial-gradient(circle at 80% 35%, rgba(251,191,36,.25), transparent 30%);
+      animation: pulse 7s ease-in-out infinite reverse;
+    }
+
+    @keyframes pulse {
+      0%,100% {
+        opacity: .5;
+      }
+      50% {
+        opacity: 1;
+      }
+    }
+
+    .center {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 5;
+    }
+
+    .omega {
+      width: 220px;
+      height: 220px;
+      margin-bottom: 10px;
+      filter: drop-shadow(0 0 30px rgba(255,215,74,.8));
+      animation: logoPulse 3s ease-in-out infinite;
+    }
+
+    @keyframes logoPulse {
+      0%,100% {
+        transform: scale(1);
+      }
+      50% {
+        transform: scale(1.05);
+      }
+    }
+
+    h1 {
+      font-size: 110px;
+      font-weight: 800;
+      letter-spacing: 4px;
+      background: linear-gradient(180deg, #fff7cc 0%, #ffd54a 45%, #b8860b 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-shadow:
+        0 0 15px rgba(255,215,74,.8),
+        0 0 40px rgba(255,215,74,.4);
+      font-family: Georgia, serif;
+    }
+
+    .subtitle {
+      margin-top: 10px;
+      color: #ffffff;
+      font-size: 32px;
+      letter-spacing: 8px;
+    }
+
+    .subtitle span {
+      color: #c084fc;
+    }
+
+    .features {
+      margin-top: 60px;
+      display: flex;
+      gap: 70px;
+      color: white;
+    }
+
+    .feature {
+      text-align: center;
+      opacity: .95;
+    }
+
+    .feature .icon {
+      font-size: 50px;
+      color: #c084fc;
+      margin-bottom: 12px;
+      text-shadow: 0 0 15px rgba(168,85,247,.8);
+    }
+
+    .feature h3 {
+      font-size: 22px;
+      margin-bottom: 6px;
+    }
+
+    .feature p {
+      font-size: 14px;
+      opacity: .8;
+    }
+
+    .url-box {
+      margin-top: 60px;
+      border: 2px solid rgba(168,85,247,.8);
+      border-radius: 20px;
+      padding: 18px 40px;
+      color: white;
+      font-size: 28px;
+      background: rgba(10,5,20,.75);
+      backdrop-filter: blur(10px);
+      box-shadow: 0 0 25px rgba(168,85,247,.4);
+    }
+
+    .particle {
+      position: absolute;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #c084fc;
+      box-shadow: 0 0 12px #c084fc;
+      animation: rise linear infinite;
+    }
+
+    @keyframes rise {
+      from {
+        transform: translateY(100vh) scale(0);
+        opacity: 0;
+      }
+      20% {
+        opacity: 1;
+      }
+      to {
+        transform: translateY(-120vh) scale(1);
+        opacity: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="scene">
+    <div class="bg-noise"></div>
+
+    <div class="energy-line" style="top:20%"></div>
+    <div class="energy-line"></div>
+    <div class="energy-line"></div>
+
+    <!-- Replace these with your own anime/manhwa renders -->
+    <img class="character left" src="https://images.unsplash.com/photo-1511367461989-f85a21fda167?q=80&w=1200&auto=format&fit=crop" />
+
+    <img class="character right" src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=1200&auto=format&fit=crop" />
+
+    <div class="overlay-purple"></div>
+    <div class="overlay-gold"></div>
+
+    <div class="center">
+      <svg class="omega" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="gold" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stop-color="#FFF1A8"/>
+            <stop offset="50%" stop-color="#FFD54A"/>
+            <stop offset="100%" stop-color="#B8860B"/>
+          </linearGradient>
+        </defs>
+
+        <path d="M120 380C70 330 70 170 256 90C442 170 442 330 392 380"
+              stroke="url(#gold)"
+              stroke-width="26"
+              fill="none"
+              stroke-linecap="round"/>
+
+        <path d="M190 340L256 210L322 340"
+              stroke="url(#gold)"
+              stroke-width="24"
+              fill="none"
+              stroke-linecap="round"
+              stroke-linejoin="round"/>
+
+        <rect x="238" y="360" width="36" height="36" transform="rotate(45 256 378)"
+              fill="url(#gold)"/>
+      </svg>
+
+      <h1>OMEGAAPI</h1>
+
+      <div class="subtitle">
+        FREE <span>MANGA &amp; MANHWA</span> REST API
+      </div>
+
+      <div class="features">
+        <div class="feature">
+          <div class="icon">
+            <svg width="52" height="52" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M13 2L4 14H11L10 22L20 9H13L13 2Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <h3>FAST</h3>
+          <p>&amp; RELIABLE</p>
+        </div>
+
+        <div class="feature">
+          <div class="icon">
+            <svg width="52" height="52" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M3 5C3 3.89543 3.89543 3 5 3H11V21H5C3.89543 21 3 20.1046 3 19V5Z" stroke="currentColor" stroke-width="2"/>
+              <path d="M21 5C21 3.89543 20.1046 3 19 3H13V21H19C20.1046 21 21 20.1046 21 19V5Z" stroke="currentColor" stroke-width="2"/>
+            </svg>
+          </div>
+          <h3>MANGA</h3>
+          <p>&amp; MANHWA</p>
+        </div>
+
+        <div class="feature">
+          <div class="icon">
+            <svg width="52" height="52" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M8 8L4 12L8 16" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M16 8L20 12L16 16" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M13 5L11 19" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <h3>REST</h3>
+          <p>API</p>
+        </div>
+
+        <div class="feature">
+          <div class="icon">
+            <svg width="52" height="52" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M12 3L19 6V11C19 16 15.5 19 12 21C8.5 19 5 16 5 11V6L12 3Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <h3>FREE</h3>
+          <p>TO USE</
+      </div>
+
+      <div class="url-box">
+        https://omegaapi.vercel.app
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const scene = document.querySelector('.scene');
+
+    for (let i = 0; i < 80; i++) {
+      const p = document.createElement('div');
+      p.className = 'particle';
+
+      p.style.left = Math.random() * 100 + 'vw';
+      p.style.animationDuration = (5 + Math.random() * 10) + 's';
+      p.style.animationDelay = Math.random() * 10 + 's';
+      p.style.opacity = Math.random();
+      p.style.transform = `scale(${Math.random()})`;
+
+      scene.appendChild(p);
+    }
+  </script>
+</body>
+</html>
