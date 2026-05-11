@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { useParams } from 'next/navigation';
 import type { ChapterData, Chapter } from '@/types';
 import { IconChevronLeft, IconChevronRight, IconColumns, IconFile, IconHome, IconBook } from '@/components/icons';
+import { saveHistory, saveReadingPosition, getReadingPosition } from '@/lib/storage';
 
 const BASE = typeof window !== 'undefined' ? window.location.origin : 'https://omegaapi.vercel.app';
 
@@ -43,6 +44,23 @@ export default function ChapterReaderPage() {
             series: ch.series || { id: 0, title: '', slug: '', thumbnail: '', status: '', description: '' },
           });
           setCurrentPage(0);
+
+          /* Save reading history */
+          if (ch.series) {
+            // Extract chapter index from name (e.g., "Chapter 45" → 45)
+            const match = ch.name?.match(/(\d+)/);
+            const chapterIndex = match ? parseInt(match[1], 10) : 0;
+            saveHistory({
+              slug: seriesSlug,
+              title: ch.series.title || '',
+              thumbnail: ch.series.thumbnail || '',
+              chapterSlug: chapterSlug,
+              chapterName: ch.name || '',
+              chapterIndex,
+              totalChapters: 0, // Will be updated when chapter list loads
+              timestamp: Date.now(),
+            });
+          }
         } else {
           setError(data.error || 'Chapter not found');
         }
@@ -66,6 +84,25 @@ export default function ChapterReaderPage() {
           setAllChapters(sorted);
           const idx = sorted.findIndex((c: Chapter) => c.slug === chapterSlug);
           setCurrentIndex(idx);
+
+          /* Update history with total chapters count */
+          if (sorted.length > 0) {
+            const current = sorted[idx];
+            if (current) {
+              const match = current.name?.match(/(\d+)/);
+              const chapterIndex = match ? parseInt(match[1], 10) : 0;
+              saveHistory({
+                slug: seriesSlug,
+                title: chapter?.series?.title || '',
+                thumbnail: chapter?.series?.thumbnail || '',
+                chapterSlug: chapterSlug,
+                chapterName: current.name || '',
+                chapterIndex,
+                totalChapters: sorted.length,
+                timestamp: Date.now(),
+              });
+            }
+          }
         }
       })
       .catch(() => {});
@@ -82,6 +119,32 @@ export default function ChapterReaderPage() {
     window.addEventListener('keydown', handler);
     return () => window.removeEventListener('keydown', handler);
   }, [readingMode, chapter]);
+
+  /* Restore scroll position for vertical reader */
+  useEffect(() => {
+    if (readingMode !== 'vertical' || loading) return;
+    const saved = getReadingPosition(seriesSlug, chapterSlug);
+    if (saved > 0) {
+      setTimeout(() => window.scrollTo(0, saved), 100);
+    }
+  }, [loading, readingMode]);
+
+  /* Save scroll position on scroll (debounced) */
+  useEffect(() => {
+    if (readingMode !== 'vertical') return;
+    let timer: NodeJS.Timeout;
+    const handleScroll = () => {
+      clearTimeout(timer);
+      timer = setTimeout(() => {
+        saveReadingPosition(seriesSlug, chapterSlug, window.scrollY);
+      }, 500);
+    };
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => {
+      clearTimeout(timer);
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, [readingMode, seriesSlug, chapterSlug]);
 
   const prevChapter = currentIndex >= 0 && currentIndex < allChapters.length - 1 ? allChapters[currentIndex + 1] : null;
   const nextChapter = currentIndex > 0 ? allChapters[currentIndex - 1] : null;

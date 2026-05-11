@@ -2,9 +2,10 @@
 
 import { useState, useEffect, useCallback, useRef } from 'react';
 import type { Series, Pagination } from '@/types';
-import { IconStar, IconEye, IconBook, IconSearch, IconInbox, IconAlertTriangle, IconArrowRight, IconArrowLeft, IconChevronLeft, IconChevronRight, IconFire, IconTrophy, IconSparkles, IconX, IconShuffle } from '@/components/icons';
+import { IconStar, IconEye, IconBook, IconSearch, IconInbox, IconAlertTriangle, IconArrowRight, IconArrowLeft, IconChevronLeft, IconChevronRight, IconFire, IconTrophy, IconSparkles, IconX, IconShuffle, IconHeart, IconClock } from '@/components/icons';
 import { formatViews, Spinner } from '@/components/ui';
 import { Footer } from '@/components/layout';
+import { getHistory, getContinueReading, getBookmarks, toggleBookmark, isBookmarked, getRecentSearches, saveSearch, clearRecentSearches, type HistoryEntry } from '@/lib/storage';
 
 const BASE = typeof window !== 'undefined' ? window.location.origin : 'https://omegaapi.vercel.app';
 
@@ -49,7 +50,20 @@ function ScrollRow({ children }: { children: React.ReactNode }) {
 }
 
 /* ── Series Card (Manhwa style) ── */
-function ManhwaCard({ series, onClick }: { series: Series; onClick: () => void }) {
+function ManhwaCard({ series, onClick, onBookmark }: { series: Series; onClick: () => void; onBookmark?: (e: React.MouseEvent) => void }) {
+  const [bookmarked, setBookmarked] = useState(false);
+
+  useEffect(() => {
+    setBookmarked(isBookmarked(series.slug));
+  }, [series.slug]);
+
+  const handleBookmark = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    const added = toggleBookmark(series.slug);
+    setBookmarked(added);
+    onBookmark?.(e);
+  };
+
   return (
     <div className="manhwa-card cursor-pointer" onClick={onClick} style={{ width: '160px', minWidth: '160px' }}>
       <div className="cover-wrap">
@@ -62,6 +76,18 @@ function ManhwaCard({ series, onClick }: { series: Series; onClick: () => void }
         <div className="rating-badge">
           <IconStar size={10} /> {series.rating.toFixed(1)}
         </div>
+        {/* Bookmark button */}
+        <button
+          onClick={handleBookmark}
+          className="absolute top-2 right-2 z-10 w-7 h-7 flex items-center justify-center rounded-full transition-all"
+          style={{
+            background: bookmarked ? 'rgba(239,68,68,0.9)' : 'rgba(0,0,0,0.5)',
+            color: bookmarked ? '#fff' : '#a1a1aa',
+          }}
+          title={bookmarked ? 'Remove bookmark' : 'Add bookmark'}
+        >
+          <IconHeart size={12} fill={bookmarked ? 'currentColor' : 'none'} />
+        </button>
         <div className="info-overlay">
           <p className="text-white text-xs line-clamp-3 leading-relaxed mb-2">{series.description?.slice(0, 120) || 'No description.'}</p>
           <div className="flex items-center gap-2 text-white/80 text-[0.6rem]">
@@ -106,6 +132,7 @@ function SearchOverlay({ open, onClose, onSelect }: { open: boolean; onClose: ()
   const [q, setQ] = useState('');
   const [results, setResults] = useState<Series[]>([]);
   const [loading, setLoading] = useState(false);
+  const [recentSearches, setRecentSearches] = useState<string[]>([]);
   const timerRef = useRef<NodeJS.Timeout>();
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -113,6 +140,7 @@ function SearchOverlay({ open, onClose, onSelect }: { open: boolean; onClose: ()
     if (open) {
       setQ('');
       setResults([]);
+      setRecentSearches(getRecentSearches());
       setTimeout(() => inputRef.current?.focus(), 100);
     }
   }, [open]);
@@ -140,6 +168,17 @@ function SearchOverlay({ open, onClose, onSelect }: { open: boolean; onClose: ()
     setQ(val);
     if (timerRef.current) clearTimeout(timerRef.current);
     timerRef.current = setTimeout(() => search(val), 300);
+  };
+
+  const handleSelect = (s: Series) => {
+    saveSearch(q || s.title);
+    onSelect(s);
+    onClose();
+  };
+
+  const handleRecentClick = (term: string) => {
+    setQ(term);
+    search(term);
   };
 
   if (!open) return null;
@@ -184,7 +223,7 @@ function SearchOverlay({ open, onClose, onSelect }: { open: boolean; onClose: ()
             {!loading && results.map((s) => (
               <div
                 key={s.id}
-                onClick={() => { onSelect(s); onClose(); }}
+                onClick={() => handleSelect(s)}
                 className="flex items-center gap-4 px-4 py-3 hover:bg-[#1e1e2a] cursor-pointer border-b border-[#222230] last:border-0 transition-colors"
               >
                 <div className="w-11 h-14 rounded-lg overflow-hidden bg-[#1e1e2a] shrink-0">
@@ -202,10 +241,34 @@ function SearchOverlay({ open, onClose, onSelect }: { open: boolean; onClose: ()
               </div>
             ))}
             {!loading && q.length < 2 && (
-              <div className="p-8 text-center">
-                <span className="text-[#3f3f46] mx-auto mb-3 block"><IconSearch size={32} /></span>
-                <p className="text-sm text-[#52525b]">Type at least 2 characters to search</p>
-              </div>
+              <>
+                {/* Recent Searches */}
+                {recentSearches.length > 0 && (
+                  <div className="px-4 pt-4 pb-2">
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-[0.6rem] font-semibold uppercase tracking-widest text-[#52525b]">Recent Searches</span>
+                      <button onClick={() => { clearRecentSearches(); setRecentSearches([]); }} className="text-[0.55rem] text-[#52525b] hover:text-[#ef4444] transition-colors">Clear</button>
+                    </div>
+                    <div className="flex flex-wrap gap-2">
+                      {recentSearches.map((term) => (
+                        <button
+                          key={term}
+                          onClick={() => handleRecentClick(term)}
+                          className="text-xs px-3 py-1.5 bg-[#1e1e2a] border border-[#2a2a36] text-[#a1a1aa] hover:text-[#e4e4e7] hover:border-[#ef4444]/40 transition-all rounded"
+                        >
+                          {term}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                {recentSearches.length === 0 && (
+                  <div className="p-8 text-center">
+                    <span className="text-[#3f3f46] mx-auto mb-3 block"><IconSearch size={32} /></span>
+                    <p className="text-sm text-[#52525b]">Type at least 2 characters to search</p>
+                  </div>
+                )}
+              </>
             )}
           </div>
         </div>
@@ -218,9 +281,11 @@ function SearchOverlay({ open, onClose, onSelect }: { open: boolean; onClose: ()
 function SeriesDetailModal({ slug, onClose }: { slug: string; onClose: () => void }) {
   const [series, setSeries] = useState<Series | null>(null);
   const [loading, setLoading] = useState(true);
+  const [bookmarked, setBookmarked] = useState(false);
 
   useEffect(() => {
     setLoading(true);
+    setBookmarked(isBookmarked(slug));
     fetch(`${BASE}/api/v1/series/${slug}?include=chapters`)
       .then(r => r.json())
       .then(data => {
@@ -350,6 +415,22 @@ function SeriesDetailModal({ slug, onClose }: { slug: string; onClose: () => voi
 
               {/* Action buttons */}
               <div className="flex gap-3 mt-6">
+                <button
+                  onClick={() => {
+                    const added = toggleBookmark(slug);
+                    setBookmarked(added);
+                  }}
+                  className="btn-brutal btn-sm flex items-center justify-center gap-2"
+                  style={{
+                    background: bookmarked ? '#ef4444' : 'transparent',
+                    color: bookmarked ? '#fff' : '#e4e4e7',
+                    borderColor: '#e4e4e7',
+                    boxShadow: '3px 3px 0 0 #e4e4e7',
+                  }}
+                >
+                  <IconHeart size={14} fill={bookmarked ? 'currentColor' : 'none'} />
+                  {bookmarked ? 'BOOKMARKED' : 'BOOKMARK'}
+                </button>
                 {series.chapters?.length > 0 && (
                   <a href={`/browse/${slug}/${series.chapters[series.chapters.length - 1].slug}`} className="btn-brutal btn-sm flex-1 justify-center" style={{ background: '#ef4444', borderColor: '#e4e4e7', boxShadow: '3px 3px 0 0 #e4e4e7' }}>
                     READ FIRST CHAPTER
@@ -378,6 +459,12 @@ export default function BrowsePage() {
   const [selectedGenre, setSelectedGenre] = useState<string | null>(null);
   const [modalSlug, setModalSlug] = useState<string | null>(null);
   const [searchOpen, setSearchOpen] = useState(false);
+  const [bookmarkRefresh, setBookmarkRefresh] = useState(0);
+
+  /* Continue Reading + My List state */
+  const [continueReading, setContinueReading] = useState<HistoryEntry[]>([]);
+  const [myList, setMyList] = useState<Series[]>([]);
+  const [myListLoading, setMyListLoading] = useState(false);
 
   /* View All state */
   const [viewAll, setViewAll] = useState(false);
@@ -391,6 +478,29 @@ export default function BrowsePage() {
     document.documentElement.setAttribute('data-theme', 'dark');
     return () => { document.documentElement.removeAttribute('data-theme'); };
   }, []);
+
+  /* Load Continue Reading from localStorage */
+  useEffect(() => {
+    setContinueReading(getContinueReading());
+  }, [bookmarkRefresh]);
+
+  /* Load My List (bookmarked series) */
+  useEffect(() => {
+    const slugs = getBookmarks();
+    if (slugs.length === 0) { setMyList([]); return; }
+    setMyListLoading(true);
+    Promise.all(
+      slugs.map(slug =>
+        fetch(`${BASE}/api/v1/series/${slug}`)
+          .then(r => r.json())
+          .then(data => data.success ? data.data : null)
+          .catch(() => null)
+      )
+    ).then(series => {
+      setMyList(series.filter(Boolean));
+      setMyListLoading(false);
+    });
+  }, [bookmarkRefresh]);
 
   useEffect(() => {
     const load = async () => {
@@ -575,6 +685,69 @@ export default function BrowsePage() {
           </div>
         )}
 
+        {/* Continue Reading */}
+        {!selectedGenre && !viewAll && continueReading.length > 0 && (
+          <section className="mb-10">
+            <SectionHeader icon={<IconClock size={20} />} title="Continue Reading" subtitle="Pick up where you left off" />
+            <ScrollRow>
+              {continueReading.map(entry => (
+                <div
+                  key={entry.slug}
+                  className="manhwa-card cursor-pointer"
+                  style={{ width: '160px', minWidth: '160px' }}
+                  onClick={() => setModalSlug(entry.slug)}
+                >
+                  <div className="cover-wrap">
+                    <img
+                      src={entry.thumbnail}
+                      alt={entry.title}
+                      loading="lazy"
+                      onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
+                    />
+                    {/* Progress overlay */}
+                    <div className="absolute bottom-0 left-0 right-0 z-10" style={{ background: 'linear-gradient(to top, rgba(0,0,0,0.85), transparent)' }}>
+                      <div className="px-2 pb-2 pt-4">
+                        <div className="text-[0.55rem] text-white/80 mb-1">{entry.chapterName}</div>
+                        <div className="w-full h-1 bg-white/20 rounded-full overflow-hidden">
+                          <div
+                            className="h-full bg-[#ef4444] rounded-full transition-all"
+                            style={{ width: `${Math.round((entry.chapterIndex / entry.totalChapters) * 100)}%` }}
+                          />
+                        </div>
+                        <div className="text-[0.5rem] text-white/50 mt-0.5">{entry.chapterIndex}/{entry.totalChapters}</div>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="card-title">{entry.title}</div>
+                </div>
+              ))}
+            </ScrollRow>
+          </section>
+        )}
+
+        {/* My List (Bookmarks) */}
+        {!selectedGenre && !viewAll && getBookmarks().length > 0 && (
+          <section className="mb-10">
+            <SectionHeader icon={<IconHeart size={20} />} title="My List" subtitle={`${getBookmarks().length} bookmarked series`} />
+            {myListLoading ? (
+              <div className="flex gap-4 overflow-hidden">
+                {Array.from({ length: 4 }).map((_, i) => <SkeletonCard key={i} />)}
+              </div>
+            ) : myList.length > 0 ? (
+              <ScrollRow>
+                {myList.map(s => (
+                  <ManhwaCard
+                    key={s.id}
+                    series={s}
+                    onClick={() => setModalSlug(s.slug)}
+                    onBookmark={() => setBookmarkRefresh(v => v + 1)}
+                  />
+                ))}
+              </ScrollRow>
+            ) : null}
+          </section>
+        )}
+
         {/* Popular */}
         {!selectedGenre && !viewAll && (
           <>
@@ -591,7 +764,7 @@ export default function BrowsePage() {
                 </div>
               ) : (
                 <ScrollRow>
-                  {popular.map(s => <ManhwaCard key={s.id} series={s} onClick={() => setModalSlug(s.slug)} />)}
+                  {popular.map(s => <ManhwaCard key={s.id} series={s} onClick={() => setModalSlug(s.slug)} onBookmark={() => setBookmarkRefresh(v => v + 1)} />)}
                 </ScrollRow>
               )}
             </section>
@@ -604,7 +777,7 @@ export default function BrowsePage() {
                 </div>
               ) : (
                 <ScrollRow>
-                  {trending.map(s => <ManhwaCard key={s.id} series={s} onClick={() => setModalSlug(s.slug)} />)}
+                  {trending.map(s => <ManhwaCard key={s.id} series={s} onClick={() => setModalSlug(s.slug)} onBookmark={() => setBookmarkRefresh(v => v + 1)} />)}
                 </ScrollRow>
               )}
             </section>
@@ -617,7 +790,7 @@ export default function BrowsePage() {
                 </div>
               ) : (
                 <ScrollRow>
-                  {topRated.map(s => <ManhwaCard key={s.id} series={s} onClick={() => setModalSlug(s.slug)} />)}
+                  {topRated.map(s => <ManhwaCard key={s.id} series={s} onClick={() => setModalSlug(s.slug)} onBookmark={() => setBookmarkRefresh(v => v + 1)} />)}
                 </ScrollRow>
               )}
             </section>
@@ -646,7 +819,7 @@ export default function BrowsePage() {
             ) : (
               <>
                 <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-8 gap-4">
-                  {allSeries.map(s => <ManhwaCard key={s.id} series={s} onClick={() => setModalSlug(s.slug)} />)}
+                  {allSeries.map(s => <ManhwaCard key={s.id} series={s} onClick={() => setModalSlug(s.slug)} onBookmark={() => setBookmarkRefresh(v => v + 1)} />)}
                 </div>
                 {allHasMore && (
                   <div className="text-center mt-8">
@@ -682,7 +855,7 @@ export default function BrowsePage() {
               </div>
             ) : (
               <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-8 gap-4">
-                {genreFiltered.map(s => <ManhwaCard key={s.id} series={s} onClick={() => setModalSlug(s.slug)} />)}
+                {genreFiltered.map(s => <ManhwaCard key={s.id} series={s} onClick={() => setModalSlug(s.slug)} onBookmark={() => setBookmarkRefresh(v => v + 1)} />)}
               </div>
             )}
           </section>

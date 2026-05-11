@@ -2,6 +2,23 @@
 
 All notable changes to OmegaAPI will be documented in this file.
 
+## [3.1.0] - 2026-05-12
+
+### Added
+- Reading history: tracks last read chapter per series in localStorage, shows "Continue Reading" scroll row with progress bar on browse page
+- Bookmarks / My List: heart button on series cards and detail modal, "My List" scroll row showing bookmarked series on browse page
+- Recent searches: shown in search overlay before typing, with clear history button
+- Reading position save/restore: scroll position saved per chapter in sessionStorage, restored on revisit
+- `src/lib/storage.ts`: localStorage utility module for history, bookmarks, recent searches, and reading position
+- IconClock component added to icon library
+- IconHeart now accepts `fill` prop for filled/unfilled states
+
+### Changed
+- ManhwaCard component now includes bookmark button (heart icon) on cover overlay
+- Series Detail Modal now includes bookmark toggle button in action area
+- SearchOverlay saves query to recent searches on result selection
+- Chapter reader saves reading history on chapter load with chapter index and total count
+
 ## [3.0.7] - 2026-05-12
 
 ### Fixed
