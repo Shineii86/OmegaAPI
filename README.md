@@ -44,41 +44,41 @@ Built as a middleware layer on top of the [OmegaScans](https://omegascans.org) A
 
 ---
 
-## Table of Contents
+## 📑 Table of Contents
 
-- [About](#about)
-- [Why OmegaAPI?](#why-omegaapi)
-- [Key Features](#key-features)
-- [Quick Start](#quick-start)
-- [Base URL](#base-url)
-- [API Endpoints](#api-endpoints)
-  - [Browse Series](#browse-series)
-  - [Series Detail](#series-detail)
-  - [Chapter List](#chapter-list)
-  - [Chapter Content](#chapter-content)
-  - [Search](#search)
-  - [Genres](#genres)
-  - [Health Check](#health-check)
-  - [Stats](#stats)
-- [Response Format](#response-format)
-- [Rate Limiting](#rate-limiting)
-- [Caching](#caching)
-- [Error Handling](#error-handling)
-- [Code Examples](#code-examples)
-- [Tech Stack](#tech-stack)
-- [Project Structure](#project-structure)
-- [Local Development](#local-development)
-- [Deployment](#deployment)
-- [Contributing](#contributing)
-- [FAQ](#faq)
-- [Legal](#legal)
-- [Changelog](#changelog)
-- [License](#license)
-- [Acknowledgments](#acknowledgments)
+- [📖 About](#about)
+- [🤔 Why OmegaAPI?](#why-omegaapi)
+- [✨ Key Features](#key-features)
+- [🚀 Quick Start](#quick-start)
+- [🌐 Base URL](#base-url)
+- [📡 API Endpoints](#api-endpoints)
+  - [📚 Browse Series](#browse-series)
+  - [📖 Series Detail](#series-detail)
+  - [📑 Chapter List](#chapter-list)
+  - [📄 Chapter Content](#chapter-content)
+  - [🔍 Search](#search)
+  - [🏷️ Genres](#genres)
+  - [💓 Health Check](#health-check)
+  - [📊 Stats](#stats)
+- [📦 Response Format](#response-format)
+- [⏱️ Rate Limiting](#rate-limiting)
+- [💾 Caching](#caching)
+- [🚨 Error Handling](#error-handling)
+- [💻 Code Examples](#code-examples)
+- [🛠️ Tech Stack](#tech-stack)
+- [📁 Project Structure](#project-structure)
+- [⚙️ Local Development](#local-development)
+- [🚢 Deployment](#deployment)
+- [🤝 Contributing](#contributing)
+- [❓ FAQ](#faq)
+- [⚖️ Legal](#legal)
+- [📋 Changelog](#changelog)
+- [📝 License](#license)
+- [🙏 Acknowledgments](#acknowledgments)
 
 ---
 
-## About
+## 📖 About
 
 **OmegaAPI** is a free, public REST API that provides comprehensive manga, manhwa, and webtoon data. It acts as a middleware layer on top of the [OmegaScans](https://omegascans.org) API, adding:
 
@@ -95,42 +95,42 @@ Whether you're building a manga reader app, a recommendation engine, a tracking 
 
 ---
 
-## Why OmegaAPI?
+## 🤔 Why OmegaAPI?
 
 | | OmegaAPI | Other APIs |
 |---|---|---|
-| **Authentication** | None required | API keys, OAuth |
-| **Rate Limit** | 60 req/min | Often lower or paid |
-| **Response Format** | Consistent envelope | Varies by endpoint |
-| **Caching** | Built-in (5–15 min) | Manual |
-| **CORS** | All origins | Restricted |
-| **Cost** | Free forever | Freemium/paid |
-| **Browse UI** | Full manhwa website | Docs only |
+| 🔐 **Authentication** | None required | API keys, OAuth |
+| ⏱️ **Rate Limit** | 60 req/min | Often lower or paid |
+| 📦 **Response Format** | Consistent envelope | Varies by endpoint |
+| 💾 **Caching** | Built-in (5–15 min) | Manual |
+| 🌐 **CORS** | All origins | Restricted |
+| 💰 **Cost** | Free forever | Freemium/paid |
+| 🖥️ **Browse UI** | Full manhwa website | Docs only |
 
 ---
 
-## Key Features
+## ✨ Key Features
 
 | Feature | Description |
 |---------|-------------|
-| **Comprehensive Data** | Titles, descriptions, ratings, chapters, genres, authors, studios, cover images, alternative names, tags |
-| **Sub-Second Responses** | In-memory caching with configurable TTL (5 min series, 10 min search, 15 min chapters) |
-| **Full-Text Search** | Search across hundreds of series by title with pagination |
-| **Chapter Images** | Get every page image URL for any chapter — perfect for building reader apps |
-| **Zero Authentication** | No API keys, no sign-ups, no OAuth. Just make a request and get JSON. |
-| **CORS Ready** | Call directly from any frontend — browser, mobile, desktop, browser extension |
-| **Rate Limiting** | 60 req/min per IP with informative headers (`X-RateLimit-*`, `Retry-After`) |
-| **Consistent Envelope** | Every response follows `{ success, data, pagination? }` — no surprises |
-| **Health Monitoring** | `/api/v1/health` endpoint with upstream probe, latency, and uptime tracking |
-| **Live API Playground** | Interactive endpoint testing directly from the landing page |
-| **Manhwa Browse UI** | Full manhwa-style browse page with featured banner, horizontal scroll rows, genre filters, search autocomplete, and series detail modal |
-| **Chapter Reader** | Built-in vertical and paged reading modes with prev/next chapter navigation |
-| **Terms & Privacy** | Full Terms of Service and Privacy Policy pages included |
-| **Neo-Brutalist UI** | Bold personality with frosted glass nav, brutalist cards, spring animations, dark manhwa theme |
+| 📚 **Comprehensive Data** | Titles, descriptions, ratings, chapters, genres, authors, studios, cover images, alternative names, tags |
+| ⚡ **Sub-Second Responses** | In-memory caching with configurable TTL (5 min series, 10 min search, 15 min chapters) |
+| 🔍 **Full-Text Search** | Search across hundreds of series by title with pagination |
+| 🖼️ **Chapter Images** | Get every page image URL for any chapter — perfect for building reader apps |
+| 🔓 **Zero Authentication** | No API keys, no sign-ups, no OAuth. Just make a request and get JSON. |
+| 🌐 **CORS Ready** | Call directly from any frontend — browser, mobile, desktop, browser extension |
+| 🛡️ **Rate Limiting** | 60 req/min per IP with informative headers (`X-RateLimit-*`, `Retry-After`) |
+| 📦 **Consistent Envelope** | Every response follows `{ success, data, pagination? }` — no surprises |
+| 💓 **Health Monitoring** | `/api/v1/health` endpoint with upstream probe, latency, and uptime tracking |
+| 🎮 **Live API Playground** | Interactive endpoint testing directly from the landing page |
+| 📱 **Manhwa Browse UI** | Full manhwa-style browse page with featured banner, horizontal scroll rows, genre filters, search autocomplete, and series detail modal |
+| 📖 **Chapter Reader** | Built-in vertical and paged reading modes with prev/next chapter navigation |
+| 📜 **Terms & Privacy** | Full Terms of Service and Privacy Policy pages included |
+| 🎨 **Neo-Brutalist UI** | Bold personality with frosted glass nav, brutalist cards, spring animations, dark manhwa theme |
 
 ---
 
-## Quick Start
+## 🚀 Quick Start
 
 **No API key needed.** Just make a request:
 
@@ -167,7 +167,7 @@ if (success) {
 
 ---
 
-## Base URL
+## 🌐 Base URL
 
 ```
 https://omegaapi.vercel.app/api/v1
@@ -184,9 +184,9 @@ https://omegaapi.vercel.app/api/v1
 
 ---
 
-## API Endpoints
+## 📡 API Endpoints
 
-### Browse Series
+### 📚 Browse Series
 
 ```
 GET /api/v1/series
@@ -213,7 +213,7 @@ curl "https://omegaapi.vercel.app/api/v1/series?q=solo"
 
 ---
 
-### Series Detail
+### 📖 Series Detail
 
 ```
 GET /api/v1/series/{slug}
@@ -279,7 +279,7 @@ curl "https://omegaapi.vercel.app/api/v1/series/sex-stopwatch?include=chapters"
 
 ---
 
-### Chapter List
+### 📑 Chapter List
 
 ```
 GET /api/v1/chapters/{slug}
@@ -303,7 +303,7 @@ curl "https://omegaapi.vercel.app/api/v1/chapters/sex-stopwatch?page=1&perPage=5
 
 ---
 
-### Chapter Content
+### 📄 Chapter Content
 
 ```
 GET /api/v1/chapter/{slug}/{chapter}
@@ -352,7 +352,7 @@ curl https://omegaapi.vercel.app/api/v1/chapter/sex-stopwatch/chapter-1
 
 ---
 
-### Search
+### 🔍 Search
 
 ```
 GET /api/v1/search?q={query}
@@ -375,7 +375,7 @@ curl "https://omegaapi.vercel.app/api/v1/search?q=nano&page=2"
 
 ---
 
-### Genres
+### 🏷️ Genres
 
 ```
 GET /api/v1/genres
@@ -403,7 +403,7 @@ curl https://omegaapi.vercel.app/api/v1/genres
 
 ---
 
-### Health Check
+### 💓 Health Check
 
 ```
 GET /api/v1/health
@@ -436,7 +436,7 @@ curl https://omegaapi.vercel.app/api/v1/health
 
 ---
 
-### Stats
+### 📊 Stats
 
 ```
 GET /api/v1/stats
@@ -450,7 +450,7 @@ curl https://omegaapi.vercel.app/api/v1/stats
 
 ---
 
-## Response Format
+## 📦 Response Format
 
 Every API response follows a consistent envelope format:
 
@@ -491,7 +491,7 @@ Every API response follows a consistent envelope format:
 
 ---
 
-## Rate Limiting
+## ⏱️ Rate Limiting
 
 | Setting | Value |
 |---------|-------|
@@ -527,7 +527,7 @@ console.log(`Request ID: ${requestId}`);
 
 ---
 
-## Caching
+## 💾 Caching
 
 | Resource | Cache TTL | Description |
 |----------|-----------|-------------|
@@ -541,7 +541,7 @@ Cached responses include an `X-Cache: HIT` header. The `Cache-Control: public, s
 
 ---
 
-## Error Handling
+## 🚨 Error Handling
 
 ### HTTP Status Codes
 
@@ -556,7 +556,7 @@ Cached responses include an `X-Cache: HIT` header. The `Cache-Control: public, s
 
 ---
 
-## Code Examples
+## 💻 Code Examples
 
 <details>
 <summary><strong>JavaScript (fetch)</strong></summary>
@@ -716,7 +716,7 @@ puts "Chapters: #{response['data']['chaptersCount']}"
 
 ---
 
-## Tech Stack
+## 🛠️ Tech Stack
 
 | Component | Technology | Purpose |
 |-----------|------------|---------|
@@ -731,7 +731,7 @@ puts "Chapters: #{response['data']['chaptersCount']}"
 
 ---
 
-## Project Structure
+## 📁 Project Structure
 
 ```
 OmegaAPI/
@@ -789,7 +789,7 @@ OmegaAPI/
 
 ---
 
-## Local Development
+## ⚙️ Local Development
 
 ### Prerequisites
 
@@ -839,7 +839,7 @@ curl http://localhost:3000/api/v1/chapter/sex-stopwatch/chapter-1
 
 ---
 
-## Deployment
+## 🚢 Deployment
 
 ### Vercel (Recommended)
 
@@ -864,7 +864,7 @@ OmegaAPI is a standard Next.js application. Deploy anywhere that supports Node.j
 
 ---
 
-## Contributing
+## 🤝 Contributing
 
 Contributions are welcome! Here's how to help:
 
@@ -895,7 +895,7 @@ git push origin feature/amazing-feature
 
 ---
 
-## FAQ
+## ❓ FAQ
 
 <details>
 <summary><strong>Is OmegaAPI really free?</strong></summary>
@@ -953,7 +953,7 @@ Open an issue on our [GitHub Issues](https://github.com/Shineii86/OmegaAPI/issue
 
 ---
 
-## Legal Disclaimer
+## ⚠️ Legal Disclaimer
 
 This project is **unofficial** and **not affiliated with or endorsed by OmegaScans**.
 
@@ -964,7 +964,7 @@ This project is **unofficial** and **not affiliated with or endorsed by OmegaSca
 
 ---
 
-## Legal
+## ⚖️ Legal
 
 - **[Terms of Service](https://omegaapi.vercel.app/terms)** — Rules governing API usage
 - **[Privacy Policy](https://omegaapi.vercel.app/privacy)** — Data collection and privacy practices
@@ -972,28 +972,32 @@ This project is **unofficial** and **not affiliated with or endorsed by OmegaSca
 
 ---
 
-## Changelog
+## 📋 Changelog
 
 See [CHANGELOG.md](CHANGELOG.md) for a detailed version history.
 
-### Latest: v3.0.1 (2026-05-11)
+### 🆕 Latest: v3.1.0 (2026-05-12)
 
-- **Neo-Brutalist landing page** — Cool navy/cyan/amber design with brutalist cards, terminal code blocks, reveal animations, recipe tabs, live playground
-- **Manhwa-style browse page** — Dark theme, featured banner, horizontal scroll rows, genre filters, search autocomplete, series detail modal
-- **Chapter reader** — Vertical and paged reading modes with prev/next chapter navigation
-- **Dual-theme design system** — Light landing, dark browse, frosted glass nav
-- **35+ SVG icons** — Complete icon library with consistent sizing
-- **TypeScript** — Full type safety across all components and API routes
+- 📖 **Reading History** — localStorage-based tracking with "Continue Reading" row and progress bars
+- ❤️ **Bookmarks / My List** — Heart button on cards + modal, dedicated My List scroll row
+- 🔍 **Recent Searches** — Shown in search overlay with clear history option
+- 📌 **Reading Position Save** — Scroll position restored per chapter on revisit
+- 🎨 **Neo-Brutalist landing page** — Cool navy/cyan/amber design with brutalist cards, terminal code blocks, reveal animations, recipe tabs, live playground
+- 📱 **Manhwa-style browse page** — Dark theme, featured banner, horizontal scroll rows, genre filters, search autocomplete, series detail modal
+- 📖 **Chapter reader** — Vertical and paged reading modes with prev/next chapter navigation
+- 🎭 **Dual-theme design system** — Light landing, dark browse, frosted glass nav
+- 🎯 **35+ SVG icons** — Complete icon library with consistent sizing
+- 🔷 **TypeScript** — Full type safety across all components and API routes
 
 ---
 
-## License
+## 📝 License
 
 This project is licensed under the **MIT License** — see the [LICENSE](LICENSE) file for details.
 
 ---
 
-## Acknowledgments
+## 🙏 Acknowledgments
 
 | Project | Description |
 |---------|-------------|
