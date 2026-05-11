@@ -2,6 +2,15 @@
 
 All notable changes to OmegaAPI will be documented in this file.
 
+## [3.0.1] - 2026-05-11
+
+### Added
+- Chapter reader: bottom navigation bar with Previous Chapter, Home (Series), Chapter List dropdown, and Next Chapter buttons
+- Chapter reader: fetches chapter list to determine prev/next navigation
+- Chapter reader: hover dropdown showing all chapters with current chapter highlighted
+- Next chapter button styled as primary (red with brutal shadow), prev as secondary
+- Added IconHome icon component
+
 ## [3.0.0] - 2026-05-11
 
 ### Changed

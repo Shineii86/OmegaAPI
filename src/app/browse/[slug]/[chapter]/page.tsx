@@ -1,9 +1,9 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useParams } from 'next/navigation';
-import type { ChapterData } from '@/types';
-import { IconChevronLeft, IconChevronRight, IconColumns, IconFile } from '@/components/icons';
+import type { ChapterData, Chapter } from '@/types';
+import { IconChevronLeft, IconChevronRight, IconColumns, IconFile, IconHome, IconBook } from '@/components/icons';
 
 const BASE = typeof window !== 'undefined' ? window.location.origin : 'https://omegaapi.vercel.app';
 
@@ -18,11 +18,16 @@ export default function ChapterReaderPage() {
   const [currentPage, setCurrentPage] = useState(0);
   const [showNav, setShowNav] = useState(true);
 
+  /* Chapter navigation */
+  const [allChapters, setAllChapters] = useState<Chapter[]>([]);
+  const [currentIndex, setCurrentIndex] = useState(-1);
+
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', 'dark');
     return () => { document.documentElement.removeAttribute('data-theme'); };
   }, []);
 
+  /* Fetch chapter content */
   useEffect(() => {
     if (!seriesSlug || !chapterSlug) return;
     setLoading(true);
@@ -46,15 +51,44 @@ export default function ChapterReaderPage() {
       .finally(() => setLoading(false));
   }, [seriesSlug, chapterSlug]);
 
+  /* Fetch chapter list for prev/next navigation */
   useEffect(() => {
-    if (readingMode !== 'paged') return;
+    if (!seriesSlug) return;
+    fetch(`${BASE}/api/v1/chapters/${seriesSlug}?perPage=500`)
+      .then((r) => r.json())
+      .then((data) => {
+        if (data.success && Array.isArray(data.data)) {
+          const sorted = data.data.sort((a: Chapter, b: Chapter) => {
+            const ia = parseFloat(a.index) || 0;
+            const ib = parseFloat(b.index) || 0;
+            return ib - ia; // newest first (chapter 155 → 1)
+          });
+          setAllChapters(sorted);
+          const idx = sorted.findIndex((c: Chapter) => c.slug === chapterSlug);
+          setCurrentIndex(idx);
+        }
+      })
+      .catch(() => {});
+  }, [seriesSlug, chapterSlug]);
+
+  /* Keyboard navigation */
+  useEffect(() => {
     const handler = (e: KeyboardEvent) => {
-      if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); setCurrentPage((p) => Math.min(p + 1, (chapter?.pageCount || 1) - 1)); }
-      if (e.key === 'ArrowLeft') { e.preventDefault(); setCurrentPage((p) => Math.max(p - 1, 0)); }
+      if (readingMode === 'paged') {
+        if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); setCurrentPage((p) => Math.min(p + 1, (chapter?.pageCount || 1) - 1)); }
+        if (e.key === 'ArrowLeft') { e.preventDefault(); setCurrentPage((p) => Math.max(p - 1, 0)); }
+      }
     };
     window.addEventListener('keydown', handler);
     return () => window.removeEventListener('keydown', handler);
   }, [readingMode, chapter]);
+
+  const prevChapter = currentIndex >= 0 && currentIndex < allChapters.length - 1 ? allChapters[currentIndex + 1] : null;
+  const nextChapter = currentIndex > 0 ? allChapters[currentIndex - 1] : null;
+
+  const navigateChapter = useCallback((slug: string) => {
+    window.location.href = `/browse/${seriesSlug}/${slug}`;
+  }, [seriesSlug]);
 
   if (loading) {
     return (
@@ -81,7 +115,7 @@ export default function ChapterReaderPage() {
 
   return (
     <main className="min-h-screen relative" style={{ background: '#0c0c12' }}>
-      {/* Top Nav */}
+      {/* ── Top Nav ── */}
       <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${showNav ? 'translate-y-0 opacity-100' : '-translate-y-full opacity-0'}`} style={{ background: 'rgba(12, 12, 18, 0.92)', backdropFilter: 'blur(16px)', borderBottom: '1px solid #2a2a36' }}>
         <div className="max-w-container mx-auto px-5 h-14 flex items-center justify-between">
           <a href={`/browse/${seriesSlug}`} className="flex items-center gap-2 text-sm text-[#a1a1aa] hover:text-[#e4e4e7] transition-colors font-medium">
@@ -99,16 +133,16 @@ export default function ChapterReaderPage() {
 
       <div className="fixed inset-0 z-30" style={{ pointerEvents: readingMode === 'paged' ? 'auto' : 'none' }} onClick={() => readingMode === 'paged' && setShowNav(!showNav)} />
 
-      {/* Vertical Reader */}
+      {/* ── Vertical Reader ── */}
       {readingMode === 'vertical' && (
-        <div className="max-w-3xl mx-auto pt-16 pb-8 cursor-pointer" onClick={() => setShowNav(!showNav)}>
+        <div className="max-w-3xl mx-auto pt-16 pb-4 cursor-pointer" onClick={() => setShowNav(!showNav)}>
           {chapter.images.map((url: string, i: number) => (
             <img key={i} src={url} alt={`Page ${i + 1}`} className="w-full block" loading={i < 3 ? 'eager' : 'lazy'} />
           ))}
         </div>
       )}
 
-      {/* Paged Reader */}
+      {/* ── Paged Reader ── */}
       {readingMode === 'paged' && (
         <div className="flex items-center justify-center min-h-screen pt-14">
           {chapter.images[currentPage] ? (
@@ -119,7 +153,7 @@ export default function ChapterReaderPage() {
         </div>
       )}
 
-      {/* Paged Controls */}
+      {/* ── Paged Controls ── */}
       {readingMode === 'paged' && (
         <div className={`fixed bottom-0 left-0 right-0 z-40 transition-all duration-300 ${showNav ? 'translate-y-0 opacity-100' : 'translate-y-full opacity-0'}`}>
           <div className="max-w-lg mx-auto px-5 py-4" style={{ background: 'rgba(12, 12, 18, 0.92)', backdropFilter: 'blur(16px)', borderTop: '1px solid #2a2a36' }}>
@@ -139,9 +173,76 @@ export default function ChapterReaderPage() {
         </div>
       )}
 
-      {/* Footer Info (vertical) */}
+      {/* ── Chapter Navigation Bar (always visible) ── */}
+      <div className={`fixed bottom-0 left-0 right-0 z-40 transition-all duration-300 ${readingMode === 'vertical' ? (showNav ? 'translate-y-0 opacity-100' : 'translate-y-full opacity-0') : 'pointer-events-none opacity-0'}`}>
+        <div style={{ background: 'rgba(12, 12, 18, 0.95)', backdropFilter: 'blur(16px)', borderTop: '1px solid #2a2a36' }}>
+          <div className="max-w-3xl mx-auto px-4 py-3 flex items-center gap-2">
+            {/* Previous Chapter */}
+            <button
+              onClick={() => prevChapter && navigateChapter(prevChapter.slug)}
+              disabled={!prevChapter}
+              className="flex-1 flex items-center justify-center gap-2 px-3 py-2.5 bg-[#1e1e2a] border border-[#2a2a36] text-[#a1a1aa] hover:text-[#e4e4e7] hover:border-[#ef4444]/40 transition-all disabled:opacity-20 disabled:cursor-not-allowed"
+              title={prevChapter ? prevChapter.name : 'No previous chapter'}
+            >
+              <IconChevronLeft size={16} />
+              <span className="text-xs font-semibold uppercase tracking-wider hidden sm:inline">Prev</span>
+            </button>
+
+            {/* Home / Series Page */}
+            <a
+              href={`/browse/${seriesSlug}`}
+              className="flex items-center justify-center gap-2 px-4 py-2.5 bg-[#1e1e2a] border border-[#2a2a36] text-[#a1a1aa] hover:text-[#fbbf24] hover:border-[#fbbf24]/40 transition-all"
+              title="Back to series"
+            >
+              <IconHome size={16} />
+              <span className="text-xs font-semibold uppercase tracking-wider hidden sm:inline">{chapter.series?.title || 'Series'}</span>
+            </a>
+
+            {/* Chapter List Dropdown */}
+            {allChapters.length > 0 && (
+              <div className="relative group">
+                <button className="flex items-center justify-center gap-1.5 px-3 py-2.5 bg-[#1e1e2a] border border-[#2a2a36] text-[#a1a1aa] hover:text-[#e4e4e7] hover:border-[#ef4444]/40 transition-all">
+                  <IconBook size={14} />
+                  <span className="text-xs font-mono">{chapter.name}</span>
+                  <span className="inline-block rotate-90"><IconChevronRight size={12} /></span>
+                </button>
+                {/* Dropdown */}
+                <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-48 max-h-64 overflow-y-auto bg-[#16161e] border border-[#2a2a36] rounded-lg shadow-xl opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto transition-opacity z-50" style={{ scrollbarWidth: 'thin' }}>
+                  {allChapters.map((ch) => (
+                    <a
+                      key={ch.id}
+                      href={`/browse/${seriesSlug}/${ch.slug}`}
+                      className={`block px-3 py-2 text-xs border-b border-[#222230] last:border-0 transition-colors ${
+                        ch.slug === chapterSlug
+                          ? 'bg-[#ef4444]/10 text-[#ef4444] font-semibold'
+                          : 'text-[#a1a1aa] hover:bg-[#1e1e2a] hover:text-[#e4e4e7]'
+                      }`}
+                    >
+                      {ch.name}
+                      {ch.title && <span className="text-[#52525b] ml-1">— {ch.title}</span>}
+                    </a>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Next Chapter */}
+            <button
+              onClick={() => nextChapter && navigateChapter(nextChapter.slug)}
+              disabled={!nextChapter}
+              className="flex-1 flex items-center justify-center gap-2 px-3 py-2.5 bg-[#ef4444] border border-[#e4e4e7] text-white font-semibold shadow-[3px_3px_0_0_#e4e4e7] hover:bg-[#dc2626] transition-all disabled:opacity-20 disabled:cursor-not-allowed disabled:shadow-none"
+              title={nextChapter ? nextChapter.name : 'No next chapter'}
+            >
+              <span className="text-xs uppercase tracking-wider hidden sm:inline">Next</span>
+              <IconChevronRight size={16} />
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* ── Footer Info (vertical, above nav bar) ── */}
       {readingMode === 'vertical' && (
-        <div className="max-w-3xl mx-auto px-5 pb-8 text-center">
+        <div className="max-w-3xl mx-auto px-5 pb-20 text-center">
           <p className="text-xs text-[#71717a] mb-4">{chapter.name} · {chapter.pageCount} pages · {chapter.series?.title || ''}</p>
           <a href={`/api/v1/chapter/${seriesSlug}/${chapterSlug}`} target="_blank" className="text-xs text-[#fbbf24] hover:underline font-medium">View JSON API response</a>
         </div>
