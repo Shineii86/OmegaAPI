@@ -2,6 +2,11 @@
 
 All notable changes to OmegaAPI will be documented in this file.
 
+## [3.0.5] - 2026-05-12
+
+### Added
+- Custom 404 page with large 404 text, NOT FOUND pill badge, and navigation buttons (Home, Browse Series, API Docs)
+
 ## [3.0.4] - 2026-05-11
 
 ### Fixed
