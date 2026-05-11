@@ -8,6 +8,15 @@ module.exports = {
   theme: {
     extend: {
       colors: {
+        primary: 'rgb(var(--primary) / <alpha-value>)',
+        secondary: 'rgb(var(--secondary) / <alpha-value>)',
+        tertiary: 'rgb(var(--tertiary) / <alpha-value>)',
+        accent: 'rgb(var(--accent) / <alpha-value>)',
+        surface: {
+          DEFAULT: '#16161e',
+          bright: '#1e1e2a',
+          dim: '#0c0c12',
+        },
         brand: {
           50: '#fdf4ff',
           100: '#fae8ff',
@@ -24,7 +33,11 @@ module.exports = {
       },
       fontFamily: {
         sans: ['Inter', 'system-ui', 'sans-serif'],
+        display: ['"Space Grotesk"', 'Inter', 'system-ui', 'sans-serif'],
         mono: ['JetBrains Mono', 'Fira Code', 'monospace'],
+      },
+      maxWidth: {
+        container: '1152px',
       },
     },
   },

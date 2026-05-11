@@ -2,6 +2,20 @@
 
 All notable changes to OmegaAPI will be documented in this file.
 
+## [3.0.0] - 2026-05-11
+
+### Changed
+- Complete frontend redesign with Neo-Brutalist × Apple Polish design language
+- Landing page: Cool navy/cyan/amber color scheme with bold uppercase headings, brutalist buttons, card-lift effects, terminal-style code blocks, pill-tag badges, marquee banner, reveal animations, animated counters, recipe tabs, live playground
+- Browse page: Full manhwa website style with dark theme (#121218 bg), featured series banner, horizontal scroll rows (Popular, Trending, Top Rated), cover-focused series cards with rating badges and hover overlays, debounced search with autocomplete dropdown, genre filter pills, series detail modal with banner/cover/synopsis/metadata/chapters, skeleton loaders, scroll row navigation
+- Series detail page: Dark theme with brutalist styling, genre pills, dark chapter list
+- Chapter reader: Dark theme for immersive reading experience
+- Docs, Support, Terms, Privacy pages: Updated nav/footer with new design system
+- globals.css: New design tokens for light (landing) and dark (browse) themes, brutalist component classes, syntax highlighting tokens, reveal animations, shadow tokens, font-display class, heartbeat animation
+- tailwind.config.js: Added primary/secondary/tertiary/accent color scales, surface colors, display font family, container max-width
+- components/icons.tsx: Added 16 new icons (IconArrowRight, IconArrowLeft, IconGithub, IconStarFilled, IconCopy, IconCheck, IconCode, IconSparkles, IconHeart, IconLayers, IconTerminal, IconShuffle, IconTrophy, IconTag, IconMenu, IconX, IconFire, IconCrown)
+- components/layout.tsx: Redesigned Navbar with light/dark theme support, brutalist logo, uppercase tracking; Footer with dark background, heartbeat animation, brutalist links
+
 ## [2.1.1] - 2026-05-11
 
 ### Added

@@ -19,6 +19,11 @@ export default function ChapterReaderPage() {
   const [showNav, setShowNav] = useState(true);
 
   useEffect(() => {
+    document.documentElement.setAttribute('data-theme', 'dark');
+    return () => { document.documentElement.removeAttribute('data-theme'); };
+  }, []);
+
+  useEffect(() => {
     if (!seriesSlug || !chapterSlug) return;
     setLoading(true);
     fetch(`${BASE}/api/v1/chapter/${seriesSlug}/${chapterSlug}`)
@@ -53,40 +58,40 @@ export default function ChapterReaderPage() {
 
   if (loading) {
     return (
-      <main className="min-h-screen bg-[var(--bg-subtle)] flex items-center justify-center">
-        <div className="w-7 h-7 border-2 border-[var(--border)] border-t-[var(--accent)] rounded-full animate-spin" />
+      <main className="min-h-screen flex items-center justify-center" style={{ background: '#0c0c12' }}>
+        <div className="w-7 h-7 border-2 border-[#2a2a36] border-t-[#ef4444] rounded-full animate-spin" />
       </main>
     );
   }
 
   if (error || !chapter) {
     return (
-      <main className="min-h-screen bg-[var(--bg-subtle)] flex items-center justify-center">
+      <main className="min-h-screen flex items-center justify-center" style={{ background: '#0c0c12' }}>
         <div className="text-center">
-          <div className="w-16 h-16 rounded-2xl bg-[var(--bg-muted)] flex items-center justify-center mx-auto mb-4 text-[var(--text-muted)]">
+          <div className="w-16 h-16 flex items-center justify-center mx-auto mb-4 text-[#52525b] border-2 border-[#2a2a36]">
             <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><circle cx="12" cy="12" r="10" /><path d="M16 16s-1.5-2-4-2-4 2-4 2" /><line x1="9" y1="9" x2="9.01" y2="9" /><line x1="15" y1="9" x2="15.01" y2="9" /></svg>
           </div>
-          <h1 className="text-xl font-bold mb-2 text-[var(--text)]">Chapter Not Found</h1>
-          <p className="text-sm text-[var(--text-secondary)] mb-6">{error || 'Unable to load chapter.'}</p>
-          <a href={`/browse/${seriesSlug}`} className="btn-primary btn-sm"><IconChevronLeft size={14} /> Back to Series</a>
+          <h1 className="font-display text-xl text-[#e4e4e7] mb-2" style={{ textTransform: 'none' }}>Chapter Not Found</h1>
+          <p className="text-sm text-[#a1a1aa] mb-6">{error || 'Unable to load chapter.'}</p>
+          <a href={`/browse/${seriesSlug}`} className="btn-brutal btn-sm"><IconChevronLeft size={14} /> BACK TO SERIES</a>
         </div>
       </main>
     );
   }
 
   return (
-    <main className="min-h-screen bg-[var(--bg-subtle)] relative">
+    <main className="min-h-screen relative" style={{ background: '#0c0c12' }}>
       {/* Top Nav */}
-      <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${showNav ? 'translate-y-0 opacity-100' : '-translate-y-full opacity-0'}`} style={{ background: 'rgba(255, 255, 255, 0.92)', backdropFilter: 'blur(16px)', borderBottom: '1px solid var(--border)' }}>
-        <div className="max-w-5xl mx-auto px-5 h-14 flex items-center justify-between">
-          <a href={`/browse/${seriesSlug}`} className="flex items-center gap-2 text-sm text-[var(--text-secondary)] hover:text-[var(--text)] transition-colors font-medium">
+      <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${showNav ? 'translate-y-0 opacity-100' : '-translate-y-full opacity-0'}`} style={{ background: 'rgba(12, 12, 18, 0.92)', backdropFilter: 'blur(16px)', borderBottom: '1px solid #2a2a36' }}>
+        <div className="max-w-container mx-auto px-5 h-14 flex items-center justify-between">
+          <a href={`/browse/${seriesSlug}`} className="flex items-center gap-2 text-sm text-[#a1a1aa] hover:text-[#e4e4e7] transition-colors font-medium">
             <IconChevronLeft size={16} /> {chapter.series?.title || 'Back'}
           </a>
           <div className="flex items-center gap-3">
-            <span className="text-sm font-semibold text-[var(--text)]">{chapter.name}</span>
-            <span className="text-xs text-[var(--text-muted)]">({chapter.pageCount} pages)</span>
+            <span className="text-sm font-semibold text-[#e4e4e7]">{chapter.name}</span>
+            <span className="text-xs text-[#71717a]">({chapter.pageCount} pages)</span>
           </div>
-          <button onClick={() => setReadingMode(readingMode === 'vertical' ? 'paged' : 'vertical')} className="text-xs px-3 py-1.5 rounded-lg bg-[var(--bg-subtle)] border border-[var(--border)] text-[var(--text-muted)] hover:text-[var(--text)] transition-colors flex items-center gap-1.5 font-medium shadow-sm">
+          <button onClick={() => setReadingMode(readingMode === 'vertical' ? 'paged' : 'vertical')} className="text-xs px-3 py-1.5 bg-[#1e1e2a] border border-[#2a2a36] text-[#a1a1aa] hover:text-[#e4e4e7] transition-colors flex items-center gap-1.5 font-medium">
             {readingMode === 'vertical' ? <><IconColumns size={13} /> Paged</> : <><IconFile size={13} /> Vertical</>}
           </button>
         </div>
@@ -109,7 +114,7 @@ export default function ChapterReaderPage() {
           {chapter.images[currentPage] ? (
             <img src={chapter.images[currentPage]} alt={`Page ${currentPage + 1}`} className="max-h-[calc(100vh-4rem)] max-w-full object-contain" />
           ) : (
-            <div className="text-[var(--text-muted)]">Page not available</div>
+            <div className="text-[#71717a]">Page not available</div>
           )}
         </div>
       )}
@@ -117,18 +122,18 @@ export default function ChapterReaderPage() {
       {/* Paged Controls */}
       {readingMode === 'paged' && (
         <div className={`fixed bottom-0 left-0 right-0 z-40 transition-all duration-300 ${showNav ? 'translate-y-0 opacity-100' : 'translate-y-full opacity-0'}`}>
-          <div className="max-w-lg mx-auto px-5 py-4" style={{ background: 'rgba(255, 255, 255, 0.92)', backdropFilter: 'blur(16px)', borderTop: '1px solid var(--border)' }}>
+          <div className="max-w-lg mx-auto px-5 py-4" style={{ background: 'rgba(12, 12, 18, 0.92)', backdropFilter: 'blur(16px)', borderTop: '1px solid #2a2a36' }}>
             <div className="flex items-center gap-4">
-              <button onClick={() => setCurrentPage((p) => Math.max(p - 1, 0))} disabled={currentPage === 0} className="px-4 py-2 text-sm rounded-lg bg-[var(--bg-subtle)] border border-[var(--border)] text-[var(--text-muted)] disabled:opacity-30 hover:text-[var(--text)] transition-colors shadow-sm">
+              <button onClick={() => setCurrentPage((p) => Math.max(p - 1, 0))} disabled={currentPage === 0} className="px-4 py-2 text-sm bg-[#1e1e2a] border border-[#2a2a36] text-[#a1a1aa] disabled:opacity-30 hover:text-[#e4e4e7] transition-colors">
                 <IconChevronLeft size={16} />
               </button>
               <div className="flex-1">
-                <input type="range" min={0} max={Math.max(0, chapter.pageCount - 1)} value={currentPage} onChange={(e) => setCurrentPage(parseInt(e.target.value))} className="w-full accent-[var(--accent)]" />
+                <input type="range" min={0} max={Math.max(0, chapter.pageCount - 1)} value={currentPage} onChange={(e) => setCurrentPage(parseInt(e.target.value))} className="w-full accent-[#ef4444]" />
               </div>
-              <button onClick={() => setCurrentPage((p) => Math.min(p + 1, chapter.pageCount - 1))} disabled={currentPage >= chapter.pageCount - 1} className="px-4 py-2 text-sm rounded-lg bg-[var(--bg-subtle)] border border-[var(--border)] text-[var(--text-muted)] disabled:opacity-30 hover:text-[var(--text)] transition-colors shadow-sm">
+              <button onClick={() => setCurrentPage((p) => Math.min(p + 1, chapter.pageCount - 1))} disabled={currentPage >= chapter.pageCount - 1} className="px-4 py-2 text-sm bg-[#1e1e2a] border border-[#2a2a36] text-[#a1a1aa] disabled:opacity-30 hover:text-[#e4e4e7] transition-colors">
                 <IconChevronRight size={16} />
               </button>
-              <span className="text-xs text-[var(--text-muted)] font-mono w-16 text-center">{currentPage + 1}/{chapter.pageCount}</span>
+              <span className="text-xs text-[#71717a] font-mono w-16 text-center">{currentPage + 1}/{chapter.pageCount}</span>
             </div>
           </div>
         </div>
@@ -137,8 +142,8 @@ export default function ChapterReaderPage() {
       {/* Footer Info (vertical) */}
       {readingMode === 'vertical' && (
         <div className="max-w-3xl mx-auto px-5 pb-8 text-center">
-          <p className="text-xs text-[var(--text-muted)] mb-4">{chapter.name} · {chapter.pageCount} pages · {chapter.series?.title || ''}</p>
-          <a href={`/api/v1/chapter/${seriesSlug}/${chapterSlug}`} target="_blank" className="text-xs text-[var(--accent)] hover:underline font-medium">View JSON API response</a>
+          <p className="text-xs text-[#71717a] mb-4">{chapter.name} · {chapter.pageCount} pages · {chapter.series?.title || ''}</p>
+          <a href={`/api/v1/chapter/${seriesSlug}/${chapterSlug}`} target="_blank" className="text-xs text-[#fbbf24] hover:underline font-medium">View JSON API response</a>
         </div>
       )}
     </main>
