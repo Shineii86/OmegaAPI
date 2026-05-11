@@ -2,6 +2,24 @@
 
 All notable changes to OmegaAPI will be documented in this file.
 
+## [3.5.0] - 2026-05-12
+
+### Added
+- Dedicated genre pages at `/browse/genre/[name]` — shows ALL series in a genre, not just popular 40
+- Genre index cached in localStorage with 1-hour TTL for instant revisits
+- Progress bar while scanning series for genre tags
+- Quick-switch genre pills on genre page for easy navigation between genres
+- Inline series detail modal on genre pages (same UX as browse page)
+
+### Changed
+- Genre pills on browse page now link to dedicated genre pages instead of client-side filtering
+- Genre pages fetch all 263 series and enrich with tags from detail endpoints in batches of 10
+
+### Removed
+- Client-side genre filtering from browse page (replaced by dedicated genre pages)
+- `selectedGenre` state and URL sync from browse page
+- Unused icon imports from browse page
+
 ## [3.4.1] - 2026-05-12
 
 ### Fixed

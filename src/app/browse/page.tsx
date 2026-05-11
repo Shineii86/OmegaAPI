@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback, useRef } from 'react';
 import type { Series, Pagination } from '@/types';
-import { IconStar, IconEye, IconBook, IconSearch, IconInbox, IconAlertTriangle, IconArrowRight, IconArrowLeft, IconChevronLeft, IconChevronRight, IconFire, IconTrophy, IconSparkles, IconX, IconShuffle, IconHeart, IconClock, IconGrid, IconList, IconArrowDown } from '@/components/icons';
+import { IconStar, IconEye, IconBook, IconSearch, IconArrowRight, IconChevronLeft, IconChevronRight, IconFire, IconTrophy, IconSparkles, IconX, IconHeart, IconClock, IconGrid, IconList } from '@/components/icons';
 import { formatViews, Spinner } from '@/components/ui';
 import { Footer } from '@/components/layout';
 import { getHistory, getContinueReading, clearHistory, getBookmarks, toggleBookmark, isBookmarked, getRecentSearches, saveSearch, clearRecentSearches, type HistoryEntry } from '@/lib/storage';
@@ -516,7 +516,6 @@ export default function BrowsePage() {
   const [featured, setFeatured] = useState<Series | null>(null);
   const [loading, setLoading] = useState(true);
   const [genres, setGenres] = useState<string[]>([]);
-  const [selectedGenre, setSelectedGenre] = useState<string | null>(null);
   const [modalSlug, setModalSlug] = useState<string | null>(null);
   const [searchOpen, setSearchOpen] = useState(false);
   const [bookmarkRefresh, setBookmarkRefresh] = useState(0);
@@ -562,24 +561,6 @@ export default function BrowsePage() {
       }
     } catch { /* SSR or private mode */ }
   }, []);
-
-  /* Sync genre from URL params */
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const genre = params.get('genre');
-    if (genre) setSelectedGenre(genre);
-  }, []);
-
-  /* Update URL when genre changes */
-  useEffect(() => {
-    const url = new URL(window.location.href);
-    if (selectedGenre) {
-      url.searchParams.set('genre', selectedGenre);
-    } else {
-      url.searchParams.delete('genre');
-    }
-    window.history.replaceState({}, '', url.toString());
-  }, [selectedGenre]);
 
   /* Load Continue Reading from localStorage */
   useEffect(() => {
@@ -715,9 +696,6 @@ export default function BrowsePage() {
 
   const trending = popular.filter(s => s.rating >= 4.5).slice(0, 15);
   const topRated = [...popular].sort((a, b) => b.rating - a.rating).slice(0, 15);
-  const genreFiltered = selectedGenre
-    ? popular.filter(s => s.tags?.some(t => t.toLowerCase() === selectedGenre.toLowerCase()))
-    : popular;
 
   /* Fetch all series for "View All" mode */
   const fetchAll = useCallback(async (page: number) => {
@@ -741,7 +719,6 @@ export default function BrowsePage() {
 
   const openViewAll = useCallback(() => {
     setViewAll(true);
-    setSelectedGenre(null);
     if (allSeries.length === 0) fetchAll(1);
   }, [allSeries.length, fetchAll]);
 
@@ -847,27 +824,21 @@ export default function BrowsePage() {
         {genres.length > 0 && (
           <div className="mb-8">
             <div className="flex flex-wrap gap-2">
-              <button
-                onClick={() => setSelectedGenre(null)}
-                className={`genre-pill ${!selectedGenre ? 'active' : ''}`}
-              >
-                All
-              </button>
               {genres.slice(0, 20).map(g => (
-                <button
+                <a
                   key={g}
-                  onClick={() => setSelectedGenre(selectedGenre === g ? null : g)}
-                  className={`genre-pill ${selectedGenre === g ? 'active' : ''}`}
+                  href={`/browse/genre/${encodeURIComponent(g.toLowerCase())}`}
+                  className="genre-pill"
                 >
                   {g}
-                </button>
+                </a>
               ))}
             </div>
           </div>
         )}
 
         {/* Continue Reading */}
-        {!selectedGenre && !viewAll && continueReading.length > 0 && (
+        {!viewAll && continueReading.length > 0 && (
           <section className="mb-10">
             <div className="flex items-center justify-between mb-4">
               <SectionHeader icon={<IconClock size={20} />} title="Continue Reading" subtitle="Pick up where you left off" />
@@ -915,7 +886,7 @@ export default function BrowsePage() {
         )}
 
         {/* My List (Bookmarks) */}
-        {!selectedGenre && !viewAll && getBookmarks().length > 0 && (
+        {!viewAll && getBookmarks().length > 0 && (
           <section className="mb-10">
             <SectionHeader icon={<IconHeart size={20} />} title="My List" subtitle={`${getBookmarks().length} bookmarked series`} />
             {myListLoading ? (
@@ -938,7 +909,7 @@ export default function BrowsePage() {
         )}
 
         {/* Popular */}
-        {!selectedGenre && !viewAll && (
+        {!viewAll && (
           <>
             <section className="mb-10">
               <div className="flex items-end justify-between mb-4">
@@ -1000,7 +971,7 @@ export default function BrowsePage() {
         )}
 
         {/* View All — Full Grid with Pagination */}
-        {viewAll && !selectedGenre && (
+        {viewAll && (
           <section className="mb-10">
             <div className="flex items-end justify-between mb-4">
               <div className="flex items-center gap-3">
@@ -1113,28 +1084,6 @@ export default function BrowsePage() {
         )}
 
         {/* Genre-filtered view */}
-        {selectedGenre && (
-          <section className="mb-10">
-            <div className="flex items-end justify-between mb-4">
-              <SectionHeader icon={<IconBook size={20} />} title={selectedGenre} subtitle={`${genreFiltered.length} series in this genre`} />
-              <button onClick={() => setSelectedGenre(null)} className="text-xs font-semibold uppercase tracking-widest text-[#a1a1aa] hover:text-[#e4e4e7] transition-colors flex items-center gap-1">
-                <IconChevronLeft size={12} /> Back
-              </button>
-            </div>
-            {genreFiltered.length === 0 ? (
-              <div className="card-brutal text-center py-12">
-                <div className="flex justify-center mb-4 text-[#52525b]"><IconInbox size={48} /></div>
-                <h3 className="text-lg font-display text-[#e4e4e7] mb-2" style={{ textTransform: 'none' }}>No Series Found</h3>
-                <p className="text-sm text-[#71717a]">No series found in the {selectedGenre} genre.</p>
-              </div>
-            ) : (
-              <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-8 gap-5">
-                {genreFiltered.map(s => <ManhwaCard key={s.id} series={s} onClick={() => setModalSlug(s.slug)} onBookmark={() => setBookmarkRefresh(v => v + 1)} />)}
-              </div>
-            )}
-          </section>
-        )}
-
         {/* API Info Banner */}
         <section className="mb-10">
           <div className="card-brutal text-center py-8" style={{ background: '#1e1e2a', borderColor: '#2a2a36' }}>
