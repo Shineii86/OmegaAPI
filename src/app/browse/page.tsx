@@ -476,7 +476,7 @@ export default function BrowsePage() {
           <div className="relative max-w-container mx-auto px-5 md:px-8 py-12 flex items-end" style={{ minHeight: '380px', zIndex: 1 }}>
             <div className="flex gap-6 items-end pb-4 w-full">
               {/* Cover Image */}
-              <div className="shrink-0 hidden sm:block" style={{ width: '176px' }}>
+              <div className="shrink-0" style={{ width: '140px' }}>
                 <div style={{ aspectRatio: '3/4', borderRadius: '12px', overflow: 'hidden', border: '2px solid #2a2a36', boxShadow: '0 8px 32px rgba(0,0,0,0.5)', background: '#1e1e2a' }}>
                   <img
                     src={featured.cover || featured.thumbnail}
