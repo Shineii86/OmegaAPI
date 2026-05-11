@@ -65,7 +65,7 @@ function ManhwaCard({ series, onClick, onBookmark }: { series: Series; onClick: 
   };
 
   return (
-    <div className="manhwa-card cursor-pointer" onClick={onClick} style={{ width: '160px', minWidth: '160px' }}>
+    <div className="manhwa-card cursor-pointer" onClick={onClick}>
       <div className="cover-wrap">
         <img
           src={series.thumbnail}
@@ -106,7 +106,7 @@ function ManhwaCard({ series, onClick, onBookmark }: { series: Series; onClick: 
 /* ── Skeleton Card ── */
 function SkeletonCard() {
   return (
-    <div style={{ width: '160px', minWidth: '160px' }}>
+    <div className="manhwa-card-skeleton">
       <div className="skeleton" style={{ aspectRatio: '2/3', borderRadius: '8px' }} />
       <div className="skeleton mt-2" style={{ height: '14px', width: '80%' }} />
       <div className="skeleton mt-1" style={{ height: '12px', width: '60%' }} />
@@ -188,10 +188,40 @@ function SearchOverlay({ open, onClose, onSelect, allSeries }: { open: boolean; 
               type="text"
               value={q}
               onChange={(e) => setQ(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' && q.length >= 2) {
+                  // Already filtering client-side, just ensure results are shown
+                  const lower = q.toLowerCase();
+                  const filtered = allSeries.filter(s =>
+                    s.title.toLowerCase().includes(lower) ||
+                    s.alternativeNames?.toLowerCase().includes(lower) ||
+                    s.author?.toLowerCase().includes(lower) ||
+                    s.tags?.some(t => t.toLowerCase().includes(lower))
+                  ).slice(0, 12);
+                  setResults(filtered);
+                }
+              }}
               placeholder="Search by title, author, or genre..."
               className="flex-1 bg-transparent text-[#e4e4e7] py-4 text-base placeholder:text-[#52525b] focus:outline-none"
               autoComplete="off"
             />
+            {q.length >= 2 && (
+              <button
+                onClick={() => {
+                  const lower = q.toLowerCase();
+                  const filtered = allSeries.filter(s =>
+                    s.title.toLowerCase().includes(lower) ||
+                    s.alternativeNames?.toLowerCase().includes(lower) ||
+                    s.author?.toLowerCase().includes(lower) ||
+                    s.tags?.some(t => t.toLowerCase().includes(lower))
+                  ).slice(0, 12);
+                  setResults(filtered);
+                }}
+                className="shrink-0 px-3 py-1.5 bg-[#ef4444] text-white text-xs font-semibold uppercase tracking-wider rounded hover:bg-[#dc2626] transition-colors"
+              >
+                Search
+              </button>
+            )}
             {q && (
               <button onClick={() => { setQ(''); setResults([]); }} className="text-[#52525b] hover:text-[#a1a1aa] transition-colors shrink-0">
                 <IconX size={16} />
@@ -701,7 +731,6 @@ export default function BrowsePage() {
                 <div
                   key={entry.slug}
                   className="manhwa-card cursor-pointer"
-                  style={{ width: '160px', minWidth: '160px' }}
                   onClick={() => setModalSlug(entry.slug)}
                 >
                   <div className="cover-wrap">

@@ -2,6 +2,17 @@
 
 All notable changes to OmegaAPI will be documented in this file.
 
+## [3.2.2] - 2026-05-12
+
+### Fixed
+- View All grid cards now responsive (auto-width in grids, fixed 160px only in scroll rows)
+- Grid cards use full available width instead of fixed 160px on all screen sizes
+- Skeleton cards also responsive in grid layouts
+
+### Added
+- Search button in search overlay (appears when query is 2+ characters)
+- Enter key also triggers search in the overlay input
+
 ## [3.2.1] - 2026-05-12
 
 ### Fixed
