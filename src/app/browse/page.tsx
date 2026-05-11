@@ -667,6 +667,30 @@ export default function BrowsePage() {
           if (all.length > 0) {
             setFeatured(all[Math.floor(Math.random() * Math.min(all.length, 10))]);
           }
+
+          // Background: fetch tags for popular series (list endpoint returns empty tags)
+          const BATCH = 10;
+          const slugs = all.map((s: Series) => s.slug).slice(0, 40);
+          for (let i = 0; i < slugs.length; i += BATCH) {
+            const batch = slugs.slice(i, i + BATCH);
+            const results = await Promise.all(
+              batch.map((slug: string) =>
+                fetch(`${BASE}/api/v1/series/${slug}`)
+                  .then(r => r.json())
+                  .then(d => d.success ? { slug, tags: d.data?.tags || [] } : null)
+                  .catch(() => null)
+              )
+            );
+            setPopular(prev => {
+              const updated = [...prev];
+              for (const result of results) {
+                if (!result) continue;
+                const idx = updated.findIndex(s => s.slug === result.slug);
+                if (idx >= 0) updated[idx] = { ...updated[idx], tags: result.tags };
+              }
+              return updated;
+            });
+          }
         }
         if (genresData.success) {
           setGenres(genresData.data?.genres || []);

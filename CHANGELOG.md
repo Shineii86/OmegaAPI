@@ -2,6 +2,12 @@
 
 All notable changes to OmegaAPI will be documented in this file.
 
+## [3.4.1] - 2026-05-12
+
+### Fixed
+- Genre filter actually works now — list endpoint returns empty tags, so popular series are enriched with tags from detail endpoint in background batches of 10
+- Genre pills now filter series by actual genre tags (Action, Romance, etc.)
+
 ## [3.4.0] - 2026-05-12
 
 ### Changed
