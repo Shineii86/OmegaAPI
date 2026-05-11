@@ -347,7 +347,7 @@ export default function HomePage() {
   const ep = endpoints[activeEp];
 
   return (
-    <main className="relative" style={{ background: 'var(--bg)' }}>
+    <main className="relative overflow-x-hidden" style={{ background: 'var(--bg)' }}>
       <Navbar active="home">
         <HealthBadge />
         <button onClick={() => setSearchOpen(true)} className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-[var(--text-muted)] border-2 border-[#0f172a] px-3 py-1.5 hover:bg-[#0f172a] hover:text-white transition-all" style={{ fontSize: '0.65rem', letterSpacing: '0.08em' }}>

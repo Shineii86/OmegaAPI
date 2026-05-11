@@ -2,6 +2,13 @@
 
 All notable changes to OmegaAPI will be documented in this file.
 
+## [3.2.3] - 2026-05-12
+
+### Fixed
+- Landing page Common Recipes code blocks wrap on mobile instead of overflowing (white-space: pre-wrap)
+- Added overflow-x: hidden to landing page main container as safety net
+- Code blocks use word-break: break-all to handle long lines on small screens
+
 ## [3.2.2] - 2026-05-12
 
 ### Fixed

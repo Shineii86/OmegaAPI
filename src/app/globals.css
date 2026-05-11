@@ -936,27 +936,28 @@ code, pre, .font-mono {
   .glass-card, .card-brutal {
     max-width: 100%;
     min-width: 0;
+    overflow: hidden;
   }
 
-  /* Code blocks: scroll horizontally, don't overflow parent */
+  /* Code blocks: wrap content on mobile instead of scrolling */
   .code-block, .code-brutal {
     max-width: 100%;
     min-width: 0;
-    overflow-x: auto;
-    overflow-y: hidden;
-    -webkit-overflow-scrolling: touch;
+    overflow: hidden;
   }
 
   .code-block pre, .code-brutal pre {
-    min-width: max-content;
-    overflow-x: visible;
-    font-size: 0.68rem;
-    padding: 0.85rem 1rem;
-    white-space: pre;
-    word-break: normal;
+    white-space: pre-wrap;
+    word-break: break-all;
+    overflow-wrap: break-word;
+    font-size: 0.65rem;
+    padding: 0.75rem;
+    line-height: 1.6;
+    max-width: 100%;
+    overflow-x: hidden;
   }
 
-  /* Make code blocks full-bleed inside cards */
+  /* Full-bleed code blocks inside cards */
   .card-brutal .code-block {
     margin-left: -1.5rem;
     margin-right: -1.5rem;
