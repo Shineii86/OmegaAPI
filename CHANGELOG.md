@@ -2,6 +2,18 @@
 
 All notable changes to OmegaAPI will be documented in this file.
 
+## [3.2.0] - 2026-05-12
+
+### Added
+- Grid/List view toggle in "View All" mode with IconGrid and IconList icons
+- Genre synced to URL params (`/browse?genre=action`) — shareable filtered views
+- Client-side search: filters by title, alternative names, author, and tags (upstream API ignores query param)
+
+### Fixed
+- Search overlay now actually filters results (was returning same results for any query due to upstream API bug)
+- View All grid gap increased from `gap-4` to `gap-5` for better card spacing
+- List view shows series in compact rows with thumbnail, title, rating, chapters, status, type, and bookmark button
+
 ## [3.1.1] - 2026-05-12
 
 ### Changed

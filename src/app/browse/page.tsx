@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback, useRef } from 'react';
 import type { Series, Pagination } from '@/types';
-import { IconStar, IconEye, IconBook, IconSearch, IconInbox, IconAlertTriangle, IconArrowRight, IconArrowLeft, IconChevronLeft, IconChevronRight, IconFire, IconTrophy, IconSparkles, IconX, IconShuffle, IconHeart, IconClock } from '@/components/icons';
+import { IconStar, IconEye, IconBook, IconSearch, IconInbox, IconAlertTriangle, IconArrowRight, IconArrowLeft, IconChevronLeft, IconChevronRight, IconFire, IconTrophy, IconSparkles, IconX, IconShuffle, IconHeart, IconClock, IconGrid, IconList } from '@/components/icons';
 import { formatViews, Spinner } from '@/components/ui';
 import { Footer } from '@/components/layout';
 import { getHistory, getContinueReading, getBookmarks, toggleBookmark, isBookmarked, getRecentSearches, saveSearch, clearRecentSearches, type HistoryEntry } from '@/lib/storage';
@@ -128,12 +128,10 @@ function SectionHeader({ icon, title, subtitle }: { icon: React.ReactNode; title
 }
 
 /* ── Search Overlay (renders outside nav) ── */
-function SearchOverlay({ open, onClose, onSelect }: { open: boolean; onClose: () => void; onSelect: (s: Series) => void }) {
+function SearchOverlay({ open, onClose, onSelect, allSeries }: { open: boolean; onClose: () => void; onSelect: (s: Series) => void; allSeries: Series[] }) {
   const [q, setQ] = useState('');
   const [results, setResults] = useState<Series[]>([]);
-  const [loading, setLoading] = useState(false);
   const [recentSearches, setRecentSearches] = useState<string[]>([]);
-  const timerRef = useRef<NodeJS.Timeout>();
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -153,22 +151,18 @@ function SearchOverlay({ open, onClose, onSelect }: { open: boolean; onClose: ()
     return () => window.removeEventListener('keydown', handler);
   }, [open, onClose]);
 
-  const search = useCallback(async (query: string) => {
-    if (query.length < 2) { setResults([]); return; }
-    setLoading(true);
-    try {
-      const res = await fetch(`${BASE}/api/v1/search?q=${encodeURIComponent(query)}&perPage=12`);
-      const data = await res.json();
-      if (data.success) { setResults(data.data || []); }
-    } catch { /* silent */ }
-    finally { setLoading(false); }
-  }, []);
-
-  const handleChange = (val: string) => {
-    setQ(val);
-    if (timerRef.current) clearTimeout(timerRef.current);
-    timerRef.current = setTimeout(() => search(val), 300);
-  };
+  /* Client-side search — filter from all loaded series */
+  useEffect(() => {
+    if (q.length < 2) { setResults([]); return; }
+    const lower = q.toLowerCase();
+    const filtered = allSeries.filter(s =>
+      s.title.toLowerCase().includes(lower) ||
+      s.alternativeNames?.toLowerCase().includes(lower) ||
+      s.author?.toLowerCase().includes(lower) ||
+      s.tags?.some(t => t.toLowerCase().includes(lower))
+    ).slice(0, 12);
+    setResults(filtered);
+  }, [q, allSeries]);
 
   const handleSelect = (s: Series) => {
     saveSearch(q || s.title);
@@ -178,7 +172,6 @@ function SearchOverlay({ open, onClose, onSelect }: { open: boolean; onClose: ()
 
   const handleRecentClick = (term: string) => {
     setQ(term);
-    search(term);
   };
 
   if (!open) return null;
@@ -194,8 +187,8 @@ function SearchOverlay({ open, onClose, onSelect }: { open: boolean; onClose: ()
               ref={inputRef}
               type="text"
               value={q}
-              onChange={(e) => handleChange(e.target.value)}
-              placeholder="Search manga or manhwa..."
+              onChange={(e) => setQ(e.target.value)}
+              placeholder="Search by title, author, or genre..."
               className="flex-1 bg-transparent text-[#e4e4e7] py-4 text-base placeholder:text-[#52525b] focus:outline-none"
               autoComplete="off"
             />
@@ -209,18 +202,13 @@ function SearchOverlay({ open, onClose, onSelect }: { open: boolean; onClose: ()
 
           {/* Results */}
           <div className="max-h-[60vh] overflow-y-auto">
-            {loading && (
-              <div className="p-6 text-center">
-                <div className="w-5 h-5 border-2 border-[#2a2a36] border-t-[#ef4444] rounded-full animate-spin mx-auto" />
-              </div>
-            )}
-            {!loading && q.length >= 2 && results.length === 0 && (
+            {q.length >= 2 && results.length === 0 && (
               <div className="p-8 text-center">
                 <span className="text-[#3f3f46] mx-auto mb-3 block"><IconSearch size={32} /></span>
                 <p className="text-sm text-[#71717a]">No results found for &quot;{q}&quot;</p>
               </div>
             )}
-            {!loading && results.map((s) => (
+            {results.map((s) => (
               <div
                 key={s.id}
                 onClick={() => handleSelect(s)}
@@ -240,7 +228,7 @@ function SearchOverlay({ open, onClose, onSelect }: { open: boolean; onClose: ()
                 <span className="text-[#3f3f46] shrink-0"><IconChevronRight size={16} /></span>
               </div>
             ))}
-            {!loading && q.length < 2 && (
+            {q.length < 2 && (
               <>
                 {/* Recent Searches */}
                 {recentSearches.length > 0 && (
@@ -460,6 +448,7 @@ export default function BrowsePage() {
   const [modalSlug, setModalSlug] = useState<string | null>(null);
   const [searchOpen, setSearchOpen] = useState(false);
   const [bookmarkRefresh, setBookmarkRefresh] = useState(0);
+  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
 
   /* Continue Reading + My List state */
   const [continueReading, setContinueReading] = useState<HistoryEntry[]>([]);
@@ -478,6 +467,24 @@ export default function BrowsePage() {
     document.documentElement.setAttribute('data-theme', 'dark');
     return () => { document.documentElement.removeAttribute('data-theme'); };
   }, []);
+
+  /* Sync genre from URL params */
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const genre = params.get('genre');
+    if (genre) setSelectedGenre(genre);
+  }, []);
+
+  /* Update URL when genre changes */
+  useEffect(() => {
+    const url = new URL(window.location.href);
+    if (selectedGenre) {
+      url.searchParams.set('genre', selectedGenre);
+    } else {
+      url.searchParams.delete('genre');
+    }
+    window.history.replaceState({}, '', url.toString());
+  }, [selectedGenre]);
 
   /* Load Continue Reading from localStorage */
   useEffect(() => {
@@ -607,7 +614,7 @@ export default function BrowsePage() {
       </nav>
 
       {/* Search Overlay */}
-      <SearchOverlay open={searchOpen} onClose={() => setSearchOpen(false)} onSelect={(s) => setModalSlug(s.slug)} />
+      <SearchOverlay open={searchOpen} onClose={() => setSearchOpen(false)} onSelect={(s) => setModalSlug(s.slug)} allSeries={popular} />
 
       {/* Featured Banner */}
       {featured && (
@@ -808,19 +815,74 @@ export default function BrowsePage() {
                   <p className="text-xs text-[#71717a]">{allTotal.toLocaleString()} series available</p>
                 </div>
               </div>
-              <button onClick={closeViewAll} className="text-xs font-semibold uppercase tracking-widest text-[#a1a1aa] hover:text-[#e4e4e7] transition-colors flex items-center gap-1">
-                <IconChevronLeft size={12} /> Back
-              </button>
+              <div className="flex items-center gap-3">
+                {/* View Mode Toggle */}
+                <div className="flex items-center border border-[#2a2a36] rounded overflow-hidden">
+                  <button
+                    onClick={() => setViewMode('grid')}
+                    className={`p-2 transition-colors ${viewMode === 'grid' ? 'bg-[#ef4444] text-white' : 'bg-[#1e1e2a] text-[#71717a] hover:text-[#a1a1aa]'}`}
+                    title="Grid view"
+                  >
+                    <IconGrid size={14} />
+                  </button>
+                  <button
+                    onClick={() => setViewMode('list')}
+                    className={`p-2 transition-colors ${viewMode === 'list' ? 'bg-[#ef4444] text-white' : 'bg-[#1e1e2a] text-[#71717a] hover:text-[#a1a1aa]'}`}
+                    title="List view"
+                  >
+                    <IconList size={14} />
+                  </button>
+                </div>
+                <button onClick={closeViewAll} className="text-xs font-semibold uppercase tracking-widest text-[#a1a1aa] hover:text-[#e4e4e7] transition-colors flex items-center gap-1">
+                  <IconChevronLeft size={12} /> Back
+                </button>
+              </div>
             </div>
             {allSeries.length === 0 && allLoading ? (
-              <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-8 gap-4">
+              <div className={viewMode === 'grid'
+                ? "grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-8 gap-5"
+                : "space-y-2"
+              }>
                 {Array.from({ length: 16 }).map((_, i) => <SkeletonCard key={i} />)}
               </div>
             ) : (
               <>
-                <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-8 gap-4">
-                  {allSeries.map(s => <ManhwaCard key={s.id} series={s} onClick={() => setModalSlug(s.slug)} onBookmark={() => setBookmarkRefresh(v => v + 1)} />)}
-                </div>
+                {viewMode === 'grid' ? (
+                  <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-8 gap-5">
+                    {allSeries.map(s => <ManhwaCard key={s.id} series={s} onClick={() => setModalSlug(s.slug)} onBookmark={() => setBookmarkRefresh(v => v + 1)} />)}
+                  </div>
+                ) : (
+                  <div className="space-y-2">
+                    {allSeries.map(s => (
+                      <div
+                        key={s.id}
+                        onClick={() => setModalSlug(s.slug)}
+                        className="flex items-center gap-4 p-3 bg-[#16161e] border border-[#2a2a36] rounded-lg hover:bg-[#1e1e2a] cursor-pointer transition-colors"
+                      >
+                        <div className="w-12 h-16 rounded overflow-hidden bg-[#1e1e2a] shrink-0">
+                          <img src={s.thumbnail} alt="" className="w-full h-full object-cover" loading="lazy" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <div className="text-sm font-semibold text-[#e4e4e7] truncate">{s.title}</div>
+                          <div className="flex items-center gap-3 mt-1 text-[0.65rem] text-[#71717a]">
+                            <span className="flex items-center gap-1 text-[#fbbf24]"><IconStar size={10} /> {s.rating.toFixed(1)}</span>
+                            <span>{s.chaptersCount} ch</span>
+                            <span className={`px-1.5 py-0.5 rounded text-[0.55rem] font-semibold ${s.status === 'Ongoing' ? 'bg-[#22c55e]/10 text-[#22c55e]' : 'bg-[#3b82f6]/10 text-[#3b82f6]'}`}>{s.status}</span>
+                            <span className="text-[#52525b]">{s.type}</span>
+                          </div>
+                        </div>
+                        <button
+                          onClick={(e) => { e.stopPropagation(); toggleBookmark(s.slug); setBookmarkRefresh(v => v + 1); }}
+                          className="p-1.5 rounded-full transition-colors shrink-0"
+                          style={{ color: isBookmarked(s.slug) ? '#ef4444' : '#52525b' }}
+                        >
+                          <IconHeart size={14} fill={isBookmarked(s.slug) ? 'currentColor' : 'none'} />
+                        </button>
+                        <span className="text-[#3f3f46] shrink-0"><IconChevronRight size={16} /></span>
+                      </div>
+                    ))}
+                  </div>
+                )}
                 {allHasMore && (
                   <div className="text-center mt-8">
                     <button
@@ -854,7 +916,7 @@ export default function BrowsePage() {
                 <p className="text-sm text-[#71717a]">No series found in the {selectedGenre} genre.</p>
               </div>
             ) : (
-              <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-8 gap-4">
+              <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-8 gap-5">
                 {genreFiltered.map(s => <ManhwaCard key={s.id} series={s} onClick={() => setModalSlug(s.slug)} onBookmark={() => setBookmarkRefresh(v => v + 1)} />)}
               </div>
             )}
