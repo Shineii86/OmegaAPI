@@ -2,6 +2,25 @@
 
 All notable changes to OmegaAPI will be documented in this file.
 
+## [3.4.0] - 2026-05-12
+
+### Changed
+- Landing page redesign: split hero with live API response preview, condensed from 11 sections to 6
+- Removed architecture, marquee, error codes, rate limiting, and quick start sections (reference material moved to docs)
+- Features condensed from 8 cards to 4 focused ones with color-coded icons
+- Endpoint reference redesigned as side-by-side layout (list + detail panel)
+- Stats bar moved to full-width dark strip below hero for immediate impact
+- Gradient text shifted from cyan/blue to amber/red/violet for warmer, more distinctive feel
+- Live response preview shows actual API data (series title, rating, views) in hero
+- Cleaner section flow: Hero → Stats → Features → Endpoints → Response Format → Playground → CTA
+
+### Removed
+- Architecture section (developer middleware diagram — not relevant for first visit)
+- Marquee banner (visual noise without value)
+- Error codes section (reference material, not marketing)
+- Rate limiting section (moved to docs)
+- Quick Start recipes section (redundant with endpoint examples)
+
 ## [3.3.2] - 2026-05-12
 
 ### Fixed

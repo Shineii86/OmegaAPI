@@ -12,13 +12,6 @@ import { CodeBlock, CopyBtn, formatViews } from '@/components/ui';
 
 const BASE = typeof window !== 'undefined' ? window.location.origin : 'https://omegaapi.vercel.app';
 
-const keywords = [
-  'Free API', 'No Auth', 'Manga Data', 'Manhwa & Webtoon', 'CORS Ready',
-  'REST API', 'Sub-Second Cache', 'Rate Limiting', 'Open Source', 'MIT Licensed',
-  'OmegaScans Powered', 'JSON Responses', 'Full-Text Search', 'Series Metadata',
-  'Chapter Images', 'Edge Runtime', 'Zero Config', 'TypeScript',
-];
-
 const endpoints = [
   {
     method: 'GET', path: '/api/v1/series', label: 'series',
@@ -181,6 +174,47 @@ function AnimCounter({ target, suffix = '' }: { target: number; suffix?: string 
   }, [target]);
 
   return <span ref={ref} className="counter-value">{count.toLocaleString()}{suffix}</span>;
+}
+
+/* ── Live Response Preview ── */
+function LivePreview() {
+  const [data, setData] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetch(`${BASE}/api/v1/series/sex-stopwatch`)
+      .then(r => r.json())
+      .then(d => { if (d.success) setData(d.data); })
+      .catch(() => {})
+      .finally(() => setLoading(false));
+  }, []);
+
+  if (loading) return (
+    <div className="code-brutal">
+      <div className="code-header"><div className="dots"><span /><span /><span /></div><span>response.json</span></div>
+      <pre className="text-[0.72rem]"><code><span className="text-[#64748b]">Loading live data...</span></code></pre>
+    </div>
+  );
+
+  if (!data) return null;
+
+  return (
+    <div className="code-brutal">
+      <div className="code-header">
+        <div className="dots"><span /><span /><span /></div>
+        <span>response.json</span>
+        <span className="tag tag-green text-[0.5rem]">LIVE</span>
+      </div>
+      <pre className="text-[0.68rem] leading-relaxed"><code>{`{
+  `}<span className="text-[#64748b]">"title"</span>{`: `}<span className="text-[#86efac]">"{data.title}"</span>{`,
+  `}<span className="text-[#64748b]">"rating"</span>{`: `}<span className="text-[#fbbf24]">{data.rating}</span>{`,
+  `}<span className="text-[#64748b]">"status"</span>{`: `}<span className="text-[#86efac]">"{data.status}"</span>{`,
+  `}<span className="text-[#64748b]">"totalViews"</span>{`: `}<span className="text-[#fbbf24]">{data.totalViews?.toLocaleString()}</span>{`,
+  `}<span className="text-[#64748b]">"chaptersCount"</span>{`: `}<span className="text-[#fbbf24]">{data.chaptersCount}</span>{`,
+  `}<span className="text-[#64748b]">"tags"</span>{`: [`}<span className="text-[#86efac]">{data.tags?.slice(0, 3).map((t: string) => `"${t}"`).join(', ')}</span>{`]
+}`}</code></pre>
+    </div>
+  );
 }
 
 /* ── Search Modal ── */
@@ -361,49 +395,61 @@ export default function HomePage() {
 
       {/* ── Hero ── */}
       <section className="hero-mesh relative overflow-hidden">
-        <div className="max-w-container mx-auto px-5 md:px-8 pt-20 md:pt-28 pb-20 text-center relative">
-          <Reveal>
-            <div className="inline-flex items-center gap-2 bg-white border-2 border-[#0f172a] px-4 py-1.5 mb-8 shadow-brutal-sm">
-              <span className="w-2 h-2 rounded-full bg-[#10b981] animate-pulse" />
-              <span className="text-xs font-semibold uppercase tracking-wider text-[#64748b]" style={{ fontSize: '0.6rem', letterSpacing: '0.1em' }}>LIVE AND FREE — POWERED BY OMEGASCANS</span>
+        <div className="max-w-container mx-auto px-5 md:px-8 pt-20 md:pt-28 pb-16 md:pb-20 relative">
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
+            {/* Left: Copy */}
+            <div>
+              <Reveal>
+                <div className="inline-flex items-center gap-2 bg-white border-2 border-[#0f172a] px-4 py-1.5 mb-8 shadow-brutal-sm">
+                  <span className="w-2 h-2 rounded-full bg-[#10b981] animate-pulse" />
+                  <span className="text-xs font-semibold uppercase tracking-wider text-[#64748b]" style={{ fontSize: '0.6rem', letterSpacing: '0.1em' }}>FREE · NO AUTH · 263 SERIES</span>
+                </div>
+              </Reveal>
+
+              <Reveal delay={100}>
+                <h1 className="font-display text-4xl md:text-5xl lg:text-6xl leading-[0.95] mb-6" style={{ textTransform: 'none' }}>
+                  <span className="gradient-text">Manga data.</span><br />
+                  <span className="gradient-text">Zero friction.</span>
+                </h1>
+              </Reveal>
+
+              <Reveal delay={200}>
+                <p className="text-base md:text-lg text-[#475569] max-w-md mb-8 leading-relaxed">
+                  Browse series. Get chapter images. Search titles.<br />
+                  No API key. No signup. Just build.
+                </p>
+              </Reveal>
+
+              <Reveal delay={300}>
+                <div className="flex flex-col sm:flex-row gap-3 mb-8">
+                  <a href="#endpoints" className="btn-brutal">EXPLORE API <IconArrowRight size={16} /></a>
+                  <a href="#playground" className="btn-brutal-outline">TRY IT LIVE</a>
+                </div>
+              </Reveal>
+
+              <Reveal delay={400}>
+                <div className="flex flex-wrap gap-2">
+                  {['FREE', 'NO AUTH', 'CORS', 'EDGE CACHED', 'CACHED'].map((t) => (
+                    <span key={t} className="pill-tag text-[#8b5cf6] border-[#8b5cf6]">{t}</span>
+                  ))}
+                </div>
+              </Reveal>
             </div>
-          </Reveal>
 
-          <Reveal delay={100}>
-            <h1 className="hero-title font-display text-5xl md:text-6xl lg:text-7xl leading-[0.9] mb-6" style={{ textTransform: 'none' }}>
-              <span className="gradient-text">The API for</span><br />
-              <span className="gradient-text">Manga & Manhwa</span><br />
-              <span className="gradient-text">Data</span>
-            </h1>
-          </Reveal>
-
-          <Reveal delay={200}>
-            <p className="text-lg md:text-xl text-[#334155] max-w-xl mx-auto mb-10 leading-relaxed">
-              Browse series. Get chapter images. Search titles.<br className="hidden md:block" />
-              No API key. No signup. Just build.
-            </p>
-          </Reveal>
-
-          <Reveal delay={300}>
-            <div className="flex flex-wrap justify-center gap-2.5 mb-10">
-              {['FREE API', 'NO AUTH', 'MANGA DATA', 'CHAPTER IMAGES', 'CORS READY', 'EDGE CACHED'].map((t) => (
-                <span key={t} className="pill-tag" style={{ color: '#8b5cf6', borderColor: '#8b5cf6' }}>{t}</span>
-              ))}
-            </div>
-          </Reveal>
-
-          <Reveal delay={400}>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
-              <a href="#endpoints" className="btn-brutal">EXPLORE ENDPOINTS <IconArrowRight size={16} /></a>
-              <a href="#playground" className="btn-brutal-outline">TRY IT LIVE</a>
-            </div>
-          </Reveal>
-
-          <Reveal delay={500}>
-            <div className="max-w-2xl mx-auto">
-              <CodeBlock code={`curl "${BASE}/api/v1/series/sex-stopwatch"`} lang="bash" />
-            </div>
-          </Reveal>
+            {/* Right: Live Response */}
+            <Reveal direction="right" delay={200}>
+              <div className="space-y-4">
+                <div className="code-brutal">
+                  <div className="code-header">
+                    <div className="dots"><span /><span /><span /></div>
+                    <span>terminal</span>
+                  </div>
+                  <pre className="text-[0.72rem]"><code><span className="text-[#64748b]">$</span> curl <span className="text-[#86efac]">"{BASE}/api/v1/series/sex-stopwatch"</span></code></pre>
+                </div>
+                <LivePreview />
+              </div>
+            </Reveal>
+          </div>
 
           {/* Scroll Indicator */}
           <div className="scroll-indicator">
@@ -413,100 +459,49 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ── Marquee ── */}
-      <section className="py-4 overflow-hidden marquee-wrapper">
-        <div className="marquee-track">
-          {[...keywords, ...keywords].map((kw, i) => (
-            <span key={i} className="flex items-center gap-3 px-5 text-xs font-bold uppercase tracking-widest text-[#94a3b8] whitespace-nowrap select-none" style={{ fontSize: '0.65rem', letterSpacing: '0.15em' }}>
-              {kw}
-              <span className="w-1.5 h-1.5 rounded-full bg-[#f59e0b]" />
-            </span>
-          ))}
-        </div>
-      </section>
-
-      {/* ── Stats ── */}
-      <section className="max-w-container mx-auto px-5 md:px-8 py-20">
-        <div className="stat-grid grid grid-cols-2 md:grid-cols-4 gap-4">
-          {[
-            { value: 8, suffix: '', label: 'ENDPOINTS', icon: <IconSignal size={22} /> },
-            { value: 60, suffix: '', label: 'REQ/MIN', icon: <IconBolt size={22} /> },
-            { value: 0, suffix: '', label: 'AUTH NEEDED', icon: <IconLockOpen size={22} /> },
-            { value: 100, suffix: '%', label: 'FREE FOREVER', icon: <IconDiamond size={22} /> },
-          ].map((s, i) => (
-            <Reveal key={s.label} delay={i * 100}>
-              <div className="card-brutal text-center">
-                <div className="flex justify-center mb-3 text-[#f59e0b]">{s.icon}</div>
-                <div className="text-3xl md:text-4xl font-display mb-1" style={{ textTransform: 'none' }}>
-                  <AnimCounter target={s.value} suffix={s.suffix} />
+      {/* ── Stats Bar ── */}
+      <section className="py-6" style={{ background: '#0f172a', borderTop: '3px solid #334155', borderBottom: '3px solid #334155' }}>
+        <div className="max-w-container mx-auto px-5 md:px-8">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            {[
+              { value: 8, suffix: '', label: 'ENDPOINTS', icon: <IconSignal size={18} /> },
+              { value: 60, suffix: '', label: 'REQ/MIN', icon: <IconBolt size={18} /> },
+              { value: 0, suffix: '', label: 'AUTH NEEDED', icon: <IconLockOpen size={18} /> },
+              { value: 100, suffix: '%', label: 'FREE', icon: <IconDiamond size={18} /> },
+            ].map((s) => (
+              <div key={s.label} className="flex items-center gap-3 justify-center">
+                <div className="text-[#f59e0b]">{s.icon}</div>
+                <div>
+                  <div className="font-display text-xl text-white" style={{ textTransform: 'none' }}>
+                    <AnimCounter target={s.value} suffix={s.suffix} />
+                  </div>
+                  <div className="text-[0.55rem] text-[#64748b] font-display tracking-widest">{s.label}</div>
                 </div>
-                <div className="text-[0.6rem] text-[var(--text-muted)] font-display tracking-widest">{s.label}</div>
               </div>
-            </Reveal>
-          ))}
-        </div>
-      </section>
-
-      {/* ── Architecture ── */}
-      <section className="max-w-container mx-auto px-5 md:px-8 pb-20">
-        <Reveal>
-          <div className="text-center mb-12">
-            <span className="pill-tag" style={{ color: '#06b6d4', borderColor: '#06b6d4' }}>ARCHITECTURE</span>
-            <h2 className="font-display text-3xl md:text-4xl mt-4" style={{ textTransform: 'none' }}>How It Works</h2>
-            <p className="text-[#334155] mt-3 max-w-lg mx-auto">OmegaAPI sits between raw OmegaScans data and your app — normalizing, caching, and protecting.</p>
+            ))}
           </div>
-        </Reveal>
-        <div className="grid md:grid-cols-3 gap-4">
-          {[
-            { step: '01', title: 'SOURCE', subtitle: 'OmegaScans', desc: 'Raw manga and manhwa data from the upstream provider', color: '#06b6d4', icon: <IconDatabase size={22} /> },
-            { step: '02', title: 'MIDDLEWARE', subtitle: 'OmegaAPI', desc: 'Caching, Rate Limiting, Normalization, Error Handling', color: '#f59e0b', icon: <IconSettings size={22} /> },
-            { step: '03', title: 'OUTPUT', subtitle: 'Clean JSON', desc: 'Consistent, well-structured responses ready for your app', color: '#10b981', icon: <IconFileText size={22} /> },
-          ].map((a, i) => (
-            <Reveal key={a.step} delay={i * 150}>
-              <div className="card-brutal relative overflow-hidden group">
-                <div className="absolute top-0 right-0 text-[5rem] font-display opacity-[0.06] leading-none select-none" style={{ color: a.color }}>{a.step}</div>
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="w-10 h-10 flex items-center justify-center border-2" style={{ background: `${a.color}15`, color: a.color, borderColor: a.color }}>
-                    {a.icon}
-                  </div>
-                  <div>
-                    <div className="text-[0.55rem] font-display tracking-widest" style={{ color: a.color }}>STEP {a.step}</div>
-                    <div className="font-display text-lg" style={{ textTransform: 'none', color: 'var(--text)' }}>{a.title}</div>
-                  </div>
-                </div>
-                <div className="text-sm font-semibold text-[var(--text-secondary)] mb-2">{a.subtitle}</div>
-                <p className="text-sm text-[var(--text-muted)] leading-relaxed">{a.desc}</p>
-                {i < 2 && <div className="hidden md:block absolute -right-3 top-1/2 -translate-y-1/2 text-[var(--text-muted)] z-10"><IconChevronRight size={20} /></div>}
-              </div>
-            </Reveal>
-          ))}
         </div>
       </section>
 
-      {/* ── Features ── */}
+      {/* ── Features (condensed) ── */}
       <section id="features" style={{ background: 'var(--bg-dim)' }} className="py-20">
         <div className="max-w-container mx-auto px-5 md:px-8">
           <Reveal>
             <div className="text-center mb-12">
-              <span className="pill-tag" style={{ color: '#8b5cf6', borderColor: '#8b5cf6' }}>CAPABILITIES</span>
-              <h2 className="font-display text-3xl md:text-4xl mt-4" style={{ textTransform: 'none' }}>Everything You Need</h2>
-              <p className="text-[#334155] mt-3 max-w-lg mx-auto">A complete API for building manga readers, trackers, and discovery tools.</p>
+              <span className="pill-tag text-[#8b5cf6] border-[#8b5cf6]">WHY OMEGAAPI</span>
+              <h2 className="font-display text-3xl md:text-4xl mt-4" style={{ textTransform: 'none' }}>Everything you need. Nothing you don&apos;t.</h2>
             </div>
           </Reveal>
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {[
-              { icon: <IconSearch size={20} />, title: 'Full-Text Search', desc: 'Search across hundreds of series by title.' },
-              { icon: <IconBook size={20} />, title: 'Chapter Images', desc: 'Get every page image URL for any chapter.' },
-              { icon: <IconZap size={20} />, title: 'Sub-Second Cache', desc: 'In-memory caching with 5-15 min TTL.' },
-              { icon: <IconLockOpen size={20} />, title: 'Zero Auth', desc: 'No API keys, no sign-ups. Just JSON.' },
-              { icon: <IconGlobe size={20} />, title: 'CORS Ready', desc: 'Call directly from any frontend.' },
-              { icon: <IconShield size={20} />, title: 'Rate Limiting', desc: '60 req/min per IP with headers.' },
-              { icon: <IconBarChart size={20} />, title: 'Rich Metadata', desc: 'Rating, views, author, schedule.' },
-              { icon: <IconHeartPulse size={20} />, title: 'Health Monitor', desc: '/health with upstream probe.' },
+              { icon: <IconLockOpen size={20} />, title: 'Zero Auth', desc: 'No API keys, no sign-ups, no OAuth. Just make a request and get JSON.', color: '#10b981' },
+              { icon: <IconZap size={20} />, title: 'Sub-Second', desc: 'In-memory caching with 5–15 min TTL. Responses in milliseconds.', color: '#f59e0b' },
+              { icon: <IconGlobe size={20} />, title: 'CORS Ready', desc: 'Call directly from any frontend. Browser, mobile, desktop — all origins.', color: '#06b6d4' },
+              { icon: <IconBook size={20} />, title: 'Full Reader', desc: 'Chapter images, series metadata, ratings, tags, authors — complete data.', color: '#8b5cf6' },
             ].map((f, i) => (
-              <Reveal key={f.title} delay={i * 60}>
+              <Reveal key={f.title} delay={i * 80}>
                 <div className="card-brutal group">
-                  <div className="w-10 h-10 flex items-center justify-center bg-[#f59e0b] text-[#0f172a] border-2 border-[#0f172a] mb-4 shadow-brutal-sm group-hover:shadow-brutal transition-all">{f.icon}</div>
+                  <div className="w-10 h-10 flex items-center justify-center border-2 mb-4 shadow-brutal-sm" style={{ background: `${f.color}15`, color: f.color, borderColor: f.color }}>{f.icon}</div>
                   <h3 className="font-display text-sm mb-2" style={{ textTransform: 'none' }}>{f.title}</h3>
                   <p className="text-xs text-[var(--text-muted)] leading-relaxed">{f.desc}</p>
                 </div>
@@ -516,149 +511,97 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ── API Reference — Endpoint Rows ── */}
+      {/* ── API Reference ── */}
       <section id="endpoints" className="max-w-container mx-auto px-5 md:px-8 py-20">
         <Reveal>
           <div className="text-center mb-12">
-            <span className="pill-tag" style={{ color: '#06b6d4', borderColor: '#06b6d4' }}>API REFERENCE</span>
-            <h2 className="font-display text-3xl md:text-4xl mt-4" style={{ textTransform: 'none' }}>Clean, Predictable Endpoints</h2>
-            <p className="text-[#334155] mt-3 max-w-lg mx-auto">Every response follows the same envelope format. No surprises.</p>
+            <span className="pill-tag text-[#06b6d4] border-[#06b6d4]">API REFERENCE</span>
+            <h2 className="font-display text-3xl md:text-4xl mt-4" style={{ textTransform: 'none' }}>8 Endpoints. Zero Surprises.</h2>
+            <p className="text-[#475569] mt-3 max-w-lg mx-auto">Every response follows the same envelope format. Pick an endpoint to explore.</p>
           </div>
         </Reveal>
 
-        {/* Endpoint Rows (horizontal cards) */}
         <Reveal>
-          <div className="space-y-2 mb-6">
-            {endpoints.map((e, i) => (
-              <div key={e.label} id={`ep-${e.label}`} className={`endpoint-row ${i === activeEp ? 'active' : ''}`} onClick={() => { setActiveEp(i); setCodeTab('curl'); }}>
-                <span className="badge-get shrink-0">{e.method}</span>
-                <span className="font-mono text-xs text-[var(--text)] truncate flex-1">{e.path}</span>
-                <span className="text-xs text-[var(--text-muted)] hidden sm:inline">{e.desc}</span>
-                <IconChevronRight size={14} />
-              </div>
-            ))}
-          </div>
-        </Reveal>
-
-        {/* Active Endpoint Detail */}
-        <Reveal>
-          <div className="card-brutal">
-            <div className="flex items-center gap-3 mb-2">
-              <span className="badge-get">{ep.method}</span>
-              <code className="font-mono text-sm text-[#f59e0b]">{ep.path}</code>
-            </div>
-            <p className="text-sm text-[var(--text-secondary)] mb-6">{ep.desc}</p>
-
-            {ep.params.length > 0 && (
-              <div className="mb-6">
-                <h4 className="text-xs font-display tracking-widest text-[var(--text-muted)] mb-3">PARAMETERS</h4>
-                <div className="overflow-x-auto">
-                  <table className="w-full text-sm">
-                    <thead>
-                      <tr className="text-left text-[var(--text-muted)] border-b-2 border-[#0f172a]">
-                        <th className="pb-2 pr-4 font-display text-xs">NAME</th>
-                        <th className="pb-2 pr-4 font-display text-xs">TYPE</th>
-                        <th className="pb-2 pr-4 font-display text-xs">REQUIRED</th>
-                        <th className="pb-2 pr-4 font-display text-xs">DEFAULT</th>
-                        <th className="pb-2 font-display text-xs">DESC</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {ep.params.map((p) => (
-                        <tr key={p.name} className="border-b border-[var(--border-subtle)]">
-                          <td className="py-2.5 pr-4"><code className="text-[#f59e0b] text-xs">{p.name}</code></td>
-                          <td className="py-2.5 pr-4 text-[var(--text-muted)] text-xs">{p.type}</td>
-                          <td className="py-2.5 pr-4">{p.required ? <span className="tag tag-rose text-[0.55rem]">YES</span> : <span className="text-[var(--text-muted)] text-xs">no</span>}</td>
-                          <td className="py-2.5 pr-4 text-[var(--text-muted)] text-xs">{p.def}</td>
-                          <td className="py-2.5 text-[var(--text-secondary)] text-xs">{p.desc}</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
+          <div className="grid md:grid-cols-5 gap-4">
+            {/* Endpoint List (left) */}
+            <div className="md:col-span-2 space-y-1">
+              {endpoints.map((e, i) => (
+                <div key={e.label} id={`ep-${e.label}`} className={`endpoint-row ${i === activeEp ? 'active' : ''}`} onClick={() => { setActiveEp(i); setCodeTab('curl'); }}>
+                  <span className="badge-get shrink-0">{e.method}</span>
+                  <span className="font-mono text-xs text-[var(--text)] truncate flex-1">{e.path}</span>
+                  <IconChevronRight size={14} />
                 </div>
-              </div>
-            )}
-
-            <div className="flex gap-1 mb-3">
-              {(['curl', 'js'] as const).map((tab) => (
-                <button key={tab} onClick={() => setCodeTab(tab)} className={`text-xs font-display px-3 py-1.5 transition-all border-2 ${codeTab === tab ? 'bg-[#f59e0b] text-[#0f172a] border-[#0f172a]' : 'text-[var(--text-muted)] hover:text-[var(--text)] border-transparent'}`}>
-                  {tab === 'curl' ? 'CURL' : 'JAVASCRIPT'}
-                </button>
               ))}
             </div>
-            <CodeBlock code={codeTab === 'curl' ? ep.curl : ep.js} lang={codeTab === 'curl' ? 'bash' : 'javascript'} />
+
+            {/* Endpoint Detail (right) */}
+            <div className="md:col-span-3 card-brutal">
+              <div className="flex items-center gap-3 mb-2">
+                <span className="badge-get">{ep.method}</span>
+                <code className="font-mono text-sm text-[#f59e0b]">{ep.path}</code>
+              </div>
+              <p className="text-sm text-[var(--text-secondary)] mb-5">{ep.desc}</p>
+
+              {ep.params.length > 0 && (
+                <div className="mb-5">
+                  <h4 className="text-xs font-display tracking-widest text-[var(--text-muted)] mb-3">PARAMETERS</h4>
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-sm">
+                      <thead>
+                        <tr className="text-left text-[var(--text-muted)] border-b-2 border-[#0f172a]">
+                          <th className="pb-2 pr-4 font-display text-xs">NAME</th>
+                          <th className="pb-2 pr-4 font-display text-xs">TYPE</th>
+                          <th className="pb-2 pr-4 font-display text-xs">REQ</th>
+                          <th className="pb-2 font-display text-xs">DESC</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {ep.params.map((p) => (
+                          <tr key={p.name} className="border-b border-[var(--border-subtle)]">
+                            <td className="py-2 pr-4"><code className="text-[#f59e0b] text-xs">{p.name}</code></td>
+                            <td className="py-2 pr-4 text-[var(--text-muted)] text-xs">{p.type}</td>
+                            <td className="py-2 pr-4">{p.required ? <span className="tag tag-rose text-[0.55rem]">YES</span> : <span className="text-[var(--text-muted)] text-xs">no</span>}</td>
+                            <td className="py-2 text-[var(--text-secondary)] text-xs">{p.desc}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              )}
+
+              <div className="flex gap-1 mb-3">
+                {(['curl', 'js'] as const).map((tab) => (
+                  <button key={tab} onClick={() => setCodeTab(tab)} className={`text-xs font-display px-3 py-1.5 transition-all border-2 ${codeTab === tab ? 'bg-[#f59e0b] text-[#0f172a] border-[#0f172a]' : 'text-[var(--text-muted)] hover:text-[var(--text)] border-transparent'}`}>
+                    {tab === 'curl' ? 'CURL' : 'JAVASCRIPT'}
+                  </button>
+                ))}
+              </div>
+              <CodeBlock code={codeTab === 'curl' ? ep.curl : ep.js} lang={codeTab === 'curl' ? 'bash' : 'javascript'} />
+            </div>
           </div>
         </Reveal>
       </section>
 
-      {/* ── Quick Start with recipe tabs ── */}
-      <section style={{ background: 'var(--bg-dim)' }} className="py-20">
+      {/* ── Response Format ── */}
+      <section style={{ background: 'var(--bg-dim)' }} className="py-16">
         <div className="max-w-container mx-auto px-5 md:px-8">
           <Reveal>
-            <div className="text-center mb-12">
-              <span className="pill-tag" style={{ color: '#f59e0b', borderColor: '#f59e0b' }}>QUICK START</span>
-              <h2 className="font-display text-3xl md:text-4xl mt-4" style={{ textTransform: 'none' }}>Common Recipes</h2>
-              <p className="text-[#334155] mt-3 max-w-lg mx-auto">Real-world code snippets to get you building immediately.</p>
+            <div className="text-center mb-10">
+              <span className="pill-tag text-[#8b5cf6] border-[#8b5cf6]">RESPONSE FORMAT</span>
+              <h2 className="font-display text-2xl md:text-3xl mt-4" style={{ textTransform: 'none' }}>Consistent. Always.</h2>
             </div>
           </Reveal>
-          <div className="grid md:grid-cols-2 gap-4">
+          <div className="grid md:grid-cols-3 gap-4">
             {[
-              {
-                title: 'Search for a Series',
-                desc: 'Find any manga or manhwa by title.',
-                code: `const res = await fetch('${BASE}/api/v1/search?q=solo');
-const { data } = await res.json();
-
-data.forEach(series => {
-  console.log(series.title);    // "Sex Stopwatch"
-  console.log(series.rating);   // 4.96
-});`,
-              },
-              {
-                title: 'Read Chapter Pages',
-                desc: 'Get all page images for a reader.',
-                code: `const res = await fetch(
-  '${BASE}/api/v1/chapter/sex-stopwatch/chapter-1'
-);
-const { data } = await res.json();
-
-data.images.forEach((url, i) => {
-  const img = document.createElement('img');
-  img.src = url;
-  document.getElementById('reader').appendChild(img);
-});`,
-              },
-              {
-                title: 'Series with Chapters',
-                desc: 'Fetch complete series data.',
-                code: `const res = await fetch(
-  '${BASE}/api/v1/series/sex-stopwatch?include=chapters'
-);
-const { data } = await res.json();
-
-console.log(data.title);         // "Sex Stopwatch"
-console.log(data.chaptersCount); // 155
-console.log(data.chapters[0]);   // { id, name, slug, ... }`,
-              },
-              {
-                title: 'Paginated Browsing',
-                desc: 'Browse with pagination for infinite scroll.',
-                code: `async function loadPage(page = 1) {
-  const res = await fetch(
-    \`${BASE}/api/v1/series?page=\${page}&perPage=20\`
-  );
-  const { data, pagination } = await res.json();
-
-  console.log(\`Page \${pagination.currentPage}/\${pagination.lastPage}\`);
-  return { data, hasMore: pagination.hasNext };
-}`,
-              },
-            ].map((recipe, i) => (
-              <Reveal key={recipe.title} delay={i * 80}>
-                <div className="card-brutal overflow-hidden">
-                  <h3 className="font-display text-base mb-1" style={{ textTransform: 'none' }}>{recipe.title}</h3>
-                  <p className="text-sm text-[var(--text-muted)] mb-4">{recipe.desc}</p>
-                  <CodeBlock code={recipe.code} lang="javascript" />
+              { label: 'SUCCESS (LIST)', code: `{\n  "success": true,\n  "data": [...],\n  "pagination": {\n    "total": 263,\n    "perPage": 20,\n    "currentPage": 1,\n    "hasNext": true\n  }\n}` },
+              { label: 'SUCCESS (SINGLE)', code: `{\n  "success": true,\n  "data": {\n    "title": "Sex Stopwatch",\n    "rating": 4.96,\n    "status": "Completed"\n  }\n}` },
+              { label: 'ERROR', code: `{\n  "success": false,\n  "error": "Series not found"\n}` },
+            ].map((r, i) => (
+              <Reveal key={r.label} delay={i * 100}>
+                <div className="card-brutal">
+                  <h4 className="text-[0.6rem] font-display tracking-widest text-[var(--text-muted)] mb-3">{r.label}</h4>
+                  <CodeBlock code={r.code} lang="json" />
                 </div>
               </Reveal>
             ))}
@@ -666,100 +609,16 @@ console.log(data.chapters[0]);   // { id, name, slug, ... }`,
         </div>
       </section>
 
-      {/* ── Response Format ── */}
-      <section className="max-w-container mx-auto px-5 md:px-8 py-20">
-        <Reveal>
-          <div className="text-center mb-12">
-            <span className="pill-tag" style={{ color: '#8b5cf6', borderColor: '#8b5cf6' }}>RESPONSE FORMAT</span>
-            <h2 className="font-display text-3xl md:text-4xl mt-4" style={{ textTransform: 'none' }}>Consistent Envelope</h2>
-          </div>
-        </Reveal>
-        <div className="grid md:grid-cols-3 gap-4">
-          {[
-            { label: 'SUCCESS (LIST)', code: `{\n  "success": true,\n  "data": [...],\n  "pagination": {\n    "total": 100,\n    "perPage": 20,\n    "currentPage": 1,\n    "lastPage": 5,\n    "hasNext": true\n  }\n}` },
-            { label: 'SUCCESS (SINGLE)', code: `{\n  "success": true,\n  "data": {\n    "id": 7,\n    "title": "Sex Stopwatch",\n    "rating": 4.96,\n    "status": "Completed"\n  }\n}` },
-            { label: 'ERROR', code: `{\n  "success": false,\n  "error": "Series not found"\n}` },
-          ].map((r, i) => (
-            <Reveal key={r.label} delay={i * 100}>
-              <div className="card-brutal">
-                <h4 className="text-[0.6rem] font-display tracking-widest text-[var(--text-muted)] mb-3">{r.label}</h4>
-                <CodeBlock code={r.code} lang="json" />
-              </div>
-            </Reveal>
-          ))}
-        </div>
-      </section>
-
-      {/* ── Error Codes ── */}
-      <section className="max-w-container mx-auto px-5 md:px-8 pb-20">
-        <Reveal>
-          <div className="card-brutal">
-            <h3 className="font-display text-xl mb-6" style={{ textTransform: 'none' }}>HTTP STATUS CODES</h3>
-            <div className="grid sm:grid-cols-2 md:grid-cols-5 gap-4">
-              {[
-                { code: '200', desc: 'Success', color: '#10b981' },
-                { code: '400', desc: 'Bad Request', color: '#f59e0b' },
-                { code: '404', desc: 'Not Found', color: '#ef4444' },
-                { code: '429', desc: 'Rate Limited', color: '#ef4444' },
-                { code: '500', desc: 'Server Error', color: '#ef4444' },
-              ].map((c) => (
-                <div key={c.code} className="text-center p-4 border-2 border-[var(--border)]" style={{ background: 'var(--bg-dim)' }}>
-                  <div className="text-2xl font-display font-mono" style={{ color: c.color }}>{c.code}</div>
-                  <div className="text-xs text-[var(--text-muted)] mt-1 font-display tracking-wider">{c.desc.toUpperCase()}</div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </Reveal>
-      </section>
-
       {/* ── Playground ── */}
-      <section id="playground" style={{ background: 'var(--bg-dim)' }} className="py-20">
-        <div className="max-w-container mx-auto px-5 md:px-8">
-          <Reveal>
-            <Playground />
-          </Reveal>
-        </div>
-      </section>
-
-      {/* ── Rate Limiting ── */}
-      <section className="max-w-container mx-auto px-5 md:px-8 py-20">
+      <section id="playground" className="max-w-container mx-auto px-5 md:px-8 py-20">
         <Reveal>
-          <div className="card-brutal">
-            <h3 className="font-display text-xl mb-6" style={{ textTransform: 'none' }}>RATE LIMITING</h3>
-            <div className="grid md:grid-cols-2 gap-8">
-              <div>
-                <div className="space-y-3">
-                  {[
-                    { label: 'Limit', value: '60 requests per minute' },
-                    { label: 'Window', value: 'Rolling 60-second window' },
-                    { label: 'Scope', value: 'Per IP address' },
-                  ].map((r) => (
-                    <div key={r.label} className="flex justify-between items-center py-2 border-b-2 border-[var(--border-subtle)]">
-                      <span className="text-sm text-[var(--text-muted)] font-display tracking-wider text-xs">{r.label.toUpperCase()}</span>
-                      <span className="text-sm font-medium text-[var(--text)]">{r.value}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-              <div>
-                <h4 className="text-xs font-display tracking-widest text-[var(--text-muted)] mb-3">RESPONSE HEADERS</h4>
-                <div className="space-y-2">
-                  {[
-                    { header: 'X-RateLimit-Limit', desc: 'Max requests allowed (60)' },
-                    { header: 'X-RateLimit-Remaining', desc: 'Requests remaining in window' },
-                    { header: 'X-RateLimit-Reset', desc: 'Window reset timestamp' },
-                    { header: 'X-Request-ID', desc: 'Unique request ID for tracing' },
-                  ].map((h) => (
-                    <div key={h.header} className="flex items-baseline gap-3">
-                      <code className="text-xs text-[#f59e0b] shrink-0">{h.header}</code>
-                      <span className="text-xs text-[var(--text-muted)]">{h.desc}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
+          <div className="text-center mb-10">
+            <span className="pill-tag text-[#f59e0b] border-[#f59e0b]">TRY IT</span>
+            <h2 className="font-display text-2xl md:text-3xl mt-4" style={{ textTransform: 'none' }}>Hit the API. Right here.</h2>
           </div>
+        </Reveal>
+        <Reveal>
+          <Playground />
         </Reveal>
       </section>
 
@@ -768,7 +627,7 @@ console.log(data.chapters[0]);   // { id, name, slug, ... }`,
         <div className="max-w-container mx-auto px-5 md:px-8 text-center">
           <Reveal>
             <h2 className="font-display text-3xl md:text-4xl text-white mb-4" style={{ textTransform: 'none' }}>Ready to Build?</h2>
-            <p className="text-[#94a3b8] max-w-md mx-auto mb-8">Start using OmegaAPI today. Free, fast, and requires no authentication.</p>
+            <p className="text-[#94a3b8] max-w-md mx-auto mb-8">Free, fast, and requires no authentication. Start using OmegaAPI today.</p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <a href="#endpoints" className="btn-brutal" style={{ background: '#f59e0b', borderColor: '#e4e4e7', boxShadow: '4px 4px 0 0 #e4e4e7' }}>EXPLORE API <IconArrowRight size={16} /></a>
               <a href="https://github.com/Shineii86/OmegaAPI" target="_blank" rel="noopener noreferrer" className="btn-brutal-outline" style={{ borderColor: '#e4e4e7', color: '#e4e4e7', boxShadow: '4px 4px 0 0 #e4e4e7' }}>
