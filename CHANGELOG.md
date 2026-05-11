@@ -2,6 +2,22 @@
 
 All notable changes to OmegaAPI will be documented in this file.
 
+## [3.0.2] - 2026-05-11
+
+### Changed
+- Complete README.md rewrite matching ShineiAPI style
+- Added centered header with badges (license, stars, forks, issues, PRs)
+- Added tech stack badges (Next.js, Vercel, Node.js, Tailwind, TypeScript)
+- Added table of contents with anchor links to all sections
+- Added About, Why OmegaAPI, Key Features sections
+- Added detailed API endpoint documentation with parameters and response examples
+- Added code examples in JavaScript, Python, cURL+jq, Go, PHP, Ruby
+- Added collapsible sections for response examples
+- Added FAQ section with 10 common questions
+- Added Contributing guide with commit conventions
+- Added Tech Stack, Project Structure, Local Development, Deployment sections
+- Added Legal Disclaimer, Acknowledgments, and footer links
+
 ## [3.0.1] - 2026-05-11
 
 ### Added
