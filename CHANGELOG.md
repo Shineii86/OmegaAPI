@@ -2,6 +2,13 @@
 
 All notable changes to OmegaAPI will be documented in this file.
 
+## [3.0.6] - 2026-05-12
+
+### Added
+- Browse page: "View All" button on Popular section to see all series in a paginated grid
+- View All mode: full grid layout with "Load More" button showing count (e.g. "Load More (40 of 263)")
+- Back button to return from View All and genre-filtered views
+
 ## [3.0.5] - 2026-05-12
 
 ### Added

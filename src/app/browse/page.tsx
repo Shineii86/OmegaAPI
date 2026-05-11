@@ -379,6 +379,14 @@ export default function BrowsePage() {
   const [modalSlug, setModalSlug] = useState<string | null>(null);
   const [searchOpen, setSearchOpen] = useState(false);
 
+  /* View All state */
+  const [viewAll, setViewAll] = useState(false);
+  const [allSeries, setAllSeries] = useState<Series[]>([]);
+  const [allPage, setAllPage] = useState(1);
+  const [allTotal, setAllTotal] = useState(0);
+  const [allLoading, setAllLoading] = useState(false);
+  const [allHasMore, setAllHasMore] = useState(false);
+
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', 'dark');
     return () => { document.documentElement.removeAttribute('data-theme'); };
@@ -428,6 +436,36 @@ export default function BrowsePage() {
   const genreFiltered = selectedGenre
     ? popular.filter(s => s.tags?.some(t => t.toLowerCase() === selectedGenre.toLowerCase()))
     : popular;
+
+  /* Fetch all series for "View All" mode */
+  const fetchAll = useCallback(async (page: number) => {
+    setAllLoading(true);
+    try {
+      const res = await fetch(`${BASE}/api/v1/series?page=${page}&perPage=40`);
+      const data = await res.json();
+      if (data.success) {
+        if (page === 1) {
+          setAllSeries(data.data || []);
+        } else {
+          setAllSeries(prev => [...prev, ...(data.data || [])]);
+        }
+        setAllTotal(data.pagination?.total || 0);
+        setAllHasMore(data.pagination?.hasNext || false);
+        setAllPage(page);
+      }
+    } catch { /* silent */ }
+    finally { setAllLoading(false); }
+  }, []);
+
+  const openViewAll = useCallback(() => {
+    setViewAll(true);
+    setSelectedGenre(null);
+    if (allSeries.length === 0) fetchAll(1);
+  }, [allSeries.length, fetchAll]);
+
+  const closeViewAll = useCallback(() => {
+    setViewAll(false);
+  }, []);
 
   return (
     <main className="min-h-screen" style={{ background: 'var(--bg)' }}>
@@ -538,10 +576,15 @@ export default function BrowsePage() {
         )}
 
         {/* Popular */}
-        {!selectedGenre && (
+        {!selectedGenre && !viewAll && (
           <>
             <section className="mb-10">
-              <SectionHeader icon={<IconFire size={20} />} title="Popular" subtitle="Most read series on OmegaScans" />
+              <div className="flex items-end justify-between mb-4">
+                <SectionHeader icon={<IconFire size={20} />} title="Popular" subtitle="Most read series on OmegaScans" />
+                <button onClick={openViewAll} className="text-xs font-semibold uppercase tracking-widest text-[#ef4444] hover:text-[#f87171] transition-colors flex items-center gap-1 shrink-0">
+                  View All <IconArrowRight size={12} />
+                </button>
+              </div>
               {loading ? (
                 <div className="flex gap-4 overflow-hidden">
                   {Array.from({ length: 8 }).map((_, i) => <SkeletonCard key={i} />)}
@@ -581,10 +624,56 @@ export default function BrowsePage() {
           </>
         )}
 
+        {/* View All — Full Grid with Pagination */}
+        {viewAll && !selectedGenre && (
+          <section className="mb-10">
+            <div className="flex items-end justify-between mb-4">
+              <div className="flex items-center gap-3">
+                <div className="text-[#ef4444]"><IconBook size={20} /></div>
+                <div>
+                  <h2 className="font-display text-lg text-[#e4e4e7]" style={{ textTransform: 'none' }}>All Series</h2>
+                  <p className="text-xs text-[#71717a]">{allTotal.toLocaleString()} series available</p>
+                </div>
+              </div>
+              <button onClick={closeViewAll} className="text-xs font-semibold uppercase tracking-widest text-[#a1a1aa] hover:text-[#e4e4e7] transition-colors flex items-center gap-1">
+                <IconChevronLeft size={12} /> Back
+              </button>
+            </div>
+            {allSeries.length === 0 && allLoading ? (
+              <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-8 gap-4">
+                {Array.from({ length: 16 }).map((_, i) => <SkeletonCard key={i} />)}
+              </div>
+            ) : (
+              <>
+                <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-8 gap-4">
+                  {allSeries.map(s => <ManhwaCard key={s.id} series={s} onClick={() => setModalSlug(s.slug)} />)}
+                </div>
+                {allHasMore && (
+                  <div className="text-center mt-8">
+                    <button
+                      onClick={() => fetchAll(allPage + 1)}
+                      disabled={allLoading}
+                      className="btn-brutal-outline btn-sm"
+                      style={{ borderColor: '#e4e4e7', color: '#e4e4e7', boxShadow: '3px 3px 0 0 #e4e4e7' }}
+                    >
+                      {allLoading ? 'LOADING...' : `LOAD MORE (${allSeries.length} of ${allTotal.toLocaleString()})`}
+                    </button>
+                  </div>
+                )}
+              </>
+            )}
+          </section>
+        )}
+
         {/* Genre-filtered view */}
         {selectedGenre && (
           <section className="mb-10">
-            <SectionHeader icon={<IconBook size={20} />} title={selectedGenre} subtitle={`${genreFiltered.length} series in this genre`} />
+            <div className="flex items-end justify-between mb-4">
+              <SectionHeader icon={<IconBook size={20} />} title={selectedGenre} subtitle={`${genreFiltered.length} series in this genre`} />
+              <button onClick={() => setSelectedGenre(null)} className="text-xs font-semibold uppercase tracking-widest text-[#a1a1aa] hover:text-[#e4e4e7] transition-colors flex items-center gap-1">
+                <IconChevronLeft size={12} /> Back
+              </button>
+            </div>
             {genreFiltered.length === 0 ? (
               <div className="card-brutal text-center py-12">
                 <div className="flex justify-center mb-4 text-[#52525b]"><IconInbox size={48} /></div>
