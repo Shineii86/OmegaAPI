@@ -168,48 +168,41 @@ Whether you're building a manga reader app, a recommendation engine, a tracking 
 
 ## ✨ Key Features
 
-<table>
-<tr>
-<td width="50%">
-
 ### 📡 API
 
-- 📚 **263+ Series** — Titles, descriptions, ratings, chapters, genres, authors, studios, cover images, tags
-- ⚡ **Sub-Second Responses** — In-memory caching (5 min series, 10 min search, 15 min chapters)
-- 🔍 **Full-Text Search** — Search across hundreds of series with pagination
-- 🖼️ **Chapter Images** — Every page image URL for any chapter
-- 🔀 **Sort & Filter** — `?sort=rating&order=desc&status=ongoing&type=manhwa`
-- 🎲 **Random Discovery** — `/api/v1/random` for random series
-- 📊 **Pagination Headers** — `X-Pagination-Total`, `X-Pagination-Per-Page`, etc.
-- 🔓 **Zero Auth** — No API keys, no sign-ups, no OAuth
-- 🌐 **CORS Ready** — Call from any frontend
-- 🛡️ **Rate Limiting** — 60 req/min with `X-RateLimit-*` headers
-- 📦 **Consistent Envelope** — `{ success, data, pagination? }`
-- 🔄 **Auto Retry** — Single retry on 5xx upstream errors
-- 💓 **Health Monitoring** — Upstream probe with 30s caching
-- 🖼️ **OG Image Generator** — `/api/og` for dynamic social images
-
-</td>
-<td width="50%">
+| Feature | Description |
+|---------|-------------|
+| 📚 **263+ Series** | Titles, descriptions, ratings, chapters, genres, authors, studios, cover images, tags |
+| ⚡ **Sub-Second Responses** | In-memory caching (5 min series, 10 min search, 15 min chapters) |
+| 🔍 **Full-Text Search** | Search across hundreds of series with pagination |
+| 🖼️ **Chapter Images** | Every page image URL for any chapter — build reader apps |
+| 🔀 **Sort & Filter** | `?sort=rating&order=desc&status=ongoing&type=manhwa` |
+| 🎲 **Random Discovery** | `/api/v1/random` endpoint for series discovery |
+| 📊 **Pagination Headers** | `X-Pagination-Total`, `X-Per-Page`, `X-Current-Page` in headers |
+| 🔓 **Zero Auth** | No API keys, no sign-ups, no OAuth |
+| 🌐 **CORS Ready** | Call from any frontend — browser, mobile, desktop |
+| 🛡️ **Rate Limiting** | 60 req/min per IP with `X-RateLimit-*` headers |
+| 📦 **Consistent Envelope** | Every response: `{ success, data, pagination? }` |
+| 🔄 **Auto Retry** | Single retry on 5xx upstream errors |
+| 💓 **Health Monitoring** | Upstream probe with latency tracking, cached 30s |
+| 🖼️ **OG Image Generator** | `/api/og` for dynamic social sharing images |
 
 ### 🖥️ Frontend
 
-- 📱 **Manhwa Browse UI** — Featured banner, scroll rows, genre filters, search autocomplete
-- 📖 **Chapter Reader** — Vertical and paged modes with prev/next navigation
-- ❤️ **Bookmarks / My List** — Heart button on cards, dedicated scroll row
-- 📜 **Reading History** — Track progress with "Continue Reading" row
-- 🔍 **Recent Searches** — Shown in search overlay with clear history
-- 📌 **Reading Position** — Scroll position saved per chapter
-- 🔞 **Age Verification** — 18+ gate with localStorage persistence
-- 🎨 **Neo-Brutalist UI** — Bold cards, frosted glass nav, spring animations
-- 🌙 **Dark Theme** — Immersive manhwa reading experience
-- 📱 **Responsive** — Mobile-first, works on all screen sizes
-- 🎭 **Dual Theme** — Light landing, dark browse
-- ⚡ **Error Boundary** — Graceful error recovery on all pages
-
-</td>
-</tr>
-</table>
+| Feature | Description |
+|---------|-------------|
+| 📱 **Manhwa Browse UI** | Featured banner, scroll rows, genre filters, search autocomplete |
+| 📖 **Chapter Reader** | Vertical and paged reading modes with prev/next navigation |
+| ❤️ **Bookmarks / My List** | Heart button on cards, dedicated scroll row |
+| 📜 **Reading History** | Track progress with "Continue Reading" row and progress bars |
+| 🔍 **Recent Searches** | Shown in search overlay with clear history option |
+| 📌 **Reading Position** | Scroll position saved per chapter, restored on revisit |
+| 🔞 **Age Verification** | 18+ gate with localStorage persistence |
+| 🎨 **Neo-Brutalist UI** | Bold cards, frosted glass nav, spring animations |
+| 🌙 **Dark Theme** | Immersive manhwa reading experience |
+| 📱 **Responsive** | Mobile-first, works on all screen sizes |
+| 🎭 **Dual Theme** | Light landing page, dark browse pages |
+| ⚡ **Error Boundary** | Graceful error recovery on all browse pages |
 
 ---
 
