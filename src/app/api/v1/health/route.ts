@@ -21,14 +21,17 @@ export async function GET() {
   }
 
   return successResponse({
-    status: 'ok',
-    version: '1.0.0',
-    uptime: Math.floor((Date.now() - startTime) / 1000),
-    upstream: {
-      status: upstreamStatus,
-      latencyMs: upstreamLatency,
-      url: 'https://api.omegascans.org',
+    success: true,
+    data: {
+      status: 'ok',
+      version: '1.0.0',
+      uptime: Math.floor((Date.now() - startTime) / 1000),
+      upstream: {
+        status: upstreamStatus,
+        latencyMs: upstreamLatency,
+        url: 'https://api.omegascans.org',
+      },
+      timestamp: new Date().toISOString(),
     },
-    timestamp: new Date().toISOString(),
   });
 }

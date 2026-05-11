@@ -317,7 +317,7 @@ function Playground() {
 /* ── Health Badge ── */
 function HealthBadge() {
   const [health, setHealth] = useState<{ status: string; upstream: { status: string; latencyMs: number } } | null>(null);
-  useEffect(() => { fetch(`${BASE}/api/v1/health`).then(r => r.json()).then(setHealth).catch(() => {}); }, []);
+  useEffect(() => { fetch(`${BASE}/api/v1/health`).then(r => r.json()).then(d => setHealth(d.data || d)).catch(() => {}); }, []);
 
   if (!health) return <div className="flex items-center gap-1.5 text-xs text-[var(--text-muted)]"><span className="w-1.5 h-1.5 rounded-full bg-[var(--text-muted)] animate-pulse" />checking...</div>;
 

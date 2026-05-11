@@ -2,6 +2,13 @@
 
 All notable changes to OmegaAPI will be documented in this file.
 
+## [3.3.2] - 2026-05-12
+
+### Fixed
+- API response envelope consistency: `/genres`, `/health`, `/stats` now return `{ success, data }` envelope matching all other endpoints
+- Browse page genre pills now load correctly (was broken — API returned `{ genres }` but page expected `{ data: { genres } }`)
+- Landing page HealthBadge handles both old and new response format gracefully
+
 ## [3.3.1] - 2026-05-12
 
 ### Fixed
