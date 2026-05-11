@@ -101,30 +101,37 @@ function SectionHeader({ icon, title, subtitle }: { icon: React.ReactNode; title
   );
 }
 
-/* ── Search with Autocomplete ── */
-function SearchBar({ onSelect }: { onSelect: (s: Series) => void }) {
+/* ── Search Overlay (renders outside nav) ── */
+function SearchOverlay({ open, onClose, onSelect }: { open: boolean; onClose: () => void; onSelect: (s: Series) => void }) {
   const [q, setQ] = useState('');
   const [results, setResults] = useState<Series[]>([]);
-  const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const timerRef = useRef<NodeJS.Timeout>();
-  const wrapperRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    const handler = (e: MouseEvent) => {
-      if (wrapperRef.current && !wrapperRef.current.contains(e.target as Node)) setOpen(false);
+    if (open) {
+      setQ('');
+      setResults([]);
+      setTimeout(() => inputRef.current?.focus(), 100);
+    }
+  }, [open]);
+
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
     };
-    document.addEventListener('mousedown', handler);
-    return () => document.removeEventListener('mousedown', handler);
-  }, []);
+    if (open) window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
+  }, [open, onClose]);
 
   const search = useCallback(async (query: string) => {
-    if (query.length < 2) { setResults([]); setOpen(false); return; }
+    if (query.length < 2) { setResults([]); return; }
     setLoading(true);
     try {
-      const res = await fetch(`${BASE}/api/v1/search?q=${encodeURIComponent(query)}&perPage=8`);
+      const res = await fetch(`${BASE}/api/v1/search?q=${encodeURIComponent(query)}&perPage=12`);
       const data = await res.json();
-      if (data.success) { setResults(data.data || []); setOpen(true); }
+      if (data.success) { setResults(data.data || []); }
     } catch { /* silent */ }
     finally { setLoading(false); }
   }, []);
@@ -132,48 +139,77 @@ function SearchBar({ onSelect }: { onSelect: (s: Series) => void }) {
   const handleChange = (val: string) => {
     setQ(val);
     if (timerRef.current) clearTimeout(timerRef.current);
-    timerRef.current = setTimeout(() => search(val), 350);
+    timerRef.current = setTimeout(() => search(val), 300);
   };
 
+  if (!open) return null;
+
   return (
-    <div ref={wrapperRef} className="relative flex-1 max-w-md">
-      <div className="relative">
-        <div className="absolute left-3 top-1/2 -translate-y-1/2 text-[#71717a]"><IconSearch size={16} /></div>
-        <input
-          type="text"
-          value={q}
-          onChange={(e) => handleChange(e.target.value)}
-          onFocus={() => q.length >= 2 && results.length > 0 && setOpen(true)}
-          placeholder="Search series..."
-          className="w-full bg-[#1e1e2a] border border-[#2a2a36] text-[#e4e4e7] pl-10 pr-4 py-2.5 text-sm rounded-lg placeholder:text-[#52525b] focus:outline-none focus:border-[#ef4444] transition-colors"
-        />
-        {q && (
-          <button onClick={() => { setQ(''); setResults([]); setOpen(false); }} className="absolute right-3 top-1/2 -translate-y-1/2 text-[#52525b] hover:text-[#a1a1aa]">
-            <IconX size={14} />
-          </button>
-        )}
-      </div>
-      {open && (
-        <div className="absolute top-full left-0 right-0 mt-1 bg-[#16161e] border border-[#2a2a36] rounded-lg overflow-hidden shadow-lg z-50 max-h-80 overflow-y-auto">
-          {loading && <div className="p-4 text-center text-xs text-[#71717a]">Searching...</div>}
-          {!loading && results.length === 0 && <div className="p-4 text-center text-xs text-[#71717a]">No results found</div>}
-          {!loading && results.map((s) => (
-            <div key={s.id} onClick={() => { onSelect(s); setOpen(false); setQ(''); }} className="flex items-center gap-3 px-3 py-2.5 hover:bg-[#1e1e2a] cursor-pointer border-b border-[#222230] last:border-0">
-              <div className="w-9 h-12 rounded overflow-hidden bg-[#1e1e2a] shrink-0">
-                <img src={s.thumbnail} alt="" className="w-full h-full object-cover" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
+    <div className="fixed inset-0 z-[200] bg-black/60 backdrop-blur-sm" onClick={onClose}>
+      <div className="max-w-2xl mx-auto mt-20 px-4" onClick={(e) => e.stopPropagation()}>
+        <div className="bg-[#16161e] border border-[#2a2a36] rounded-xl overflow-hidden shadow-2xl">
+          {/* Search Input */}
+          <div className="flex items-center gap-3 px-4 border-b border-[#2a2a36]">
+            <span className="text-[#71717a] shrink-0"><IconSearch size={18} /></span>
+            <input
+              ref={inputRef}
+              type="text"
+              value={q}
+              onChange={(e) => handleChange(e.target.value)}
+              placeholder="Search manga or manhwa..."
+              className="flex-1 bg-transparent text-[#e4e4e7] py-4 text-base placeholder:text-[#52525b] focus:outline-none"
+              autoComplete="off"
+            />
+            {q && (
+              <button onClick={() => { setQ(''); setResults([]); }} className="text-[#52525b] hover:text-[#a1a1aa] transition-colors shrink-0">
+                <IconX size={16} />
+              </button>
+            )}
+            <kbd className="text-[0.6rem] font-mono bg-[#1e1e2a] border border-[#2a2a36] rounded px-1.5 py-0.5 text-[#52525b] shrink-0">ESC</kbd>
+          </div>
+
+          {/* Results */}
+          <div className="max-h-[60vh] overflow-y-auto">
+            {loading && (
+              <div className="p-6 text-center">
+                <div className="w-5 h-5 border-2 border-[#2a2a36] border-t-[#ef4444] rounded-full animate-spin mx-auto" />
               </div>
-              <div className="flex-1 min-w-0">
-                <div className="text-sm text-[#e4e4e7] font-medium truncate">{s.title}</div>
-                <div className="flex items-center gap-2 text-[0.6rem] text-[#71717a]">
-                  <span className="flex items-center gap-1"><IconStar size={9} /> {s.rating.toFixed(1)}</span>
-                  <span>{s.chaptersCount} ch</span>
-                  <span className={`px-1.5 py-0.5 rounded text-[0.55rem] ${s.status === 'Ongoing' ? 'bg-[#22c55e]/10 text-[#22c55e]' : 'bg-[#3b82f6]/10 text-[#3b82f6]'}`}>{s.status}</span>
+            )}
+            {!loading && q.length >= 2 && results.length === 0 && (
+              <div className="p-8 text-center">
+                <span className="text-[#3f3f46] mx-auto mb-3 block"><IconSearch size={32} /></span>
+                <p className="text-sm text-[#71717a]">No results found for &quot;{q}&quot;</p>
+              </div>
+            )}
+            {!loading && results.map((s) => (
+              <div
+                key={s.id}
+                onClick={() => { onSelect(s); onClose(); }}
+                className="flex items-center gap-4 px-4 py-3 hover:bg-[#1e1e2a] cursor-pointer border-b border-[#222230] last:border-0 transition-colors"
+              >
+                <div className="w-11 h-14 rounded-lg overflow-hidden bg-[#1e1e2a] shrink-0">
+                  <img src={s.thumbnail} alt="" className="w-full h-full object-cover" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
                 </div>
+                <div className="flex-1 min-w-0">
+                  <div className="text-sm text-[#e4e4e7] font-semibold truncate">{s.title}</div>
+                  <div className="flex items-center gap-3 mt-1 text-[0.65rem] text-[#71717a]">
+                    <span className="flex items-center gap-1 text-[#fbbf24]"><IconStar size={10} /> {s.rating.toFixed(1)}</span>
+                    <span>{s.chaptersCount} chapters</span>
+                    <span className={`px-1.5 py-0.5 rounded text-[0.55rem] font-semibold ${s.status === 'Ongoing' ? 'bg-[#22c55e]/10 text-[#22c55e]' : 'bg-[#3b82f6]/10 text-[#3b82f6]'}`}>{s.status}</span>
+                  </div>
+                </div>
+                <span className="text-[#3f3f46] shrink-0"><IconChevronRight size={16} /></span>
               </div>
-            </div>
-          ))}
+            ))}
+            {!loading && q.length < 2 && (
+              <div className="p-8 text-center">
+                <span className="text-[#3f3f46] mx-auto mb-3 block"><IconSearch size={32} /></span>
+                <p className="text-sm text-[#52525b]">Type at least 2 characters to search</p>
+              </div>
+            )}
+          </div>
         </div>
-      )}
+      </div>
     </div>
   );
 }
@@ -341,6 +377,7 @@ export default function BrowsePage() {
   const [genres, setGenres] = useState<string[]>([]);
   const [selectedGenre, setSelectedGenre] = useState<string | null>(null);
   const [modalSlug, setModalSlug] = useState<string | null>(null);
+  const [searchOpen, setSearchOpen] = useState(false);
 
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', 'dark');
@@ -374,6 +411,18 @@ export default function BrowsePage() {
     load();
   }, []);
 
+  /* Keyboard shortcut: Cmd/Ctrl+K to open search */
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+        e.preventDefault();
+        setSearchOpen(true);
+      }
+    };
+    window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
+  }, []);
+
   const trending = popular.filter(s => s.rating >= 4.5).slice(0, 15);
   const topRated = [...popular].sort((a, b) => b.rating - a.rating).slice(0, 15);
   const genreFiltered = selectedGenre
@@ -390,8 +439,16 @@ export default function BrowsePage() {
             <span className="font-display text-lg text-[#e4e4e7]" style={{ textTransform: 'none' }}>OMEGAAPI</span>
             <span className="pill-tag ml-1 hidden sm:inline-flex" style={{ color: '#ef4444', borderColor: '#ef4444' }}>BROWSE</span>
           </a>
-          <div className="flex items-center gap-4">
-            <SearchBar onSelect={(s) => setModalSlug(s.slug)} />
+          <div className="flex items-center gap-3">
+            {/* Search Button */}
+            <button
+              onClick={() => setSearchOpen(true)}
+              className="flex items-center gap-2 px-3 py-2 bg-[#1e1e2a] border border-[#2a2a36] rounded-lg text-[#52525b] hover:text-[#a1a1aa] hover:border-[#ef4444]/40 transition-all text-sm"
+            >
+              <IconSearch size={14} />
+              <span className="hidden sm:inline text-xs">Search</span>
+              <kbd className="text-[0.55rem] font-mono bg-[#121218] border border-[#2a2a36] rounded px-1 py-0.5 text-[#52525b] hidden sm:inline">⌘K</kbd>
+            </button>
             <div className="hidden md:flex items-center gap-6">
               <a href="/" className="text-[0.7rem] font-semibold uppercase tracking-widest text-[#a1a1aa] hover:text-[#e4e4e7] transition-colors">Home</a>
               <a href="/docs" className="text-[0.7rem] font-semibold uppercase tracking-widest text-[#a1a1aa] hover:text-[#e4e4e7] transition-colors">Docs</a>
@@ -400,6 +457,9 @@ export default function BrowsePage() {
           </div>
         </div>
       </nav>
+
+      {/* Search Overlay */}
+      <SearchOverlay open={searchOpen} onClose={() => setSearchOpen(false)} onSelect={(s) => setModalSlug(s.slug)} />
 
       {/* Featured Banner */}
       {featured && (
