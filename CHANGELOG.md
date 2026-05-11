@@ -2,6 +2,13 @@
 
 All notable changes to OmegaAPI will be documented in this file.
 
+## [3.1.1] - 2026-05-12
+
+### Changed
+- Added emojis to all README.md section headers, feature tables, and comparison tables
+- Updated latest changelog version to v3.1.0 in README
+- Updated GitHub repository description and topics (manga-api, manhwa, webtoon, rest-api, nextjs, typescript, vercel, free-api, cors, manga-reader, omega-scans, neo-brutalist)
+
 ## [3.1.0] - 2026-05-12
 
 ### Added
