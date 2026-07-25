@@ -1,13 +1,12 @@
 > [!WARNING]
 > **This API Provides Access To Mature/Adult Manga And Manhwa Content**. By Using This API Or Its Browse Interface, You Confirm That You Are At Least **18 Years Of Age**. Parental Discretion Is Advised.
 
+> [!NOTE]
+> **API MAYBE Temporarily Paused** due to suspiciously too many requests. My hosted version of this API is only for testing purposes. You MUST host your own instance to use the API.
+
 <div align="center">
 
 <img src="public/banner.png" alt="OmegaAPI Banner" width="100%" />
-
-<br />
-
-# Ω OmegaAPI
 
 ### The Fastest Free Manga & Manhwa REST API
 
@@ -1146,14 +1145,59 @@ This project is licensed under the **MIT License** — see [LICENSE](LICENSE).
 
 ---
 
+## 📄 License
+
 <div align="center">
 
-**Built with ❤️ by [Shinei Nouzen](https://github.com/Shineii86)**
+[![License: MIT](https://img.shields.io/badge/License-MIT-22c55e?style=for-the-badge&logo=mit&logoColor=white)](./LICENSE)
 
-<br />
+This project is licensed under the **MIT License**.
 
-<a href="https://github.com/Shineii86/OmegaAPI/stargazers">⭐ Star</a> ·
-<a href="https://github.com/Shineii86/OmegaAPI/fork">🍴 Fork</a> ·
-<a href="https://github.com/Shineii86/OmegaAPI/issues/new">🐛 Issue</a>
+Free to use, modify, and distribute — see the [LICENSE](LICENSE) file for details.
 
+</div>
+
+---
+
+## 👤 Author
+
+<div align="center">
+
+  <a href="https://github.com/Shineii86">
+  <img src="https://github.com/AniWaifuBot/Waifus/blob/main/Source/Banner.png" alt="Banner" width="100%" />
+  </a>
+  
+</div>
+  
+<p align="center">
+  <b style="font-size: 5.5em;">Shinei Nouzen</b>
+  <br/>
+  <sub>Full-Stack Developer & Anime Enthusiast</sub>
+  <br/><br/>
+  <a href="https://github.com/Shineii86"><img src="https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white" alt="GitHub"/></a>
+  <a href="https://telegram.me/Shineii86"><img src="https://img.shields.io/badge/Telegram-2CA5E0?style=for-the-badge&logo=telegram&logoColor=white" alt="Telegram"/></a>
+  <a href="https://instagram.com/ikx7.a"><img src="https://img.shields.io/badge/Instagram-C13584?style=for-the-badge&logo=instagram&logoColor=white" alt="Instagram"/></a>
+  <a href="mailto:ikx7a@hotmail.com"><img src="https://img.shields.io/badge/Email-D14836?style=for-the-badge&logo=gmail&logoColor=white" alt="Email"/></a>
+</p>
+
+---
+
+## ⭐ Star History
+
+<p align="center">
+  <a href="https://star-history.com/#Shineii86/OmegaAPI&Date">
+    <img src="https://api.star-history.com/svg?repos=Shineii86/OmegaAPI&type=Date" alt="Star History Chart" width="100%"/>
+  </a>
+</p>
+
+> ⭐ If you found this project useful, please consider giving it a star!
+
+---
+
+<div align="center">
+  <p align="center">
+    <b>Made With ❤️ For The Manhwa Community</b>
+    <br/><br/>
+    <sub>© Shinei Nouzen. All Rights Reserved.</sub>
+  </p>
 </div>
